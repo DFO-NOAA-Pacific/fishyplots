@@ -12,10 +12,11 @@ Depends:
     R (>= 4.0.0)
 Imports:
     dplyr (>= 1.0.2),
-    rlang (>= 0.4.1)
+    rlang (>= 0.4.1),
+    ggplot2,
+    tidyr
 Suggests:
     devtools,
-    ggplot2,
     knitr,
     MASS,
     rmarkdown,
