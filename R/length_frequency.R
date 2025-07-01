@@ -3,14 +3,13 @@
 #' @param data a data frame made using pull_bio() from a fisheries survey, contains biological info
 #' @return a ggplot object
 #' @importFrom dplyr filter 
-#' @importFrom tidyr complete
+#' @importFrom tidyr complete full_seq
 #' @importFrom ggplot2 ggplot aes geom_histogram facet_wrap theme_bw labs
-#' @importFrom scales full_seq 
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' 
+#' length_frequency(bio_data)
 #' }
 length_frequency <- function(data) {
   data_clean <- data |>
