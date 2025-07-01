@@ -3,7 +3,7 @@ Package: fishyplots
 Title: Plotting Utilities For Coastwide Synopsis
 Version: 0.0.1
 Authors@R: c(
-    person("Zoe", "Khan", email="zoedeekhan@gmail.com", role = c("aut", "cre")),
+    person("Zoe", "Khan", email="zkhan@smith.edu", role = c("aut", "cre")),
     person("Callie", "Murakami", email="muracal2@uw.edu", role = "aut")
   )
 Description: This package description can be fleshed out a bit more
