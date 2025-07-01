@@ -17,6 +17,6 @@ Function to plot length frequency of fish species
 }
 \examples{
 \dontrun{
-
+length_frequency(bio_data)
 }
 }
