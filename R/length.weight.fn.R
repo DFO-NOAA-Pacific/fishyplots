@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' TBD
+#' length.weight.fn(bio.data)
 #' }
 
 length.weight.fn <- function(data) #add more arguments as needed, such as CI
