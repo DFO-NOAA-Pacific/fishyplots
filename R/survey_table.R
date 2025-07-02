@@ -62,8 +62,8 @@ if (form == 2) {
 # Convert count to label with "K" for thousands
 bio_data$label <- ifelse(bio_data$n_samples < 100,
                               as.character(bio_data$n_samples), # keep as number if under 100
-                              ifelse(bio_data$n_samples < 1000,
-                                     as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 1000
+                              ifelse(bio_data$n_samples < 950, #
+                                     as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
                                      paste0(round(bio_data$n_samples / 1000), "K") )) # if over 1000, round to nearest and label with k
 
 plot <- ggplot(bio_data, aes(x=year, y=sample_type, fill=n_samples)) +
