@@ -66,12 +66,12 @@ length_weight <- function(data) #add more arguments as needed, such as CI
     # Add text annotations for slope/intercept
     annotate("text", x = -Inf, y = Inf, 
              label = paste0("Female", 
-                            "\nln(a) = ", round(coef(lw_mod_F)[1],2),
+                            "\n a = ", format(exp(coef(lw_mod_F)[1]), digits = 3, scientific = TRUE),
                             "\n   b = ", round(coef(lw_mod_F)[2],2)), 
              hjust = -0.5, vjust = 2, size = 4) +
     annotate("text", x = -Inf, y = Inf, 
              label = paste0("  Male", 
-                            "\nln(a) = ", round(coef(lw_mod_M)[1],2),
+                            "\n a = ", format(exp(coef(lw_mod_M)[1]), digits = 3, scientific = TRUE),
                             "\n   b = ", round(coef(lw_mod_M)[2],2)), 
              hjust = -0.5, vjust = 3.5, size = 4)
   
