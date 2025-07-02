@@ -19,7 +19,8 @@ Imports:
     rnaturalearth,
     rnaturalearthdata,
     scales,
-    sf
+    sf,
+    ggridges
 Suggests:
     devtools,
     knitr,
