@@ -20,7 +20,9 @@ Imports:
     rnaturalearthdata,
     scales,
     sf,
-    ggridges
+    ggridges,
+    FSA,
+    stats
 Suggests:
     devtools,
     knitr,
