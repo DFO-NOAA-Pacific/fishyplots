@@ -14,7 +14,12 @@ Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
     ggplot2,
-    tidyr
+    tidyr,
+    gganimate,
+    rnaturalearth,
+    rnaturalearthdata,
+    scales,
+    sf
 Suggests:
     devtools,
     knitr,
