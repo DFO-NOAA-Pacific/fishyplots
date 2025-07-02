@@ -2,7 +2,10 @@
 #'
 #' @param data a data frame of target species including Length_cm, Weight_kg, and Sex
 #' @return a plot of sexed data with log regression slope and intercept
-#' @importFrom ggplot2
+#' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
+#' @importFrom dplyr filter mutate
+#' @importFrom stats lm predict
+#' @importFrom grid unit
 #' @export
 #'
 #' @examples
