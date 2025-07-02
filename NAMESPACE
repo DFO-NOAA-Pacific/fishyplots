@@ -5,9 +5,14 @@ export(age_frequency)
 export(length_frequency)
 export(map_cpue)
 export(my_func)
+export(vonb_growth)
 import(rnaturalearthdata)
+<<<<<<< HEAD
 importFrom(dplyr,arrange)
 importFrom(dplyr,bind_rows)
+=======
+importFrom(FSA,findGrowthStarts)
+>>>>>>> 996705f1cbc639c6559c9d624eda7ec9ecae7a86
 importFrom(dplyr,filter)
 importFrom(dplyr,group_by)
 importFrom(dplyr,mutate)
@@ -21,15 +26,24 @@ importFrom(ggplot2,element_blank)
 importFrom(ggplot2,element_text)
 importFrom(ggplot2,facet_wrap)
 importFrom(ggplot2,geom_histogram)
+<<<<<<< HEAD
 importFrom(ggplot2,geom_line)
 importFrom(ggplot2,geom_point)
+=======
+importFrom(ggplot2,geom_jitter)
+importFrom(ggplot2,geom_line)
+>>>>>>> 996705f1cbc639c6559c9d624eda7ec9ecae7a86
 importFrom(ggplot2,geom_sf)
 importFrom(ggplot2,geom_text)
 importFrom(ggplot2,geom_tile)
 importFrom(ggplot2,ggplot)
 importFrom(ggplot2,ggtitle)
 importFrom(ggplot2,labs)
+<<<<<<< HEAD
 importFrom(ggplot2,scale_fill_distiller)
+=======
+importFrom(ggplot2,scale_color_manual)
+>>>>>>> 996705f1cbc639c6559c9d624eda7ec9ecae7a86
 importFrom(ggplot2,scale_fill_viridis_c)
 importFrom(ggplot2,scale_linetype_manual)
 importFrom(ggplot2,stat_summary_hex)
@@ -49,7 +63,11 @@ importFrom(sf,st_crop)
 importFrom(sf,st_transform)
 importFrom(stats,coef)
 importFrom(stats,lm)
+<<<<<<< HEAD
 importFrom(stats,na.omit)
+=======
+importFrom(stats,nls)
+>>>>>>> 996705f1cbc639c6559c9d624eda7ec9ecae7a86
 importFrom(stats,predict)
 importFrom(tidyr,complete)
 importFrom(tidyr,full_seq)
