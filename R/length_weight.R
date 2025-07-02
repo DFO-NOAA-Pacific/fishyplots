@@ -7,10 +7,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' length.weight.fn(bio.data)
+#' length_weight(bio.data)
 #' }
 
-length.weight.fn <- function(data) #add more arguments as needed, such as CI
+length_weight <- function(data) #add more arguments as needed, such as CI
 { 
   # transform and regression
   log.data <- data %>% 
@@ -38,7 +38,6 @@ length.weight.fn <- function(data) #add more arguments as needed, such as CI
     data.frame(Length_cm = male$Length_cm, fit = real_predict_M, Sex = "Male"),
     data.frame(Length_cm = female$Length_cm, fit = real_predict_F, Sex = "Female")
   )
-  
   
   
   
