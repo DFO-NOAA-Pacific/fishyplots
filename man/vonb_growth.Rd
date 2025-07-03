@@ -17,6 +17,6 @@ von Bertalanffy growth function plot
 }
 \examples{
 \dontrun{
-growth(bio_data)
+vonb_growth(bio_data)
 }
 }

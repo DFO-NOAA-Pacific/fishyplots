@@ -40,7 +40,7 @@ map_cpue <- function(data, map_type) {
     map <- ggplot() +
       geom_sf(data = us_coast, color = "black") +
       stat_summary_hex(data = catch, aes(x = X, y = Y, z = cpue_kg_km2), bins = 50, fun = "mean") +
-      scale_fill_viridis_c(name = "CPUE (kg/km²)", trans = fourth_root, option = "magma") +
+      scale_fill_viridis_c(name = "CPUE (kg/km\u00B2)", trans = fourth_root, option = "magma") +
       coord_sf(crs = 3157) +
       theme_bw() +
       labs(title = "CPUE 2003-2024", x = "", y = "")
@@ -49,7 +49,7 @@ map_cpue <- function(data, map_type) {
     gif <- ggplot() +
       geom_sf(data = us_coast, color = "black") +
       stat_summary_hex(data = catch, aes(x = X, y = Y, z = cpue_kg_km2), bins = 50, fun = "mean") +
-      scale_fill_viridis_c(name = "CPUE (kg/km²)", trans = fourth_root, option = "magma") +
+      scale_fill_viridis_c(name = "CPUE (kg/km\u00B2)", trans = fourth_root, option = "magma") +
       coord_sf(crs = 3157) +
       theme_bw() +
       transition_states(Year, transition_length = 0, state_length = 1) +
