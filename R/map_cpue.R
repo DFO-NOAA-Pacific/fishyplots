@@ -4,7 +4,6 @@
 #' @param map_type choose either "static" or "dynamic" 
 #' @return a ggplot object
 #' @importFrom scales trans_new
-#' @import rnaturalearthdata
 #' @importFrom rnaturalearth ne_countries
 #' @importFrom sf st_crop st_transform st_as_sf st_coordinates
 #' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c coord_sf theme_bw labs
