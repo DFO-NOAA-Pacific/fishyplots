@@ -16,12 +16,14 @@
 length_weight <- function(data) #add more arguments as needed, such as CI
 { 
   # transform and regression
+  #remove unsexed and NAs
   log.data <- data %>% 
+    filter(!Sex == "U") %>% 
     filter(!is.na(Length_cm)) %>% 
     filter(!is.na(Weight_kg)) %>% 
     mutate(loglength = log(Length_cm), logweight = log(Weight_kg))
   
-  #filter into male and female, no unsexed
+  #subset male and female for ease
   male <- subset(log.data, log.data$Sex == "M")
   female <- subset(log.data, log.data$Sex == "F")
   
@@ -38,23 +40,33 @@ length_weight <- function(data) #add more arguments as needed, such as CI
   
   # combine for legend plotting
   real_predict_all <- rbind(
-    data.frame(Length_cm = male$Length_cm, fit = real_predict_M, Sex = "Male"),
-    data.frame(Length_cm = female$Length_cm, fit = real_predict_F, Sex = "Female")
+    data.frame(Length_cm = male$Length_cm, fit = real_predict_M, Sex = "M"),
+    data.frame(Length_cm = female$Length_cm, fit = real_predict_F, Sex = "F")
   )
   
   
   
   #plot
+  sex.color <- c("M" = "#005AB5", "F" = "#DC3220")
+  
   plot <- ggplot(log.data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
-    
+    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15, show.legend = FALSE) +
     #DATA
-    geom_point(data = male, aes(x = Length_cm, y = Weight_kg), color = "darkgrey", alpha = 0.15, pch = 1) + #plots raw male data
-    geom_point(data = female, aes(x = Length_cm, y = Weight_kg), color = "darkgrey", alpha = 0.15, pch = 1) + #plots raw female data
-    # could also make M vs F be red and blue, but overlay makes one sex more visible
-    geom_line(data = real_predict_all, aes(x = Length_cm, y = fit.fit, linetype = Sex), linewidth = 1) + # plot fit lines
-    scale_linetype_manual(values = c("Male" = "dashed", "Female" = "solid")) + 
     
+    geom_line(data = real_predict_all, 
+              aes(x = Length_cm, y = fit.fit, linetype = Sex, color = Sex), linewidth = 1) + # plot fit lines
+    
+    #set M vs F color, shape, lines
+    scale_linetype_manual(
+      values = c("M" = "dashed", "F" = "solid"),
+      labels = c("M" = "Male", "F" = "Female")) + 
+    scale_shape_manual(
+      values = c("M" = 2, "F" = 1),
+      labels = c("M" = "Male", "F" = "Female")) +
+    scale_color_manual(
+      values = sex.color,
+      labels = c("M" = "Male", "F" = "Female")) +
     
     #LEGEND AND LABELS
     #add legend for lines
