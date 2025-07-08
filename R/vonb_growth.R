@@ -36,6 +36,9 @@ vonb_growth <- function(data) {
   model_male <- nls(vb, data = data_male, start = starts_male)
   model_female <- nls(vb, data = data_female, start = starts_female)
   
+  xy <- coef(model_male) |> round(2)
+  xx <- coef(model_female) |> round(2)
+  
   # Extract all unique ages
   age_seq_male <- sort(unique(data_male$Age_years))
   age_seq_female <- sort(unique(data_female$Age_years))
@@ -60,5 +63,9 @@ vonb_growth <- function(data) {
     scale_color_manual(values = c("M" = "#008b8b", "F" = "#daa520")) +
     geom_line(data = growth_preds, aes(x = Age_years, y = fit, color = Sex), inherit.aes = FALSE) +
     theme_bw() +
-    labs(x = "Age (years)", y = "Length (cm)", title = "Growth")
+    labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
+    annotate("text", x = 15, y = 10, 
+             label = paste0("k = ", xx[2], "; Lmin = ", xx[3], "; Linf = ", xx[1]), color = "#daa520") +
+    annotate("text", x = 15, y = 5, 
+             label = paste0("k = ", xy[2], "; Lmin = ", xy[3], "; Linf = ", xy[1]), color = "#008b8b")
 }
