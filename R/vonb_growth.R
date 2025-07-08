@@ -5,7 +5,7 @@
 #' @importFrom dplyr filter
 #' @importFrom FSA findGrowthStarts
 #' @importFrom stats nls predict
-#' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs
+#' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs annotate
 #' @export
 #'
 #' @examples
@@ -64,8 +64,8 @@ vonb_growth <- function(data) {
     geom_line(data = growth_preds, aes(x = Age_years, y = fit, color = Sex), inherit.aes = FALSE) +
     theme_bw() +
     labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
-    annotate("text", x = 15, y = 10, 
-             label = paste0("k = ", xx[2], "; Lmin = ", xx[3], "; Linf = ", xx[1]), color = "#daa520") +
-    annotate("text", x = 15, y = 5, 
-             label = paste0("k = ", xy[2], "; Lmin = ", xy[3], "; Linf = ", xy[1]), color = "#008b8b")
+    annotate("label", x = Inf, y = -Inf, label = paste0("k = ", xx[2], "; Lmin = ", xx[3], "; Linf = ", xx[1]), 
+             color = "#daa520", vjust= -1.5, hjust = 1.05, fill = "#daa520", alpha = 0.2) +
+    annotate("label", x = Inf, y = -Inf, label = paste0("k = ", xy[2], "; Lmin = ", xy[3], "; Linf = ", xy[1]), 
+             color = "#008b8b", fill = "#008b8b", vjust = -0.5, hjust = 1.05, alpha = 0.2)
 }
