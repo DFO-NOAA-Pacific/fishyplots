@@ -51,7 +51,7 @@ length_weight <- function(data) #add more arguments as needed, such as CI
   
   plot <- ggplot(log.data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
-    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15, show.legend = FALSE) +
+    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15) +
     #DATA
     
     geom_line(data = real_predict_all, 
@@ -73,6 +73,7 @@ length_weight <- function(data) #add more arguments as needed, such as CI
     theme(legend.title = element_blank(), legend.position = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
     xlab("Length (cm)") +# for the x axis label
     ylab("Weight (kg)")+
+    guides(color = guide_legend(override.aes = list(alpha = 1)))+ # increase alpha of legend
     
     # ANNOTATIONS
     # Add text annotations for slope/intercept
