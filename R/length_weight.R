@@ -1,6 +1,7 @@
 #' Main function to plot length-weight relationships by sex
 #'
 #' @param data a data frame of target species including Length_cm, Weight_kg, and Sex
+#' @param color default FALSE for greyscale, TRUE gives red and blue
 #' @return a plot of sexed data with log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate
@@ -13,7 +14,7 @@
 #' length_weight(bio.data)
 #' }
 
-length_weight <- function(data) #add more arguments as needed, such as CI
+length_weight <- function(data, color = FALSE) #color BW default
 { 
   # transform and regression
   #remove unsexed and NAs
@@ -46,8 +47,13 @@ length_weight <- function(data) #add more arguments as needed, such as CI
   
   
   
-  #plot
+  #plot with or without color
+  if(color == TRUE){
   sex.color <- c("M" = "#005AB5", "F" = "#DC3220")
+  }
+  else{
+  sex.color <- c("M" = "grey60", "F" = "black")
+  }
   
   plot <- ggplot(log.data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
