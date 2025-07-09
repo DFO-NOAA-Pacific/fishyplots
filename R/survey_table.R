@@ -4,6 +4,7 @@
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @return a tibble or ggplot object
 #' @importFrom dplyr group_by summarize mutate arrange bind_rows
+#' @importFrom gfplots theme_pbs
 #' @importFrom tidyr pivot_wider
 #' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle
 #' @importFrom stats na.omit
@@ -80,14 +81,24 @@ bio_data$label <- ifelse(bio_data$n_samples < 100,
                                      as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
                                      paste0(round(bio_data$n_samples / 1000), "K") )) # if over 1000, round to nearest and label with k
 
-plot <- ggplot(bio_data, aes(x=year, y=sample_type, fill=n_samples)) +
-  geom_tile() +
-  geom_text(aes(label=label), color="black") + # add labels to tiles
-  scale_fill_distiller(direction = 1) +  # set color scale for fill
-  theme_minimal() +
-  ggtitle("Survey specimen counts") +
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank(), axis.text.x = element_text(size=11),
-        axis.text.y = element_text(size=11),legend.position="none") #legend and axis text adjustments
+#create plot
+plot <- ggplot(bio_data, aes(year, sample_type)) +
+  ggplot2::geom_tile(aes(fill = n_samples), colour = "white") +
+  scale_fill_distiller(direction = 1) + 
+  theme_pbs() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  ggplot2::guides(fill = "none") + xlab("") + ylab("") +
+  geom_text(aes(label = label),
+            colour = "black",
+            size = 3, alpha = 1
+  ) +
+  ggplot2::scale_y_discrete(position = "left")+
+  scale_x_continuous(breaks = seq(min(bio_data$year)+1, max(bio_data$year), by = 2))+
+  ggplot2::ggtitle("Survey Specimen Counts")
+
 return (plot)
 }
 }
