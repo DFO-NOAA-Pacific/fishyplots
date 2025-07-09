@@ -10,6 +10,7 @@ Description: This package description can be fleshed out a bit more
 License: GPL-3
 Depends:
     R (>= 4.0.0)
+Remotes: seananderson/gfplot
 Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
@@ -21,7 +22,9 @@ Imports:
     sf,
     ggridges,
     FSA,
-    stats
+    stats,
+    grid,
+    gfplot
 Suggests:
     devtools,
     rnaturalearthdata,
