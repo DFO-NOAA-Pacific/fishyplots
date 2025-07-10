@@ -1,6 +1,7 @@
 #' Main function to plot length-weight relationships by sex
 #'
 #' @param data a data frame of target species including Length_cm, Weight_kg, and Sex
+#' @param color default FALSE for greyscale, TRUE gives red and blue
 #' @return a plot of sexed data with log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate
@@ -13,19 +14,19 @@
 #' length_weight(bio.data)
 #' }
 
-length_weight <- function(data) #add more arguments as needed, such as CI
+length_weight <- function(data, color = FALSE) #color BW default
 { 
   # transform and regression
   #remove unsexed and NAs
-  log.data <- data %>% 
-    filter(!Sex == "U") %>% 
-    filter(!is.na(Length_cm)) %>% 
-    filter(!is.na(Weight_kg)) %>% 
+  log_data <- data |> 
+    filter(!Sex == "U") |> 
+    filter(!is.na(Length_cm)) |> 
+    filter(!is.na(Weight_kg)) |> 
     mutate(loglength = log(Length_cm), logweight = log(Weight_kg))
   
   #subset male and female for ease
-  male <- subset(log.data, log.data$Sex == "M")
-  female <- subset(log.data, log.data$Sex == "F")
+  male <- subset(log_data, log_data$Sex == "M")
+  female <- subset(log_data, log_data$Sex == "F")
   
   #regression
   lw_mod_M <- lm(logweight ~ loglength, data = male)
@@ -46,12 +47,17 @@ length_weight <- function(data) #add more arguments as needed, such as CI
   
   
   
-  #plot
+  #plot with or without color
+  if(color == TRUE){
   sex.color <- c("M" = "#005AB5", "F" = "#DC3220")
+  }
+  else{
+  sex.color <- c("M" = "grey60", "F" = "black")
+  }
   
-  plot <- ggplot(log.data, aes(x = Length_cm, y = Weight_kg)) +
+  plot <- ggplot(log_data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
-    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15, show.legend = FALSE) +
+    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15) +
     #DATA
     
     geom_line(data = real_predict_all, 
@@ -73,6 +79,7 @@ length_weight <- function(data) #add more arguments as needed, such as CI
     theme(legend.title = element_blank(), legend.position = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
     xlab("Length (cm)") +# for the x axis label
     ylab("Weight (kg)")+
+    guides(color = guide_legend(override.aes = list(alpha = 1)))+ # increase alpha of legend
     
     # ANNOTATIONS
     # Add text annotations for slope/intercept
