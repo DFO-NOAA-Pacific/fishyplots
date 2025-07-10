@@ -44,11 +44,13 @@ agestr_count <- data.frame(otosag = data$Otosag_id, year = data$Year) %>%
   mutate(sample_type = "Age Structures") #all structures collected
 
 unread_count <- left_join(agestr_count, age_count, by = "year") %>%
-  mutate(n_ages_read = ifelse(is.na(n_samples.y), 0, n_samples.y),
-    n_samples = n_samples.x - n_ages_read
-  ) %>%
+  mutate(n_ages = ifelse(is.na(n_samples.y), 0, n_samples.y), #change NA to 0 for calculation ease
+    n_unread = n_samples.x - n_ages, #unread age strugtures = n age str - n ages read
+    n_samples = ifelse(n_unread == 0, NA, n_unread)) %>% # make 0 into NA, use common name
   select(year, n_samples) %>%
-  mutate(sample_type = "Unread Age Structures") #unread structures only
+  mutate(sample_type = "Unread Age Structures") %>% #unread structures only
+  na.omit() #omit NAs where n age structures = n read ages
+  
 
 # put all into one df
 bio_data <-length_count %>%
