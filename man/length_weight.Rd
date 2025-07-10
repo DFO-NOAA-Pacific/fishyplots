@@ -4,10 +4,12 @@
 \alias{length_weight}
 \title{Main function to plot length-weight relationships by sex}
 \usage{
-length_weight(data)
+length_weight(data, color = FALSE)
 }
 \arguments{
 \item{data}{a data frame of target species including Length_cm, Weight_kg, and Sex}
+
+\item{color}{default FALSE for greyscale, TRUE gives red and blue}
 }
 \value{
 a plot of sexed data with log regression slope and intercept
