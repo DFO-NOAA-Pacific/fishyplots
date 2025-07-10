@@ -1,5 +1,6 @@
 library(taxize)
-
+library(surveyjoin)
+library(dplyr)
 # read in PBS catch data
 data <- readRDS(url("https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/3ad708fb208f58bb6bd19ec605a569ca93b54fd8/pbs-catch-all.rds"))
 
@@ -119,7 +120,6 @@ saveRDS(nwfsc_top, file="data-raw/nwfsc_top.rds")
 
 
 # finally look at the overlap from surveyjoin
-library(surveyjoin)
 
 d <- get_data()
 
@@ -128,5 +128,20 @@ overlap <- dplyr::group_by(d, common_name) |>
                    tot_wt = sum(catch_weight, na.rm=T)) |>
   dplyr::arrange(-tot_wt) |>
   dplyr::slice(1:20) 
-
+overlap$region <- "overlap"
 saveRDS(overlap, file="data-raw/overlap_top.rds")
+
+nwfsc_joined <- rbind(dplyr::select(nwfsc_top,-itis), overlap) |>
+  dplyr::group_by(common_name) |>
+  dplyr::summarize(scientific_name = scientific_name[1])
+write.csv(nwfsc_joined, file="data-raw/nwfsc_joined.csv", row.names = FALSE)
+
+afsc_joined <- rbind(afsc_top, overlap) |>
+  dplyr::group_by(common_name) |>
+  dplyr::summarize(scientific_name = scientific_name[1])
+write.csv(afsc_joined, file="data-raw/afsc_joined.csv", row.names = FALSE)
+
+pbs_joined <- rbind(pbs_top, overlap) |>
+  dplyr::group_by(common_name) |>
+  dplyr::summarize(scientific_name = scientific_name[1])
+write.csv(pbs_joined, file="data-raw/pbs_joined.csv", row.names = FALSE)
