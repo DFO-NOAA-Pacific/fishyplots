@@ -18,15 +18,15 @@ length_weight <- function(data, color = FALSE) #color BW default
 { 
   # transform and regression
   #remove unsexed and NAs
-  log.data <- data %>% 
-    filter(!Sex == "U") %>% 
-    filter(!is.na(Length_cm)) %>% 
-    filter(!is.na(Weight_kg)) %>% 
+  log_data <- data |> 
+    filter(!Sex == "U") |> 
+    filter(!is.na(Length_cm)) |> 
+    filter(!is.na(Weight_kg)) |> 
     mutate(loglength = log(Length_cm), logweight = log(Weight_kg))
   
   #subset male and female for ease
-  male <- subset(log.data, log.data$Sex == "M")
-  female <- subset(log.data, log.data$Sex == "F")
+  male <- subset(log_data, log_data$Sex == "M")
+  female <- subset(log_data, log_data$Sex == "F")
   
   #regression
   lw_mod_M <- lm(logweight ~ loglength, data = male)
@@ -55,7 +55,7 @@ length_weight <- function(data, color = FALSE) #color BW default
   sex.color <- c("M" = "grey60", "F" = "black")
   }
   
-  plot <- ggplot(log.data, aes(x = Length_cm, y = Weight_kg)) +
+  plot <- ggplot(log_data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
     geom_point(aes(color = Sex, shape = Sex), alpha = 0.15) +
     #DATA

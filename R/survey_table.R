@@ -4,7 +4,7 @@
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @return a tibble or ggplot object
 #' @importFrom dplyr group_by summarize mutate arrange bind_rows
-#' @importFrom gfplots theme_pbs
+#' @importFrom gfplot theme_pbs
 #' @importFrom tidyr pivot_wider
 #' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle
 #' @importFrom stats na.omit
