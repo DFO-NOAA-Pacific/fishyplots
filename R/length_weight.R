@@ -52,25 +52,28 @@ length_weight <- function(data, color = FALSE) #color BW default
   sex.color <- c("M" = "#005AB5", "F" = "#DC3220")
   }
   else{
-  sex.color <- c("M" = "grey60", "F" = "black")
+  sex.color <- c("M" = "grey30", "F" = "black")
   }
   
   plot <- ggplot(log_data, aes(x = Length_cm, y = Weight_kg)) +
     theme_classic() + #removes grid
-    geom_point(aes(color = Sex, shape = Sex), alpha = 0.15) +
+    geom_jitter(aes(color = Sex, shape = Sex, fill = Sex), alpha = 0.1) +
     #DATA
     
     geom_line(data = real_predict_all, 
               aes(x = Length_cm, y = fit.fit, linetype = Sex, color = Sex), linewidth = 1) + # plot fit lines
     
-    #set M vs F color, shape, lines
+    #set M vs F color, shape, lines, fill
     scale_linetype_manual(
       values = c("M" = "dashed", "F" = "solid"),
       labels = c("M" = "Male", "F" = "Female")) + 
     scale_shape_manual(
-      values = c("M" = 2, "F" = 1),
+      values = c("M" = 24, "F" = 21),
       labels = c("M" = "Male", "F" = "Female")) +
     scale_color_manual(
+      values = sex.color,
+      labels = c("M" = "Male", "F" = "Female")) +
+    scale_fill_manual(
       values = sex.color,
       labels = c("M" = "Male", "F" = "Female")) +
     
@@ -79,7 +82,7 @@ length_weight <- function(data, color = FALSE) #color BW default
     theme(legend.title = element_blank(), legend.position = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
     xlab("Length (cm)") +# for the x axis label
     ylab("Weight (kg)")+
-    guides(color = guide_legend(override.aes = list(alpha = 1)))+ # increase alpha of legend
+    guides(color = guide_legend(override.aes = list(alpha = 0.5)))+ # increase alpha of legend
     
     # ANNOTATIONS
     # Add text annotations for slope/intercept
