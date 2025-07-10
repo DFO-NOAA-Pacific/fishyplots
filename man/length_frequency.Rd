@@ -4,10 +4,12 @@
 \alias{length_frequency}
 \title{Function to plot length frequency of fish species}
 \usage{
-length_frequency(data)
+length_frequency(data, time_series = FALSE)
 }
 \arguments{
 \item{data}{a data frame made using pull_bio() from a fisheries survey, contains biological info}
+
+\item{time_series}{TRUE or FALSE}
 }
 \value{
 a ggplot object
@@ -17,6 +19,10 @@ Function to plot length frequency of fish species
 }
 \examples{
 \dontrun{
-length_frequency(bio_data)
+data <- pull_bio(survey = "NWFSC.Combo", common_name = "Pacific hake")
+length_frequency(data)
+
+data <- pull_bio(survey = "NWFSC.Combo", common_name = "Dover sole")
+length_frequency(data, time_series = TRUE)
 }
 }
