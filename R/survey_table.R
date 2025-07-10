@@ -97,9 +97,10 @@ plot <- ggplot(bio_data, aes(year, sample_type)) +
   ) +
   ggplot2::scale_y_discrete(position = "left")+
   scale_x_continuous(breaks = seq(min(bio_data$year)+1, max(bio_data$year), by = 2))+
-  ggplot2::ggtitle("Survey Specimen Counts")
+  ggplot2::ggtitle("Survey Specimen Counts") +
+  coord_cartesian(expand = FALSE)
 
-return (plot)
+return(plot)
 }
 }
 
