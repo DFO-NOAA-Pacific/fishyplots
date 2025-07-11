@@ -28,6 +28,7 @@ length_frequency <- function(data, time_series = FALSE) {
       geom_histogram(binwidth = 4) +
       facet_wrap(~Year, nrow = 3, drop = FALSE) +
       theme_bw() +
+      theme(panel.grid = element_blank()) +
       labs(title = "Length Frequency", x = "Length (cm)", y = "Count")
     return(graph)
   }
