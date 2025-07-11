@@ -1,11 +1,7 @@
 library(nwfscSurvey)
 library(ggplot2)
-library(sf)
-library(rnaturalearth)
-library(rnaturalearthdata)
 library(sdmTMB)
 library(dplyr)
-library(scales)
 library(surveyjoin)
 
 # Species lists
