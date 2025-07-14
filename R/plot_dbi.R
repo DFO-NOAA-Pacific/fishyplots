@@ -6,7 +6,7 @@
 #' @return a ggplot object, plot of design based indicies
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
 #' @importFrom here here
-#' @import dplyr %>% select rename
+#' @importFrom dplyr %>% select rename
 #' @export
 #'
 #' @examples
