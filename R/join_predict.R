@@ -2,11 +2,6 @@
 ### Script to get length-weight and growth prediction estimates 
 # made to work with NWFSC data, expand to accept other data formatting later
 
-#get data for top species (example): 
-nwfsc.top <- read.csv(here::here("data-raw", "nwfsc_joined.csv"))
-nwfsc.top.data <- pull_bio(survey = "NWFSC.Combo", common_name = unique(nwfsc.top$common_name))
-#should standardize all datasets to have the same column names for species, sex, length, weight, whatever is needed. 
-
 
 ##### Length/weight function, tibble output #####
 lw_predict <- function(data) { 
