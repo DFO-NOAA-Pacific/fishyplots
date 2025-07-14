@@ -5,7 +5,7 @@
 #' @return a ggplot object, plot of standardized design based indicies of 1+ surveys. 
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
 #' @importFrom here here
-#' @import dplyr %>% select rename
+#' @importFrom dplyr %>% select rename
 #' @export
 #'
 #' @examples
@@ -13,7 +13,6 @@
 #' plot_stan_dbi("sablefish", "PBS")
 #' plot_stan_dbi("sablefish", c("U.S. West Coast", "U.S. Gulf of Alaska"))
 #' }
-
 
 plot_stan_dbi <- function(species, regions) {
   
