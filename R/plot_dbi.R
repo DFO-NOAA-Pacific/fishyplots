@@ -16,25 +16,7 @@
 #' plot_dbi(pbs_biomass, "sablefish", "SYN QCS")
 #' }
 
-###### Data #####
 
-#pull data and reformat: 
-load(here::here("data-raw", "nwfsc_biomass.rda")) # nwfsc index data: object nwfsc_biomass
-load(here::here("data-raw", "afsc_biomass.rda")) # afsc index data: object afsc_biomass
-pbs_biomass <- readRDS(here::here("data-raw", "pbs-gfdata.rds")) #read in pbs index data
-pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
-  df <- pbs_biomass[[spec]]$survey_index #pull $survey_index df from each species list
-  return(df)})) %>%  #apply function to each species data in list, bind together
-  select(survey_abbrev, species_common_name, species_science_name, year, biomass, lowerci, upperci) %>%
-  rename (common_name = species_common_name,
-          region = survey_abbrev, 
-          scientific_name = species_science_name ,
-          est = biomass,
-          lwr = lowerci,
-          upr = upperci) #rename to have same format as NOAA data : object pbs_biomass
-
-
-##### Function #######
   
 # DBI plot function
 plot_dbi <- function(dbi_data, species, subregion) {
