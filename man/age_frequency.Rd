@@ -2,22 +2,22 @@
 % Please edit documentation in R/age_frequency.R
 \name{age_frequency}
 \alias{age_frequency}
-\title{Age frequency function. Plots distribution of ages across survey years, and can differentiate by sex.}
+\title{Plots distribution of ages across survey years.}
 \usage{
 age_frequency(data, sex = FALSE, cutoff = 0.95)
 }
 \arguments{
 \item{data}{biological data from pull_bio(), containing Age_years}
 
-\item{sex}{TRUE or FALSE for if you want to differentiate by sex (default = FALSE)}
+\item{sex}{TRUE or FALSE for if you want to differentiate by sex}
 
-\item{cutoff}{define a cutoff for grouping older ages together (default = 0.95)}
+\item{cutoff}{define a cutoff for grouping older ages together}
 }
 \value{
 a ggplot object
 }
 \description{
-Age frequency function. Plots distribution of ages across survey years, and can differentiate by sex.
+Plots distribution of ages across survey years.
 }
 \examples{
 \dontrun{
