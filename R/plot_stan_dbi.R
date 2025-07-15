@@ -4,7 +4,6 @@
 #' @param regions center or subregions to be plotted. Takes a character list of region names OR a single center name ( "NWFSC", "AFSC", or "PBS") . See unique(data$region) for subregion options per center dataset.
 #' @return a ggplot object, plot of standardized design based indicies of 1+ surveys. 
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
-#' @importFrom here here
 #' @importFrom dplyr %>% select rename
 #' @export
 #'
@@ -16,12 +15,7 @@
 
 plot_stan_dbi <- function(species, regions) {
   
-  # Make meta list of all centers and data
-  biomass_list <- list(
-    NWFSC = nwfsc_biomass,
-    AFSC = afsc_biomass,
-    PBS = pbs_biomass
-  )
+ data(all.dbi)
   
   # Assign subregions to larger survey center if argument is a single center name
   if (is.character(regions) && length(regions) == 1) {
@@ -40,9 +34,9 @@ plot_stan_dbi <- function(species, regions) {
   combined_df <- data.frame()
   
   # for each center (all data...)
-  for (center in names(biomass_list)) {
+  for (center in unique(all.dbi$science_center)) {
     
-    data <- biomass_list[[center]]
+    data <- subset(all.dbi, all.dbi$science_center == center)
     
     # Calculate standardized index
     stand_data <- data %>%
