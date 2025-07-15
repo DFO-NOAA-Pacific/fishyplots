@@ -31,7 +31,6 @@ download.file(
 )
 haul <- readRDS(temp_file)
 
-
 # Create cpue_kg_km2
 afsc_catch <- afsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
 nwfsc_catch <- nwfsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
@@ -47,14 +46,11 @@ fishfit <- function(data, species, region, haul) {
       grid <- add_utm_columns(dat = grid, ll_names = c("lon", "lat"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
       # Get catch data, filter by species and year, confirm CRS
       clean_data <- data |> 
-        filter(common_name == i)|>
-        filter(year == 2023)
+        filter(common_name == i) |> filter(year == 2023)
       if (nrow(clean_data) == 0) {
         message(paste0("No data found for ", i, " in US west coast catch data."))
-        next
-      }
-      clean_data <- add_utm_columns(dat = clean_data, ll_names = c("lon_start", "lat_start"),
-                              utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
+        next}
+      clean_data <- add_utm_columns(dat = clean_data, ll_names = c("lon_start", "lat_start"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
       
       # Make mesh and model
       mesh <- make_mesh(clean_data, c("X", "Y"), cutoff = 29)
@@ -220,6 +216,10 @@ fishfit <- function(data, species, region, haul) {
 nwfsc_predictions <- fishfit(nwfsc_catch, nwfsc_spp$common_name, "nwfsc")
 afsc_predictions <- fishfit(afsc_catch, afsc_spp$common_name, "afsc")
 pbs_predictions <- fishfit(pbs_data, pbs_spp$common_name, "pbs", haul = haul)
+
+table(nwfsc_predictions$sanity) # flathead sole, cod, halibut, ocean perch
+table(afsc_predictions$sanity) # dover sole, grenadier, hake, sanddab, dogfish, rock sole, sharpchin, shortspine, splitnose, ratfish, rockfish
+table(pbs_predictions$sanity) # english sole, sablefish
 
 # Write dataframes
 #usethis::use_data(nwfsc_predictions)
