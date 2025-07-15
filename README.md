@@ -14,4 +14,4 @@ with associated code
 
 This work is also building off of initial NOAA versions (summer 2024) of the synopsis idea by 
 Chantel Wetzel [https://github.com/DFO-NOAA-Pacific/gfsynopsis-noaa](https://github.com/DFO-NOAA-Pacific/gfsynopsis-noaa) and
-Matt Calahan [https://github.com/MattCallahan-NOAA/gapproductssynopsis](https://github.com/MattCallahan-NOAA/gapproductssynopsis)
+Matt Callahan [https://github.com/MattCallahan-NOAA/gapproductssynopsis](https://github.com/MattCallahan-NOAA/gapproductssynopsis)
