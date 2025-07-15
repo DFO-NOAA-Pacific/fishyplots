@@ -9,13 +9,20 @@ afsc_spp <- read.csv("data-raw/afsc_joined.csv")
 nwfsc_spp <- read.csv("data-raw/nwfsc_joined.csv")
 pbs_spp <- read.csv("data-raw/pbs_joined.csv")
 
+afsc_spp$common_name[afsc_spp$common_name == "Kamchatka flounder"] <- "kamchatka flounder"
+afsc_spp$common_name[afsc_spp$common_name == "Pacific cod"] <- "pacific cod"
+afsc_spp$common_name[afsc_spp$common_name == "Pacific halibut"] <- "pacific halibut"
+afsc_spp$common_name[afsc_spp$common_name == "Pacific herring"] <- "pacific herring"
+afsc_spp$common_name[afsc_spp$common_name == "Pacific ocean perch"] <- "pacific ocean perch"
+afsc_spp$common_name[afsc_spp$common_name == "Rex sole"] <- "rex sole"
+
 # Catch data
 afsc_catch <- get_data(surveys = c("Aleutian Islands", "Gulf of Alaska", "eastern Bering Sea", "northern Bering Sea"), 
                        common = afsc_spp$common_name)
 nwfsc_catch <- get_data(surveys = "NWFSC.Combo", common = nwfsc_spp$common_name)
 
 pbs_data <- readRDS(url("https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/3ad708fb208f58bb6bd19ec605a569ca93b54fd8/pbs-catch-all.rds"))
-#pbs_data <- dplyr::filter(pbs_data, species_common_name %in% pbs_spp$common_name)
+pbs_data <- dplyr::filter(pbs_data, species_common_name %in% pbs_spp$common_name)
 temp_file <- tempfile(fileext = ".rds")
 download.file(
   "https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/main/pbs-haul.rds",
@@ -23,13 +30,12 @@ download.file(
   mode = "wb" 
 )
 haul <- readRDS(temp_file)
-#pbs_catch <- dplyr::left_join(haul, pbs_data)
-#pbs_catch$catch_weight[which(is.na(pbs_catch$catch_weight))] <- 0
+
 
 # Create cpue_kg_km2
 afsc_catch <- afsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
 nwfsc_catch <- nwfsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
-pbs_catch <- pbs_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
+#pbs_catch <- pbs_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
 
 # Function
 fishfit <- function(data, species, region, haul) {
@@ -37,10 +43,8 @@ fishfit <- function(data, species, region, haul) {
     predictions <- list()
     for (i in species) {
       # Get US West coast prediction grid and confirm CRS
-      grid <- nwfsc_grid |>
-        filter(survey == "NWFSC.Combo")
-      grid <- add_utm_columns(dat = grid, ll_names = c("lon", "lat"), 
-                              utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
+      grid <- nwfsc_grid |> filter(survey == "NWFSC.Combo")
+      grid <- add_utm_columns(dat = grid, ll_names = c("lon", "lat"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
       # Get catch data, filter by species and year, confirm CRS
       clean_data <- data |> 
         filter(common_name == i)|>
@@ -61,6 +65,15 @@ fishfit <- function(data, species, region, haul) {
                       spatial = "on",
                       anisotropy = FALSE)
       
+      # model <- sdmTMB(catch_weight ~ 1,
+      #               data = clean_data,
+      #               offset = log(clean_data$effort),
+      #               mesh = mesh,
+      #               family = delta_lognormal(),
+      #               spatiotemporal="off",
+      #               spatial="on",
+      #               anisotropy = FALSE)
+   
       sanity_check <- sanity(model, silent = TRUE)
       sanity_vec <- unlist(sanity_check)
       if (any(!sanity_vec)) {
@@ -77,11 +90,7 @@ fishfit <- function(data, species, region, haul) {
         select(X, Y, prediction, species, region, sanity)
       predictions[[i]] <- preds
     }
-    results <- if (length(predictions) > 0) {
-      bind_rows(predictions)
-    } else {
-      message("No data found for any species.")
-    }
+    results <- bind_rows(predictions)
     return(results)
   }
   if (region == "afsc") {
@@ -136,11 +145,7 @@ fishfit <- function(data, species, region, haul) {
         select(X, Y, prediction, species, region, sanity)
       predictions[[i]] <- preds
     }
-    results <- if (length(predictions) > 0) {
-      bind_rows(predictions)
-    } else {
-      message("No data found for any species.")
-    }
+    results <- bind_rows(predictions)
     return(results)
   }
   if (region == "pbs") {
@@ -152,6 +157,7 @@ fishfit <- function(data, species, region, haul) {
                                    utm_names = c("X", "Y"), utm_crs = 32610, units = "km")
        # Get catch data
        subset_catch <- dplyr::filter(data, species_common_name == i)
+
        # Join the haul data with the catch data for this species
        joined <- dplyr::left_join(haul, subset_catch)
        # Fill in the 0s
@@ -170,14 +176,18 @@ fishfit <- function(data, species, region, haul) {
        
        # Make mesh and model
        mesh <- make_mesh(joined, xy_cols = c("X", "Y"), cutoff = 20)
-
-       model <- sdmTMB(catch_weight ~ 1,
+       model <- tryCatch({sdmTMB(catch_weight ~ 1,
                        data = joined,
                        offset = log(joined$effort),
                        mesh = mesh,
                        family = delta_lognormal(),
-                       spatiotemporal="off",
-                       spatial="on")
+                       spatiotemporal = "off",
+                       spatial = "on")
+       }, error = function(e) {
+         message(paste0("Model failure for ", i, ": ", e$message))
+         return(NULL)
+       })
+       if (is.null(model)) next
        
        # model <- sdmTMB(cpue_kg_km2 ~ 1,
        #                 data = CAN_catch,
@@ -186,7 +196,12 @@ fishfit <- function(data, species, region, haul) {
        #                 spatial="on",
        #                 anisotropy = FALSE)
        
-       sanity_check <- sanity(model, silent = FALSE)
+       sanity_check <- sanity(model, silent = TRUE)
+       sanity_vec <- unlist(sanity_check)
+       if (any(!sanity_vec)) {
+         failed_checks <- names(sanity_vec)[!sanity_vec]
+         message(paste0(i, " sanity check failure: ", paste(failed_checks, collapse = ", ")))
+       }
        raw_preds <- predict(model, newdata = CAN_grid)
        preds <- raw_preds |>
          mutate(prediction = plogis(est1) * exp(est2)) |>
@@ -196,11 +211,7 @@ fishfit <- function(data, species, region, haul) {
          select(X, Y, prediction, species, region, sanity)
        predictions[[i]] <- preds
        }
-     results <- if (length(predictions) > 0) {
-       bind_rows(predictions)
-     } else {
-       message("No data found for any species.")
-     }
+     results <- bind_rows(predictions)
      return(results)
   }
 }
@@ -214,3 +225,4 @@ pbs_predictions <- fishfit(pbs_data, pbs_spp$common_name, "pbs", haul = haul)
 #usethis::use_data(nwfsc_predictions)
 #usethis::use_data(afsc_predictions)
 #usethis::use_data(pbs_predictions)
+

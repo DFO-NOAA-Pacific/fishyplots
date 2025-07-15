@@ -1,8 +1,8 @@
-#' Age frequency function. Plots distribution of ages across survey years, and can differentiate by sex.
+#' Plots distribution of ages across survey years.
 #'
 #' @param data biological data from pull_bio(), containing Age_years
-#' @param sex TRUE or FALSE for if you want to differentiate by sex (default = FALSE)
-#' @param cutoff define a cutoff for grouping older ages together (default = 0.95)
+#' @param sex TRUE or FALSE for if you want to differentiate by sex
+#' @param cutoff define a cutoff for grouping older ages together
 #' @return a ggplot object
 #' @importFrom dplyr filter mutate distinct arrange case_when
 #' @importFrom stringr str_extract

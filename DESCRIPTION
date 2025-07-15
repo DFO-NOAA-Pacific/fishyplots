@@ -26,7 +26,8 @@ Imports:
     grid,
     gfplot,
     nwfscSurvey,
-    stringr
+    stringr,
+    here
 Suggests:
     devtools,
     rnaturalearthdata,
