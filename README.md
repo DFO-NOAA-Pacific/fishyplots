@@ -1,5 +1,7 @@
 # fishyplots
-This repository is a collection of plotting functions to be used for coastwide synopsis project, led by Zoe Khan and Callie Murakami.
+This repository is a collection of plotting functions to be used for coastwide synopsis project, led by Zoe Khan and Callie Murakami. 
+
+[![DOI](https://zenodo.org/badge/1012008498.svg)](https://doi.org/10.5281/zenodo.15932836)
 
 These functions and code are heavily inspired by Fisheries and Oceans Canada's reports
 
