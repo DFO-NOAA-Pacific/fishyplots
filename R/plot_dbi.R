@@ -24,7 +24,7 @@
 #' # usage examples
 #' plot_dbi("sablefish", "U.S. West Coast")
 #' plot_dbi("Dover sole", "U.S. Gulf of Alaska")
-#' plot_dbi("arrowtooth flounder", "SYN QCS", big_mark = " ")
+#' plot_dbi("arrowtooth flounder", "SYN QCS")
 #' }
 
 

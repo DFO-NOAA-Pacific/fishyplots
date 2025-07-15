@@ -4,14 +4,12 @@
 \alias{plot_dbi}
 \title{Function and formatted data to plot design based index}
 \usage{
-plot_dbi(dbi_data, species, subregion)
+plot_dbi(species, reg)
 }
 \arguments{
-\item{species}{common name of species of interest. See unique(data$common_name) for options per dataset.}
+\item{species}{common name of species of interest. See unique(all.dbi$common_name) for options per dataset.}
 
-\item{subregion}{subregion required to specify subregion to be plotted. See unique(data$region) for options per dataset.}
-
-\item{data}{survey data options loaded in script: nwfsc_biomass, afsc_biomass, pbs_biomass}
+\item{reg}{region, required to specify region to be plotted. See unique(data$region) for options per dataset.}
 }
 \value{
 a ggplot object, plot of design based indicies
@@ -21,8 +19,22 @@ Function and formatted data to plot design based index
 }
 \examples{
 \dontrun{
-plot_dbi(nwfsc_biomass, "sablefish", "U.S. West Coast")
-plot_dbi(afsc_biomass, "sablefish", "U.S. Gulf of Alaska")
-plot_dbi(pbs_biomass, "sablefish", "SYN QCS")
+# To see options for species and region in science centers: "NWFSC", "AFSC", "PBS"
+data(all.dbi)
+
+all.dbi \%>\%
+filter(science_center == "AFSC") \%>\%
+ distinct(common_name)
+
+all.dbi \%>\%
+filter(science_center == "AFSC") \%>\%
+distinct(region)
+
+
+# usage example
+
+plot_dbi("sablefish", "U.S. West Coast")
+plot_dbi("Dover sole", "U.S. Gulf of Alaska")
+plot_dbi("arrowtooth flounder", "SYN QCS")
 }
 }
