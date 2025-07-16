@@ -2,23 +2,30 @@
 % Please edit documentation in R/map_cpue.R
 \name{map_cpue}
 \alias{map_cpue}
-\title{Function for CPUE map for US coast data}
+\title{Function for empirical CPUE map for NOAA survey data}
 \usage{
-map_cpue(data, map_type)
+map_cpue(data, type = "static")
 }
 \arguments{
-\item{data}{catch data from pull_catch(), containing cpue and long/lat coordinates}
+\item{data}{catch data from get_data() function from surveyjoin or pull_catch() from nwfscSurvey}
 
-\item{map_type}{choose either "static" or "dynamic"}
+\item{type}{choose either "static" or "dynamic"}
 }
 \value{
 a ggplot object
 }
 \description{
-Function for CPUE map for US coast data
+Function for empirical CPUE map for NOAA survey data
 }
 \examples{
 \dontrun{
-map_cpue(catch_data, map_type = "static")
+catch1 <- get_data(regions = "afsc", common = "sablefish")
+map_cpue(catch1)
+
+catch2 <- get_data(regions = "pbs", common = "arrowtooth flounder")
+map_cpue(catch2, type = "dynamic")
+
+catch3 <- pull_catch(survey = "NWFSC.Combo", common_name = "arrowtooth flounder")
+map_cpue(catch3)
 }
 }

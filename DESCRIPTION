@@ -6,7 +6,7 @@ Authors@R: c(
     person("Zoe", "Khan", email="zkhan@smith.edu", role = c("aut", "cre")),
     person("Callie", "Murakami", email="muracal2@uw.edu", role = "aut")
   )
-Description: This package description can be fleshed out a bit more
+Description: This package houses functions that can be used on NOAA groundfish survey data. It is being used to create a coastwide synopsis.
 License: GPL-3
 Depends:
     R (>= 4.0.0)
@@ -24,7 +24,10 @@ Imports:
     FSA,
     stats,
     grid,
-    gfplot
+    gfplot,
+    nwfscSurvey,
+    stringr,
+    here
 Suggests:
     devtools,
     rnaturalearthdata,
