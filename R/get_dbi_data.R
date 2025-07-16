@@ -8,7 +8,8 @@ nwfsc_biomass <- nwfsc_biomass %>%
 
 load(here::here("data-raw", "afsc_biomass.rda")) # afsc index data: object afsc_biomass
 afsc_biomass <- afsc_biomass %>% 
-  select(!area)
+  select(!area) %>% 
+  filter(!region == "U.S. Eastern Bering Sea Standard Region")
 
 pbs_biomass <- readRDS(here::here("data-raw", "pbs-gfdata.rds")) #read in pbs index data
 pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
@@ -26,4 +27,4 @@ pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
 #join
 all.dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass)
 
-usethis::use_data(all.dbi)
+usethis::use_data(all.dbi, overwrite = TRUE)
