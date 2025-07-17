@@ -1,6 +1,7 @@
 #' Main function to plot length-weight relationships by sex
 #'
-#' @param data a data frame of target species including Length_cm, Weight_kg, and Sex
+#' @param data a data frame of biological data
+#' @param species common or scientific name of target species
 #' @param color default FALSE for greyscale, TRUE gives red and blue
 #' @return a plot of sexed data with log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
@@ -11,22 +12,23 @@
 #'
 #' @examples
 #' \dontrun{
-#' length_weight(bio.data)
+#' length_weight(afsc_bio, "Atka mackerel", color = T)
 #' }
 
-length_weight <- function(data, color = FALSE) #color BW default
+length_weight <- function(data, species, color = FALSE) #color BW default
 { 
   # transform and regression
   #remove unsexed and NAs
-  log_data <- data |> 
-    filter(!Sex == "U") |> 
-    filter(!is.na(Length_cm)) |> 
-    filter(!is.na(Weight_kg)) |> 
-    mutate(loglength = log(Length_cm), logweight = log(Weight_kg))
+  log_data <- data %>% 
+    filter(species == common_name | species == scientific_name) %>% 
+    filter(!sex == "U") |> 
+    filter(!is.na(length_cm)) %>%  
+    filter(!is.na(weight_kg)) %>%  
+    mutate(loglength = log(length_cm), logweight = log(weight_kg))
   
   #subset male and female for ease
-  male <- subset(log_data, log_data$Sex == "M")
-  female <- subset(log_data, log_data$Sex == "F")
+  male <- subset(log_data, log_data$sex == "M")
+  female <- subset(log_data, log_data$sex == "F")
   
   #regression
   lw_mod_M <- lm(logweight ~ loglength, data = male)
@@ -41,8 +43,8 @@ length_weight <- function(data, color = FALSE) #color BW default
   
   # combine for legend plotting
   real_predict_all <- rbind(
-    data.frame(Length_cm = male$Length_cm, fit = real_predict_M, Sex = "M"),
-    data.frame(Length_cm = female$Length_cm, fit = real_predict_F, Sex = "F")
+    data.frame(length_cm = male$length_cm, fit = real_predict_M, sex = "M"),
+    data.frame(length_cm = female$length_cm, fit = real_predict_F, sex = "F")
   )
   
   
@@ -55,13 +57,13 @@ length_weight <- function(data, color = FALSE) #color BW default
   sex.color <- c("M" = "grey30", "F" = "black")
   }
   
-  plot <- ggplot(log_data, aes(x = Length_cm, y = Weight_kg)) +
+  plot <- ggplot(log_data, aes(x = length_cm, y = weight_kg)) +
     theme_classic() + #removes grid
-    geom_jitter(aes(color = Sex, shape = Sex, fill = Sex), alpha = 0.1) +
+    geom_jitter(aes(color = sex, shape = sex, fill = sex), alpha = 0.1) +
     #DATA
     
     geom_line(data = real_predict_all, 
-              aes(x = Length_cm, y = fit.fit, linetype = Sex, color = Sex), linewidth = 1) + # plot fit lines
+              aes(x = length_cm, y = fit.fit, linetype = sex, color = sex), linewidth = 1) + # plot fit lines
     
     #set M vs F color, shape, lines, fill
     scale_linetype_manual(
