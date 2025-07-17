@@ -1,5 +1,3 @@
-library(nwfscSurvey)
-library(ggplot2)
 library(sdmTMB)
 library(dplyr)
 library(surveyjoin)
@@ -15,12 +13,53 @@ afsc_spp$common_name[afsc_spp$common_name == "Pacific halibut"] <- "pacific hali
 afsc_spp$common_name[afsc_spp$common_name == "Pacific herring"] <- "pacific herring"
 afsc_spp$common_name[afsc_spp$common_name == "Pacific ocean perch"] <- "pacific ocean perch"
 afsc_spp$common_name[afsc_spp$common_name == "Rex sole"] <- "rex sole"
+nwfsc_spp$common_name[nwfsc_spp$common_name == "north pacific spiny dogfish"] <- "pacific spiny dogfish"
 
-# Catch data
-afsc_catch <- get_data(surveys = c("Aleutian Islands", "Gulf of Alaska", "eastern Bering Sea", "northern Bering Sea"), 
-                       common = afsc_spp$common_name)
-nwfsc_catch <- get_data(surveys = "NWFSC.Combo", common = nwfsc_spp$common_name)
 
+# Alaska catch data
+#afsc_catch <- get_data(surveys = c("Aleutian Islands", "Gulf of Alaska", "eastern Bering Sea", "northern Bering Sea"), 
+                       #common = afsc_spp$common_name)
+afsc_data <- readRDS(url("https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/main/afsc-catch-all.rds"))
+
+
+# NWFSC catch data
+nwfsc_data <- readRDS(url("https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/3ad708fb208f58bb6bd19ec605a569ca93b54fd8/nwfsc-catch-all.rds"))
+joined_list <- readRDS("data-raw/joined_list.rds")
+
+nwfsc_top <- dplyr::left_join(nwfsc_data, spp_dictionary, by = "itis")
+nwfsc_top$scientific_name[which(nwfsc_top$itis==166784)] <- "sebastolobus altivelis"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==166722)] <- "sebastes goodei"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==166741)] <- "sebastes saxicola"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==98675)] <- "cancer magister"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==158082)] <- "brisaster latifrons"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==165334)] <- "coryphaenoides acrolepis"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==166725)] <- "sebastes jordani"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==98431)] <- "chionoecetes tanneri"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==158079)] <- "brisaster"
+nwfsc_top$scientific_name[which(nwfsc_top$itis==51483)] <- "scyphozoa"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="sebastolobus altivelis")] <- "longspine thornyhead"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="chionoecetes tanneri")] <- "tanner crab"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="brisaster")] <- NA
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="brisaster latifrons")] <- NA
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="sebastes goodei")] <- "chilipepper"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="sebastes saxicola")] <- "stripetail rockfish"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="sebastes jordani")] <- "shortbelly rockfish"
+nwfsc_top$common_name[which(nwfsc_top$scientific_name=="coryphaenoides acrolepis")] <- "pacific grenadier"
+
+download.file(
+  "https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/3ad708fb208f58bb6bd19ec605a569ca93b54fd8/nwfsc-haul.rds",
+  destfile = temp_file,
+  mode = "wb"  # Important: write as binary!
+)
+haul <- readRDS(temp_file)
+
+nwfsc_catch <- dplyr::filter(nwfsc_top, common_name %in% nwfsc_spp$common_name) 
+nwfsc_catch$event_id <- as.character(nwfsc_catch$event_id)
+haul$event_id <- as.character(haul$event_id)
+#nwfsc_joined <- dplyr::left_join(haul, nwfsc_catch, by = "event_id")
+#nwfsc_joined$catch_wt[which(is.na(nwfsc_joined$catch_wt))] <- 0
+
+# Canada catch data
 pbs_data <- readRDS(url("https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/3ad708fb208f58bb6bd19ec605a569ca93b54fd8/pbs-catch-all.rds"))
 pbs_data <- dplyr::filter(pbs_data, species_common_name %in% pbs_spp$common_name)
 temp_file <- tempfile(fileext = ".rds")
@@ -33,11 +72,12 @@ haul <- readRDS(temp_file)
 
 # Create cpue_kg_km2
 afsc_catch <- afsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
-nwfsc_catch <- nwfsc_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
+#nwfsc_joined <- nwfsc_joined |> mutate(cpue_kg_km2 = catch_wt / (effort * 0.01))
+#nwfsc_joined$cpue_kg_km2 <- format(nwfsc_joined$cpue_kg_km2, scientific = FALSE)
 #pbs_catch <- pbs_catch |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
 
 # Function
-fishfit <- function(data, species, region, haul) {
+fishfit <- function(data, species, region, haul_data) {
   if (region == "nwfsc") {
     predictions <- list()
     for (i in species) {
@@ -45,30 +85,28 @@ fishfit <- function(data, species, region, haul) {
       grid <- nwfsc_grid |> filter(survey == "NWFSC.Combo")
       grid <- add_utm_columns(dat = grid, ll_names = c("lon", "lat"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
       # Get catch data, filter by species and year, confirm CRS
+      data <- dplyr::left_join(haul_data, data)
+      
       clean_data <- data |> 
         filter(common_name == i) |> filter(year == 2023)
       if (nrow(clean_data) == 0) {
         message(paste0("No data found for ", i, " in US west coast catch data."))
         next}
-      clean_data <- add_utm_columns(dat = clean_data, ll_names = c("lon_start", "lat_start"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
       
+      clean_data$catch_wt[which(is.na(clean_data$catch_wt))] <- 0
+      clean_data <- clean_data |> mutate(cpue_kg_km2 = catch_wt / (effort * 0.01))
+      
+      clean_data <- add_utm_columns(dat = clean_data, ll_names = c("lon_start", "lat_start"), utm_names = c("X", "Y"), utm_crs = 3157, units = "km")
+      cutoff <- 20
       # Make mesh and model
-      mesh <- make_mesh(clean_data, c("X", "Y"), cutoff = 29)
+      mesh <- make_mesh(clean_data, c("X", "Y"), cutoff = cutoff)
+      message(mesh$mesh$n)
       model <- sdmTMB(data = clean_data,
                       formula = cpue_kg_km2 ~ 1,
                       mesh = mesh,
                       family = delta_lognormal(),
                       spatial = "on",
                       anisotropy = FALSE)
-      
-      # model <- sdmTMB(catch_weight ~ 1,
-      #               data = clean_data,
-      #               offset = log(clean_data$effort),
-      #               mesh = mesh,
-      #               family = delta_lognormal(),
-      #               spatiotemporal="off",
-      #               spatial="on",
-      #               anisotropy = FALSE)
    
       sanity_check <- sanity(model, silent = TRUE)
       sanity_vec <- unlist(sanity_check)
@@ -167,7 +205,6 @@ fishfit <- function(data, species, region, haul) {
        
        joined <- add_utm_columns(dat = joined, ll_names = c("lon_start", "lat_start"),
                                    utm_names = c("X", "Y"), utm_crs = 32610, units = "km")
-     
        joined <- joined |> mutate(cpue_kg_km2 = catch_weight / (effort * 0.01))
        
        # Make mesh and model
@@ -213,13 +250,13 @@ fishfit <- function(data, species, region, haul) {
 }
 
 # Call function on catch data
-nwfsc_predictions <- fishfit(nwfsc_catch, nwfsc_spp$common_name, "nwfsc")
+nwfsc_predictions <- fishfit(nwfsc_joined, nwfsc_spp$common_name, "nwfsc", haul)
 afsc_predictions <- fishfit(afsc_catch, afsc_spp$common_name, "afsc")
-pbs_predictions <- fishfit(pbs_data, pbs_spp$common_name, "pbs", haul = haul)
+pbs_predictions <- fishfit(pbs_data, pbs_spp$common_name, "pbs", haul_data = haul)
 
-table(nwfsc_predictions$sanity) # flathead sole, cod, halibut, ocean perch
+table(nwfsc_predictions$sanity) # No data for northern rock sole, all checks failed
 table(afsc_predictions$sanity) # dover sole, grenadier, hake, sanddab, dogfish, rock sole, sharpchin, shortspine, splitnose, ratfish, rockfish
-table(pbs_predictions$sanity) # english sole, sablefish
+table(pbs_predictions$sanity) # english sole, sablefish (+3 species with model failure)
 
 # Write dataframes
 #usethis::use_data(nwfsc_predictions)
