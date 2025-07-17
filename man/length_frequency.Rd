@@ -7,7 +7,7 @@
 length_frequency(data, time_series = FALSE)
 }
 \arguments{
-\item{data}{a data frame made using pull_bio() from a fisheries survey, contains biological info}
+\item{data}{a cleaned data frame from fisheries surveys, contains biological info}
 
 \item{time_series}{TRUE or FALSE}
 }
@@ -19,10 +19,20 @@ Function to plot length frequency of fish species
 }
 \examples{
 \dontrun{
-data <- pull_bio(survey = "NWFSC.Combo", common_name = "Pacific hake")
+# US West Coast
+load("data/nwfsc_bio.rda")
+data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
 length_frequency(data)
 
-data <- pull_bio(survey = "NWFSC.Combo", common_name = "Dover sole")
+# Canada 
+load("data/pbs_bio.rda")
+data <- pbs_bio |> filter(common_name == "dover sole")
 length_frequency(data, time_series = TRUE)
+
+# Alaska
+load("data/afsc_bio.rda")
+data <- afsc_bio |> filter(common_name == "rex sole")
+length_frequency(data, time_series = TRUE)
+
 }
 }

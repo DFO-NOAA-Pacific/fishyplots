@@ -7,7 +7,7 @@
 age_frequency(data, sex = FALSE, cutoff = 0.95)
 }
 \arguments{
-\item{data}{biological data from pull_bio(), containing Age_years}
+\item{data}{a clean data frame from fisheries surveys containing biological info}
 
 \item{sex}{TRUE or FALSE for if you want to differentiate by sex}
 
@@ -21,15 +21,19 @@ Plots distribution of ages across survey years.
 }
 \examples{
 \dontrun{
-data <- pull_bio(survey = "NWFSC.Combo", common_name = "Pacific hake")
-
-# Normal call
+# US West Coast
+load("data/nwfsc_bio.rda")
+data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
 age_frequency(data)
 
-# Include sex differentiation
+# Canada
+load("data/pbs_bio.rda")
+data <- pbs_bio |> filter(common_name == "arrowtooth flounder")
 age_frequency(data, sex = TRUE)
 
-# Specify a cutoff for binning
-age_frequency(data, cutoff = 0.85)
+# Alaska 
+load("data/afsc_bio.rda")
+data <- afsc_bio |> filter(common_name == "arrowtooth flounder")
+age_frequency(data, cutoff = 0.75)
 }
 }

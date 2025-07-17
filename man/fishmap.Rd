@@ -8,6 +8,8 @@ fishmap(data, common_name)
 }
 \arguments{
 \item{data}{prediction data from fishfit script}
+
+\item{common_name}{species common name}
 }
 \value{
 a ggplot object

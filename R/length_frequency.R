@@ -1,6 +1,6 @@
 #' Function to plot length frequency of fish species
 #'
-#' @param data a data frame made using pull_bio() from a fisheries survey, contains biological info
+#' @param data a cleaned data frame from fisheries surveys, contains biological info
 #' @param time_series TRUE or FALSE 
 #' @return a ggplot object
 #' @importFrom dplyr filter group_by summarize
@@ -11,22 +11,32 @@
 #'
 #' @examples
 #' \dontrun{
-#' data <- pull_bio(survey = "NWFSC.Combo", common_name = "Pacific hake")
+#' # US West Coast
+#' load("data/nwfsc_bio.rda")
+#' data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
 #' length_frequency(data)
 #' 
-#' data <- pull_bio(survey = "NWFSC.Combo", common_name = "Dover sole")
+#' # Canada 
+#' load("data/pbs_bio.rda")
+#' data <- pbs_bio |> filter(common_name == "dover sole")
 #' length_frequency(data, time_series = TRUE)
+#' 
+#' # Alaska
+#' load("data/afsc_bio.rda")
+#' data <- afsc_bio |> filter(common_name == "rex sole")
+#' length_frequency(data, time_series = TRUE)
+#' 
 #' }
 length_frequency <- function(data, time_series = FALSE) {
   if (time_series == FALSE) {
     data_clean <- data |>
-      filter(!is.na(Length_cm)) |>
-      complete(Year = full_seq(Year, 1))
+      filter(!is.na(length_cm)) |>
+      complete(year = full_seq(year, 1))
     
     graph <- data_clean |>
-      ggplot(aes(x = Length_cm)) +
+      ggplot(aes(x = length_cm)) +
       geom_histogram(binwidth = 4) +
-      facet_wrap(~Year, nrow = 3, drop = FALSE) +
+      facet_wrap(~year, nrow = 3, drop = FALSE) +
       theme_bw() +
       theme(panel.grid = element_blank()) +
       labs(title = "Length Frequency", x = "Length (cm)", y = "Count")
@@ -34,18 +44,18 @@ length_frequency <- function(data, time_series = FALSE) {
   }
   if (time_series == TRUE) {
     data_clean <- data |>
-      filter(!is.na(Length_cm))
+      filter(!is.na(length_cm))
     
     summary_stats <- data_clean |>
-      group_by(Year) |>
-      summarize(median = quantile(Length_cm, 0.5),
-                mean = mean(Length_cm),
-                p25 = quantile(Length_cm, 0.25),
-                p75 = quantile(Length_cm, 0.75),
-                p97.5 = quantile(Length_cm, 0.975),
-                p2.5 = quantile(Length_cm, 0.025))
+      group_by(year) |>
+      summarize(median = quantile(length_cm, 0.5),
+                mean = mean(length_cm),
+                p25 = quantile(length_cm, 0.25),
+                p75 = quantile(length_cm, 0.75),
+                p97.5 = quantile(length_cm, 0.975),
+                p2.5 = quantile(length_cm, 0.025))
     
-    graph <- ggplot(data = summary_stats, aes(x = Year, y = mean)) +
+    graph <- ggplot(data = summary_stats, aes(x = year, y = mean)) +
       geom_errorbar(aes(ymin = p2.5, ymax = p97.5), width = 0.5, linewidth = 0.5, color = "grey") +
       geom_errorbar(aes(ymin = p25, ymax = p75), width = 0.5, linewidth = 1) +
       geom_point(shape = 21, fill = "grey", color = "black", size = 1.5, stroke = 1.2) +
@@ -57,3 +67,4 @@ length_frequency <- function(data, time_series = FALSE) {
     return(graph)
   }
 }
+

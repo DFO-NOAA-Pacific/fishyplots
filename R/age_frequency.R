@@ -1,6 +1,6 @@
 #' Plots distribution of ages across survey years.
 #'
-#' @param data biological data from pull_bio(), containing Age_years
+#' @param data a clean data frame from fisheries surveys containing biological info
 #' @param sex TRUE or FALSE for if you want to differentiate by sex
 #' @param cutoff define a cutoff for grouping older ages together
 #' @return a ggplot object
@@ -14,34 +14,38 @@
 #'
 #' @examples
 #' \dontrun{
-#' data <- pull_bio(survey = "NWFSC.Combo", common_name = "Pacific hake")
-#' 
-#' # Normal call
+#' # US West Coast
+#' load("data/nwfsc_bio.rda")
+#' data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
 #' age_frequency(data)
 #' 
-#' # Include sex differentiation
+#' # Canada
+#' load("data/pbs_bio.rda")
+#' data <- pbs_bio |> filter(common_name == "arrowtooth flounder")
 #' age_frequency(data, sex = TRUE)
 #' 
-#' # Specify a cutoff for binning
-#' age_frequency(data, cutoff = 0.85)
+#' # Alaska 
+#' load("data/afsc_bio.rda")
+#' data <- afsc_bio |> filter(common_name == "arrowtooth flounder")
+#' age_frequency(data, cutoff = 0.75)
 #' }
 age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
   # Clean data
   data_clean <- data |>
-    filter(!is.na(Age_years)) |>
-    filter(Sex != "U") |>
-    complete(Year = full_seq(Year, 1))
+    filter(!is.na(age_years)) |>
+    filter(sex != "U") |>
+    complete(year = full_seq(year, 1))
   
   # Define a cutoff to start grouping bins together
-  cutoff <- as.numeric(quantile(data_clean$Age_years, cutoff, na.rm = TRUE))
+  cutoff <- as.numeric(quantile(data_clean$age_years, cutoff, na.rm = TRUE))
   
   # Group together bins above the cutoff
   # Eg. cutoff = 7 and age = 15, so 15-7 = 8, 8/5 = 1.6, floor = 1, 5*1+7 = 12, 12 is the lower bound of the cutoff
   data_clean <- data_clean |>
     mutate(age_group = case_when(
-      Age_years < cutoff ~ as.character(Age_years),
-      Age_years >= cutoff ~ paste0(5 * floor((Age_years - cutoff) / 5) + cutoff, "-",
-                                   5*floor((Age_years-cutoff) / 5) + cutoff + 4)))
+      age_years < cutoff ~ as.character(age_years),
+      age_years >= cutoff ~ paste0(5 * floor((age_years - cutoff) / 5) + cutoff, "-",
+                                   5*floor((age_years-cutoff) / 5) + cutoff + 4)))
   
   # Create an ordered list of age_groups by their lower bounds
   age_levels <- data_clean |>
@@ -59,7 +63,7 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
   
   if (sex == FALSE) {
     graph <- data_clean |> 
-      ggplot(aes(x = age_group_num, y = factor(Year))) +
+      ggplot(aes(x = age_group_num, y = factor(year))) +
       geom_density_ridges(stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE) +
       theme_bw() +
       labs(x = "Age (years)", y = "", title = "Age frequency") +
@@ -69,7 +73,7 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
   }
   else if (sex == TRUE) {
     graph <- data_clean |> 
-      ggplot(aes(x = age_group_num, y = factor(Year), fill = Sex)) +
+      ggplot(aes(x = age_group_num, y = factor(year), fill = sex)) +
       geom_density_ridges(alpha = 0.5, stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE) +
       theme_bw() +
       labs(x = "Age (years)", y = "", title = "Age frequency") +
