@@ -79,7 +79,8 @@ map_cpue <- function(data, type = "static") {
     stat_summary_hex(data = data, aes(x = X*1000, y = Y*1000, z = cpue_kg_km2), bins = 50) +
     scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
     theme_bw() +
-    labs(x = "", y = "", title = paste0("CPUE ", min_year, "-", max_year))
+    labs(x = "", y = "", title = paste0("CPUE ", min_year, "-", max_year),
+         caption = "Note: color scale is fourth-root transformed.")
   
   if (type == "static") {
     return(map)

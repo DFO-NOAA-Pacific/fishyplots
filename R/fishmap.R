@@ -1,6 +1,7 @@
 #' Function for modeled CPUE map based on prediction data
 #'
 #' @param data prediction data from fishfit script
+#' @param common_name species common name 
 #' @return a ggplot object
 #' @importFrom scales trans_new
 #' @importFrom rnaturalearth ne_countries
@@ -15,6 +16,9 @@
 fishmap <- function(data, common_name) {
   data <- data |> 
     filter(species == common_name)
+  if (nrow(data) == 0) {
+    stop(paste0("No data for ", common_name, ". Check species spelling."))
+  }
   region <- unique(data$region)[1]
   
   fourth_root <- trans_new(
@@ -57,7 +61,8 @@ fishmap <- function(data, common_name) {
     stat_summary_hex(data = data, aes(x = X*1000, y = Y*1000, z = prediction), bins = 50) +
     scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
     theme_bw() +
-    labs(x = "", y = "", title = paste0("Model Predicted CPUE ", year))
+    labs(x = "", y = "", title = paste0("Model Predicted CPUE ", year),
+         caption = "Note: color scale is fourth-root transformed.")
   
   return(map)
 }
