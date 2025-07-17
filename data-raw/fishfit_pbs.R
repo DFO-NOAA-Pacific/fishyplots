@@ -145,6 +145,7 @@ for(i in 1:nrow(spp_list)) {
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
   pred$region <- "pbs"
+  pred$crs <- 32610
   
   if(i == 1) {
     pred_all <- pred
@@ -160,8 +161,11 @@ table(pred_all$sanity)
 table(pred_all$species)
 # Check which species had no data
 no_data_species
-# Check which species have successful vs. unsucessful fits
+# Check which species have successful vs. unsuccessful fits
 pred_all |> filter(sanity == TRUE) |> distinct(species)
 pred_all |> filter(sanity == FALSE) |> distinct(species)
 # Test map
 fishmap(pred_all, common_name = "dover sole")
+
+predictions_pbs <- pred_all
+usethis::use_data(predictions_pbs)

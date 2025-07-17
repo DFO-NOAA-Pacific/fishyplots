@@ -141,7 +141,7 @@ for(i in 1:nrow(spp_list)) {
   
   # Now make the prediction to the data frame from surveyjoin
   grid <- surveyjoin::nwfsc_grid
-  grid <- add_utm_columns(grid, ll_names = c("lon", "lat"), utm_crs = crs)
+  grid <- add_utm_columns(grid, ll_names = c("lon", "lat"), utm_crs = 32610)
   
   pred <- predict(fit, grid)
   
@@ -156,6 +156,7 @@ for(i in 1:nrow(spp_list)) {
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
   pred$region <- "nwfsc"
+  pred$crs <- 32610
   
   if(i == 1) {
     pred_all <- pred
@@ -174,3 +175,8 @@ no_data_species
 # Check which species have successful vs. unsuccessful models
 pred_all |> filter(sanity == TRUE) |> distinct(common_name)
 pred_all |> filter(sanity == FALSE) |> distinct(common_name)
+
+fishmap(pred_all, common_name = "yellowtail rockfish")
+
+predictions_nwfsc <- pred_all
+usethis::use_data(predictions_nwfsc)
