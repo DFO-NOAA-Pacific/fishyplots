@@ -65,7 +65,8 @@ for(i in 1:nrow(spp_list)) {
   joined$catch_weight[which(is.na(joined$catch_weight))] <- 0
   
   # Filter to most recent year
-  joined <- dplyr::filter(joined, year %in% c(2023,2024))
+  joined <- dplyr::filter(joined, year %in% c(2023,2024)) |>
+    dplyr::filter(!(survey_name == "eastern Bering Sea" & year == 2023))
   
   if (nrow(joined) == 0) {
     message(paste0("No data for ", spp_list$common_name[i], " in 2022-2023."))
@@ -84,7 +85,7 @@ for(i in 1:nrow(spp_list)) {
     joined, xy_cols = c("X","Y"),
     cutoff = 82
   )
-  message(paste0("Mesh: ", mesh$mesh$n))
+  #message(paste0("Mesh: ", mesh$mesh$n))
   # mesh$mesh$n
   
   tweedie <- FALSE
@@ -152,13 +153,13 @@ for(i in 1:nrow(spp_list)) {
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
   pred$region <- "afsc"
+  pred$crs <- 32602
   
   if(i == 1) {
     pred_all <- pred
   } else {
     pred_all <- rbind(pred, pred_all)
   }
-  
 }
 
 # Check sanity column
@@ -172,3 +173,6 @@ pred_all |> filter(sanity == TRUE) |> distinct(species)
 pred_all |> filter(sanity == FALSE) |> distinct(species)
 # Test map
 fishmap(pred_all, common_name = "Alaska plaice")
+
+predictions_afsc <- pred_all
+usethis::use_data(predictions_afsc)
