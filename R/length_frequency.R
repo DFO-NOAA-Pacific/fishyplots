@@ -1,6 +1,6 @@
 #' Function to plot length frequency of fish species
 #'
-#' @param data a cleaned data frame from fisheries surveys, contains biological info
+#' @param data biological fisheries data containing length information
 #' @param time_series TRUE or FALSE 
 #' @return a ggplot object
 #' @importFrom dplyr filter group_by summarize

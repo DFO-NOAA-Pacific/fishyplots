@@ -7,7 +7,7 @@
 length_frequency(data, time_series = FALSE)
 }
 \arguments{
-\item{data}{a cleaned data frame from fisheries surveys, contains biological info}
+\item{data}{biological fisheries data containing length information}
 
 \item{time_series}{TRUE or FALSE}
 }

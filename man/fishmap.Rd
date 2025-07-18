@@ -7,7 +7,7 @@
 fishmap(data, common_name)
 }
 \arguments{
-\item{data}{prediction data from fishfit script}
+\item{data}{prediction data from fishfit scripts}
 
 \item{common_name}{species common name}
 }
@@ -19,6 +19,7 @@ Function for modeled CPUE map based on prediction data
 }
 \examples{
 \dontrun{
-fishmap(afsc_predictions, "arrowtooth flounder")
+load("data/predictions_afsc.rda")
+fishmap(predictions_afsc, "arrowtooth flounder")
 }
 }

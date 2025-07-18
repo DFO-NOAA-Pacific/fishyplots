@@ -7,7 +7,7 @@
 survey_table(data, form = c(1, 2))
 }
 \arguments{
-\item{data}{a data frame of target species including Length_cm, Weight_kg, Age_years, Otosag_id, and Year.}
+\item{data}{a data frame of bio data}
 
 \item{form}{choose 1 for tibble or 2 for ggplot}
 }
@@ -19,6 +19,8 @@ Main function to display survey specimen counts
 }
 \examples{
 \dontrun{
-survey_table(bio.data, form = 2)
+survey_table(afsc_bio, form = 1)
+survey_table(nwfsc_bio, form = 2)
+survey_table(pbs_bio, form = 2)
 }
 }

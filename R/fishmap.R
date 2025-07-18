@@ -1,6 +1,6 @@
 #' Function for modeled CPUE map based on prediction data
 #'
-#' @param data prediction data from fishfit script
+#' @param data prediction data from fishfit scripts
 #' @param common_name species common name 
 #' @return a ggplot object
 #' @importFrom scales trans_new
@@ -11,7 +11,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' fishmap(afsc_predictions, "arrowtooth flounder")
+#' load("data/predictions_afsc.rda")
+#' fishmap(predictions_afsc, "arrowtooth flounder")
 #' }
 fishmap <- function(data, common_name) {
   data <- data |> 
