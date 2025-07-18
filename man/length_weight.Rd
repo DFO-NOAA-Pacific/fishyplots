@@ -4,10 +4,12 @@
 \alias{length_weight}
 \title{Main function to plot length-weight relationships by sex}
 \usage{
-length_weight(data, color = FALSE)
+length_weight(data, species, color = FALSE)
 }
 \arguments{
-\item{data}{a data frame of target species including Length_cm, Weight_kg, and Sex}
+\item{data}{a data frame of biological data}
+
+\item{species}{common or scientific name of target species}
 
 \item{color}{default FALSE for greyscale, TRUE gives red and blue}
 }
@@ -19,6 +21,6 @@ Main function to plot length-weight relationships by sex
 }
 \examples{
 \dontrun{
-length_weight(bio.data)
+length_weight(afsc_bio, "Atka mackerel", color = T)
 }
 }

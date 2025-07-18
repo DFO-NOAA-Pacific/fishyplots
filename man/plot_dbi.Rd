@@ -7,9 +7,9 @@
 plot_dbi(species, reg)
 }
 \arguments{
-\item{species}{common name of species of interest. See unique(all.dbi$common_name) for options per dataset.}
+\item{species}{common name of species of interest. See examples for options per dataset.}
 
-\item{reg}{region, required to specify region to be plotted. See unique(data$region) for options per dataset.}
+\item{reg}{region, required to specify region to be plotted. See examples for options per dataset.}
 }
 \value{
 a ggplot object, plot of design based indicies
@@ -31,8 +31,7 @@ filter(science_center == "AFSC") \%>\%
 distinct(region)
 
 
-# usage example
-
+# usage examples
 plot_dbi("sablefish", "U.S. West Coast")
 plot_dbi("Dover sole", "U.S. Gulf of Alaska")
 plot_dbi("arrowtooth flounder", "SYN QCS")

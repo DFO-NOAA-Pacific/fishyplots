@@ -7,7 +7,7 @@
 vonb_growth(data)
 }
 \arguments{
-\item{data}{catch data from pull_bio(), containing Length_cm, Age_years, and Sex}
+\item{data}{biological data containing age, length, and sex information}
 }
 \value{
 a ggplot object

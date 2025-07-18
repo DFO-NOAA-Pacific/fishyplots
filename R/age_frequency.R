@@ -1,6 +1,6 @@
 #' Plots distribution of ages across survey years.
 #'
-#' @param data a clean data frame from fisheries surveys containing biological info
+#' @param data biological fisheries data containing age and sex information
 #' @param sex TRUE or FALSE for if you want to differentiate by sex
 #' @param cutoff define a cutoff for grouping older ages together
 #' @return a ggplot object

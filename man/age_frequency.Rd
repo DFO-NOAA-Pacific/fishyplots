@@ -7,7 +7,7 @@
 age_frequency(data, sex = FALSE, cutoff = 0.95)
 }
 \arguments{
-\item{data}{a clean data frame from fisheries surveys containing biological info}
+\item{data}{biological fisheries data containing age and sex information}
 
 \item{sex}{TRUE or FALSE for if you want to differentiate by sex}
 

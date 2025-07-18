@@ -1,6 +1,6 @@
 #' von Bertalanffy growth function plot
 #'
-#' @param data catch data from pull_bio(), containing Length_cm, Age_years, and Sex
+#' @param data biological data containing age, length, and sex information
 #' @return a ggplot object
 #' @importFrom dplyr filter
 #' @importFrom FSA findGrowthStarts
@@ -71,12 +71,12 @@ vonb_growth <- function(data) {
   # Plot growth function
   ggplot(data = data_clean, aes(x = age_years, y = length_cm, color = sex)) +
     geom_jitter(alpha = 0.1) +
-    scale_color_manual(values = c("M" = "#008b8b", "F" = "#daa520")) +
+    scale_color_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
     geom_line(data = growth_preds, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE) +
     theme_bw() +
     labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
     annotate("label", x = Inf, y = -Inf, label = paste0("k = ", xx[2], "; Lmin = ", xx[3], "; Linf = ", xx[1]), 
-             color = "#daa520", vjust= -1.5, hjust = 1.05, fill = "#daa520", alpha = 0.2) +
+             color = "#009E73", vjust= -1.5, hjust = 1.05, fill = "#009E73", alpha = 0.2) +
     annotate("label", x = Inf, y = -Inf, label = paste0("k = ", xy[2], "; Lmin = ", xy[3], "; Linf = ", xy[1]), 
-             color = "#008b8b", fill = "#008b8b", vjust = -0.5, hjust = 1.05, alpha = 0.2)
+             color = "#E69F00", fill = "#E69F00", vjust = -0.5, hjust = 1.05, alpha = 0.2)
 }
