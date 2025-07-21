@@ -1,0 +1,118 @@
+# Create prediction data frame for von Bertalanffy growth function
+library(FSA)
+library(dplyr)
+
+vb_predict <- function(data) {
+  
+  # Clean data
+  data_clean <- data |>
+    filter(!is.na(length_cm)) |>
+    filter(!is.na(age_years)) |>
+    filter(sex == "F" | sex == "M")
+  
+  if (length(unique(data_clean$age_years)) < 20) {
+    message("Not enough age data.")
+    return(NULL)
+  } 
+  
+  # Define the von Bertalanffy growth function
+  vb <- length_cm ~ Linf * (1 - exp(-K * (age_years - t0)))
+  
+  # Subset data by Sex
+  data_male <- subset(data_clean, sex == "M")
+  data_female <- subset(data_clean, sex == "F")
+  
+  # Get starting values for Linf, K, and t0 using FSA package
+  starts_male <- try(findGrowthStarts(formula = length_cm ~ age_years, data = data_male), silent = T)
+  starts_female <- try(findGrowthStarts(formula = length_cm ~ age_years, data = data_female), silent = T)
+  
+  #findGrowthStarts(length_cm ~ age_years, data = data_male, plot = TRUE) 
+  
+  # Check t0 isn't too low
+  t0_m <- if (!inherits(starts_male, "try-error") && "t0" %in% names(starts_male)) starts_male["t0"] else NA
+  t0_f <- if (!inherits(starts_female, "try-error") && "t0" %in% names(starts_female)) starts_female["t0"] else NA
+  if ((!is.na(t0_m) && t0_m < -6) || (!is.na(t0_f) && t0_f < -6)) {
+    message("Poor model fit: t0 too low.")
+    return(data.frame())
+  }
+  
+  # Fit models using the vb and starts
+  model_male <- try(nls(vb, data = data_male, start = starts_male), silent = T)
+  model_female <- try(nls(vb, data = data_female, start = starts_female), silent = T)
+  
+  xy <- if (!inherits(model_male, "try-error")) round(coef(model_male), 2) else c(Linf = NA, K = NA, t0 = NA)
+  xx <- if (!inherits(model_female, "try-error")) round(coef(model_female), 2) else c(Linf = NA, K = NA, t0 = NA)
+  
+  # Extract all unique ages
+  age_seq_male <- sort(unique(data_male$age_years))
+  age_seq_female <- sort(unique(data_female$age_years))
+  
+  # Create data frames for predictions
+  pred_male <- if (!inherits(model_male, "try-error")) {
+    data.frame(
+      age_years = age_seq_male,
+      fit = predict(model_male, newdata = data.frame(age_years = age_seq_male)),
+      sex = "M",
+      linf = xy[1],
+      k = xy[2],
+      t0 = xy[3]) 
+    }
+    else {
+      data.frame()
+    }
+  
+  pred_female <- if (!inherits(model_female, "try-error")) {
+    data.frame(
+      age_years = age_seq_female,
+      fit = predict(model_female, newdata = data.frame(age_years = age_seq_female)),
+      sex = "F",
+      linf = xx[1],
+      k = xx[2],
+      t0 = xx[3])
+    }
+    else {
+      data.frame()
+    }
+  
+  growth_preds <- rbind(pred_male, pred_female)
+  
+  growth_preds <- growth_preds |>
+    mutate(center = unique(data$science_center)[1]) |>
+    mutate(common = unique(data$common_name)[1]) |>
+    mutate(scientific = unique(data$scientific_name)[1])
+  
+  return(growth_preds)
+}
+
+# Combine suvey data from all regions
+data(pbs_bio)
+data(afsc_bio)
+data(nwfsc_bio)
+bio_data <- list(pbs = pbs_bio, afsc = afsc_bio, nwfsc = nwfsc_bio)
+
+# Create empty prediction data frame
+vb_predictions <- data.frame()
+
+# Loop through each region, then each species to apply the prediction function
+for (center in names(bio_data)) {
+  dataset <- bio_data[[center]]
+  # Get unique species in this dataset
+  species_list <- unique(dataset$scientific_name)
+  # Loop over each species
+  for (species in species_list) {
+    # Subset data to this species
+    sp_data <- dataset |> filter(scientific_name == species)
+    outputs <- vb_predict(sp_data)
+    
+    #outputs <- full_join(lw_predict(sp_data), vb_predict(sp_data), by = c("center","common", "scientific", "sex"))
+    vb_predictions <- bind_rows(lw_vb_predictions, outputs)
+  }
+} 
+
+# Write dataframe
+usethis::use_data(vb_predictions)
+
+
+#nwfsc_bio1 <- nwfsc_bio |> select(-otosag_id)
+#bio_data <- rbind(nwfsc_bio1, afsc_bio, pbs_bio)
+#plot_growth(bio_data, lw_vb_predictions, "NWFSC", "walleye pollock")

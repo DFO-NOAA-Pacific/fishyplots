@@ -15,3 +15,23 @@
 #'   \item{t0}{intercept of curve, age at length 0 }
 #' }
 #'
+"lw_vb_predictions"
+
+#' Alternate data storage for von Bertalanffy predictions
+#'
+#' Contains von Bertalanffy growth curve estimates for each fish age bracket 
+#'
+#' @format A data frame with 2488 rows and 9 variables:
+#' \describe{
+#'   \item{age_years}{Fish age in years}
+#'   \item{fit}{Growth estimate (length cm)}
+#'   \item{sex}{Fish sex, male or female}
+#'   \item{linf}{Asymptotic length of growth curve}
+#'   \item{k}{growth coefficient, rate of growth}
+#'   \item{t0}{exponent, slope of length-weight regression }
+#'   \item{center}{Region (NWFSC, AFSC, PBS)}
+#'   \item{common}{Species common name}
+#'   \item{scientific}{Species scientific name}
+#' }
+#'
+"vb_predictions"
