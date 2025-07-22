@@ -1,6 +1,7 @@
 #' Function to plot length frequency of fish species
 #'
 #' @param data biological fisheries data containing length information
+#' @param region choose a science center (AFSC, NWFSC, PBS)
 #' @param time_series TRUE or FALSE 
 #' @return a ggplot object
 #' @importFrom dplyr filter group_by summarize
@@ -11,26 +12,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' # US West Coast
-#' load("data/nwfsc_bio.rda")
-#' data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
-#' length_frequency(data)
+#' data(nwfsc_bio)
+#' data(afsc_bio)
+#' data(pbs_bio)
+#' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+#' data <- all_data |> filter(common_name == "arrowtooth flounder")
 #' 
-#' # Canada 
-#' load("data/pbs_bio.rda")
-#' data <- pbs_bio |> filter(common_name == "dover sole")
-#' length_frequency(data, time_series = TRUE)
-#' 
-#' # Alaska
-#' load("data/afsc_bio.rda")
-#' data <- afsc_bio |> filter(common_name == "rex sole")
-#' length_frequency(data, time_series = TRUE)
+#' length_frequency(data, region = c("AFSC", "PBS", "NWFSC"))
 #' 
 #' }
-length_frequency <- function(data, time_series = FALSE) {
+
+length_frequency <- function(data, region, time_series = TRUE) {
   if (time_series == FALSE) {
     data_clean <- data |>
       filter(!is.na(length_cm)) |>
+      filter(science_center %in% region) |>
       complete(year = full_seq(year, 1))
     
     graph <- data_clean |>
@@ -44,10 +40,11 @@ length_frequency <- function(data, time_series = FALSE) {
   }
   if (time_series == TRUE) {
     data_clean <- data |>
-      filter(!is.na(length_cm))
+      filter(!is.na(length_cm)) |>
+      filter(science_center %in% region)
     
     summary_stats <- data_clean |>
-      group_by(year) |>
+      group_by(year, science_center) |>
       summarize(median = quantile(length_cm, 0.5),
                 mean = mean(length_cm),
                 p25 = quantile(length_cm, 0.25),
@@ -64,7 +61,11 @@ length_frequency <- function(data, time_series = FALSE) {
            caption = "Error bars show 50% and 95% quantiles.") +
       theme(panel.grid = element_blank())
     
+    if (length(region) > 1) {
+      graph <- graph +
+        facet_wrap(~science_center)
+    }
+    
     return(graph)
   }
 }
-
