@@ -1,10 +1,11 @@
 #' plot von Bertalanffy function predictions
 #'
 #' @param data biological data containing age, length, and sex information
+#' @param predictions von Bertalanffy prediction data in /data folder
+#' @param region region AFSC, NWFSC, or PBS
+#' @param species species common name 
 #' @return a ggplot object
-#' @importFrom dplyr filter
-#' @importFrom FSA findGrowthStarts
-#' @importFrom stats nls predict
+#' @importFrom dplyr filter pull
 #' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs annotate
 #' @export
 #'
@@ -12,18 +13,24 @@
 #' \dontrun{
 #' data(vb_predictions)
 #' data(pbs_bio)
-#' plot_growth(pbs_bio, vb_predictions, "PBS", "arrowtooth flounder")
+#' data(afsc_bio)
+#' data(nwfsc_bio)
+#' data <- rbind(pbs_bio, afsc_bio, nwfsc_bio)
+#' 
+#' plot_growth(data, vb_predictions, "AFSC", "walleye pollock")
+#' plot_growth(data, vb_predictions, region = c("AFSC", "NWFSC", "PBS"), "arrowtooth flounder")
 #' }
 plot_growth <- function(data, predictions, region, species) {
   data <- data |>
     filter(!is.na(length_cm)) |>
     filter(!is.na(age_years)) |>
     filter(sex == "F" | sex == "M") |>
-    filter(region == region) |>
+    filter(science_center %in% region) |>
+    rename(center = science_center) |>
     filter(common_name == species)
   
   predictions <- predictions |>
-    filter(center == region) |>
+    filter(center %in% region) |>
     filter(common == species)
   
   if (nrow(predictions) == 0) {
@@ -31,22 +38,39 @@ plot_growth <- function(data, predictions, region, species) {
     return(NULL)
   }
   
-  linf_m <- predictions |> filter(sex == "M") |> pull(linf) |> unique()
-  k_m <- predictions |> filter(sex == "M") |> pull(k) |> unique()
-  t0_m <- predictions |> filter(sex == "M") |> pull(t0) |> unique()
+  linf_m <- (predictions |> filter(sex == "M") |> pull(linf) |> unique())[1]
+  k_m <- (predictions |> filter(sex == "M") |> pull(k) |> unique())[1]
+  t0_m <- (predictions |> filter(sex == "M") |> pull(t0) |> unique())[1]
   
-  linf_f <- predictions |> filter(sex == "F") |> pull(linf) |> unique()
-  k_f <- predictions |> filter(sex == "F") |> pull(k) |> unique()
-  t0_f <- predictions |> filter(sex == "F") |> pull(t0) |> unique()
+  linf_f <- (predictions |> filter(sex == "F") |> pull(linf) |> unique())[1]
+  k_f <- (predictions |> filter(sex == "F") |> pull(k) |> unique())[1]
+  t0_f <- (predictions |> filter(sex == "F") |> pull(t0) |> unique())[1]
   
-  ggplot(data = data, aes(x = age_years, y = length_cm, color = sex)) +
-    geom_jitter(alpha = 0.1) +
+  label_data <- predictions |>
+    group_by(center, sex) |>
+    summarize(linf = round(unique(linf)[1], 2),
+              k = round(unique(k)[1], 2),
+              t0 = round(unique(t0)[1], 2),
+              .groups = "drop") |>
+    mutate(vjust = ifelse(sex == "M", -0.5, -1.5)) |>
+    mutate(hjust = 1.05)
+  
+  graph <- ggplot(data = data, aes(x = age_years, y = length_cm, color = sex)) +
+    geom_point(alpha = 0.1) +
     scale_color_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
-    geom_line(data = predictions, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE) +
+    scale_fill_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
+    geom_line(data = predictions, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE, linewidth = 1) +
     theme_bw() +
     labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
-    annotate("label", x = Inf, y = -Inf, label = paste0("k = ", k_m, "; t0 = ", t0_m, "; Linf = ", linf_m), 
-             color = "#E69F00", vjust= -1.5, hjust = 1.05, fill = "#E69F00", alpha = 0.2) +
-    annotate("label", x = Inf, y = -Inf, label = paste0("k = ", k_f, "; t0 = ", t0_f, "; Linf = ", linf_f), 
-             color = "#009E73", fill = "#009E73", vjust = -0.5, hjust = 1.05, alpha = 0.2)
+    geom_label(
+      data = label_data, aes(x = Inf, y = -Inf, color = sex, fill = sex, hjust = hjust, vjust = vjust,
+                             label = paste0("k = ", k, "; t0 = ", t0, "; Linf = ", linf)), 
+      alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
+  
+  if (length(region) > 1) {
+    graph <- graph +
+      facet_wrap(~center)
+  }
+  
+  return(graph)
 }
