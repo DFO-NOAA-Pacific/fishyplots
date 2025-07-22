@@ -26,7 +26,8 @@ Imports:
     grid,
     gfplot,
     stringr,
-    here
+    here,
+    ggsidekick
 Suggests:
     devtools,
     usethis,

@@ -2,11 +2,12 @@
 #'
 #' @param data biological data containing age, length, and sex information
 #' @param predictions von Bertalanffy prediction data in /data folder
-#' @param region region AFSC, NWFSC, or PBS
+#' @param region region AFSC, NWFSC, and/or PBS
 #' @param species species common name 
 #' @return a ggplot object
-#' @importFrom dplyr filter pull
-#' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs annotate
+#' @importFrom dplyr filter rename pull mutate summarize group_by
+#' @importFrom ggsidekick theme_sleek
+#' @importFrom ggplot2 ggplot aes geom_point scale_color_manual scale_fill_manual geom_line labs geom_label
 #' @export
 #'
 #' @examples
@@ -33,6 +34,11 @@ plot_growth <- function(data, predictions, region, species) {
     filter(center %in% region) |>
     filter(common == species)
   
+  data$center <- factor(data$center, levels = c("AFSC", "PBS", "NWFSC"),
+                        labels = c("Alaska", "Canada", "U.S. West Coast"))
+  predictions$center <- factor(predictions$center, levels = c("AFSC", "PBS", "NWFSC"),
+                               labels = c("Alaska", "Canada", "U.S. West Coast"))
+  
   if (nrow(predictions) == 0) {
     message("No age data available.")
     return(NULL)
@@ -53,18 +59,19 @@ plot_growth <- function(data, predictions, region, species) {
               t0 = round(unique(t0)[1], 2),
               .groups = "drop") |>
     mutate(vjust = ifelse(sex == "M", -0.5, -1.5)) |>
-    mutate(hjust = 1.05)
+    mutate(hjust = 1.05) |>
+    mutate(sex_label = ifelse(sex == "M", "Male", "Female"))
   
   graph <- ggplot(data = data, aes(x = age_years, y = length_cm, color = sex)) +
-    geom_point(alpha = 0.1) +
+    geom_point(alpha = 0.1, show.legend = FALSE) +
     scale_color_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
     scale_fill_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
-    geom_line(data = predictions, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE, linewidth = 1) +
-    theme_bw() +
+    geom_line(data = predictions, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE, linewidth = 1, show.legend = FALSE) +
+    theme_sleek() +
     labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
     geom_label(
       data = label_data, aes(x = Inf, y = -Inf, color = sex, fill = sex, hjust = hjust, vjust = vjust,
-                             label = paste0("k = ", k, "; t0 = ", t0, "; Linf = ", linf)), 
+                             label = paste0(sex_label, ": k = ", k, "; t0 = ", t0, "; Linf = ", linf)), 
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
   
   if (length(region) > 1) {
