@@ -4,10 +4,12 @@
 \alias{survey_table}
 \title{Main function to display survey specimen counts}
 \usage{
-survey_table(data, form = c(1, 2))
+survey_table(data, species, form = c(1, 2))
 }
 \arguments{
 \item{data}{a data frame of bio data}
+
+\item{species}{species of interest common or scientific name}
 
 \item{form}{choose 1 for tibble or 2 for ggplot}
 }
@@ -19,8 +21,8 @@ Main function to display survey specimen counts
 }
 \examples{
 \dontrun{
-survey_table(afsc_bio, form = 1)
-survey_table(nwfsc_bio, form = 2)
-survey_table(pbs_bio, form = 2)
+survey_table(afsc_bio, "Atka mackerel", form = 1)
+survey_table(nwfsc_bio, "Sebastes zacentrus", form = 2)
+survey_table(pbs_bio,"arrowtooth flounder", form = 2)
 }
 }
