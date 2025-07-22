@@ -1,9 +1,9 @@
 #' Function and formatted data to plot design based index
 #'
-#' @param species common name of species of interest. See examples for options per dataset.
+#' @param species common or scientific name of species of interest. See examples for options per dataset.
 #' @param reg region, required to specify region to be plotted. See examples for options per dataset.
 #' @return a ggplot object, plot of design based indicies
-#' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
+#' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab ggtitle
 #' @importFrom dplyr %>% select rename
 #' @export
 #'
@@ -35,13 +35,17 @@ plot_dbi <- function(species, reg) {
   # if (!species %in% species_list) stop("") expand later with error messages
   
   data(all.dbi)
+  subset <- all.dbi %>% 
+    filter(common_name == species | scientific_name == species) %>% 
+    filter(region == reg)
     
-    plot <- ggplot2::ggplot(data = subset(all.dbi, all.dbi$common_name == species & all.dbi$region == reg)) +
+    plot <- ggplot2::ggplot(data = subset) +
       ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = lwr, ymax = upr), fill = "lightgray") +
       ggplot2::geom_line(ggplot2::aes(x = year, y = est)) +
       ggplot2::geom_point(ggplot2::aes(x = year, y = est)) +
       ggplot2::ylab("Biomass (mt)") +
       ggplot2::xlab("Year") +
+      ggplot2::ggtitle(unique(subset$common_name)) +
       ggplot2::theme_bw() +
       ggplot2::scale_y_continuous(
         labels = function(x) format(x, big.mark = ",", scientific = FALSE))
