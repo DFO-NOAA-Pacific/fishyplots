@@ -2,9 +2,10 @@
 #'
 #' Contains biological data from NWFSC surveys for availible top species defined in data-raw/nwfsc_top.rds.
 #'
-#' @format A data frame with 983297 rows and 9 variables:
+#' @format A data frame with 983297 rows and 10 variables:
 #' \describe{
 #'   \item{science_center}{science center of data collection}
+#'   \item{region}{region of data collection}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
@@ -21,9 +22,10 @@
 #'
 #' Contains biological data from AFSC surveys for availible top species defined in data-raw/afsc_top.rds.
 #'
-#' @format A data frame with 467530 rows and 8 variables:
+#' @format A data frame with 467530 rows and 9 variables:
 #' \describe{
 #'   \item{science_center}{science center of data collection}
+#'   \item{region}{region of data collection}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
@@ -39,9 +41,10 @@
 #'
 #' Contains biological data from PBS surveys for availible top species defined in data-raw/pbs_top.rds.
 #'
-#' @format A data frame with 226600 rows and 8 variables:
+#' @format A data frame with 226600 rows and 9 variables:
 #' \describe{
 #'   \item{science_center}{science center of data collection}
+#'   \item{region}{region of data collection}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
