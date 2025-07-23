@@ -13,13 +13,20 @@
 #'
 #' @examples
 #' \dontrun{
-#' survey_table(afsc_bio, "Atka mackerel", form = 1)
-#' survey_table(nwfsc_bio, "Sebastes zacentrus", form = 2)
+#' data(pbs_bio)
+#' data(afsc_bio)
+#' data(nwfsc_bio)
+#' data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
+#' 
+#' 
+#' survey_table(afsc_bio, "atka mackerel", form = 1)
+#' survey_table(nwfsc_bio, "sebastes zacentrus", form = 2)
 #' survey_table(pbs_bio,"arrowtooth flounder", form = 2)
 #' }
 
 
 survey_table <- function(data, species, form = c(1,2)) {
+  
   
   #filter species
   if (any(data$common_name == species | data$scientific_name == species)) {
@@ -29,13 +36,22 @@ survey_table <- function(data, species, form = c(1,2)) {
   
   #make subsets with just the wanted data (l/w/a and year)
   #number of lengths counted per year
+  if(any(spec.data$region == "AFSC")){
+    data("ak_survey_lengths")
+    length_count <-  ak_survey_lengths %>% 
+      group_by(year) %>%
+      summarize(n_samples=sum(length.count))%>%
+      mutate(sample_type = "Length") %>% 
+      rename(yr = year) %>% 
+      na.omit()}
+  else{
 length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year) %>%
   na.omit() %>% #omit rows with no data from being counted
   group_by(yr) %>%
   summarize(n_samples=n())%>% #sum sample number over grouping (year)
   mutate(sample_type = "Length") #label as length count
-    #If using alaska data, pull from lengths data NOT afsc_bio
-  #code here for that ^^
+}
+    
 
 #weight counts
 weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year) %>%

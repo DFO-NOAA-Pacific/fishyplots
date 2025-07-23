@@ -21,7 +21,7 @@ lw_predict <- function(data) {
   
   #extract parameter estimates into tibble
   lw.tbble <- tibble(
-    center = unique(data$science_center),
+    region = unique(data$region),
     common = unique(data$common_name),
     scientific = unique(data$scientific_name), #see data structure later to name region and species dynamically
     sex = c("M", "F"),
@@ -61,7 +61,7 @@ vb_predict <- function(data) {
   xx <- if (!inherits(model_female, "try-error")) round(coef(model_female), 2) else NA
 
   growth.tbble <- tibble(
-    center = unique(data$science_center),
+    region = unique(data$region),
     common = unique(data$common_name),
     scientific = unique(data$scientific_name),
     sex = c("M", "F"),
@@ -85,9 +85,9 @@ bio_data <- list(pbs = pbs_bio,
   afsc = afsc_bio,
   nwfsc = nwfsc_bio)
 
-for (center in names(bio_data)) {
+for (region in names(bio_data)) {
   
-  dataset <- bio_data[[center]]
+  dataset <- bio_data[[region]]
   
   # Get unique species in this dataset
   species_list <- unique(dataset$scientific_name)
@@ -98,11 +98,11 @@ for (center in names(bio_data)) {
     sp_data <- dataset %>% filter(scientific_name == species)
     
     
-    outputs <- full_join(lw_predict(sp_data), vb_predict(sp_data), by = c("center","common", "scientific", "sex"))
+    outputs <- full_join(lw_predict(sp_data), vb_predict(sp_data), by = c("region","common", "scientific", "sex"))
     lw_vb_predictions <- bind_rows(lw_vb_predictions, outputs)
     
     
   }
 } 
 # save predictions
-usethis::use_data(lw_vb_predictions)
+usethis::use_data(lw_vb_predictions, overwrite = TRUE)

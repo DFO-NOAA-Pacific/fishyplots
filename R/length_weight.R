@@ -1,6 +1,6 @@
 #' Main function to plot length-weight relationships by sex
 #'
-#' @param data science center bio data to be plotted. Preload from data file.
+#' @param data region bio data to be plotted. Preload from data file.
 #' @param species common or scientific name of target species
 #' @param color default TRUE for color, FALSE  for greyscale
 #' @param subset default TRUE for a faster plotting subset of n = 2000. Set FALSE for all available data.
@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' length_weight(afsc_bio, "Atka mackerel", color = T)
+#' length_weight(afsc_bio, "atka mackerel", color = T)
 #' }
 
 length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color default, subset default
@@ -51,9 +51,9 @@ length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color d
   
   # get regression fit for m and f of species in data
   F_pred <- lw_vb_predictions %>% 
-    filter(center == unique(spec.data$science_center), species == common | species == scientific, sex == "F")
+    filter(region == unique(spec.data$region), species == common | species == scientific, sex == "F")
   M_pred <- lw_vb_predictions %>% 
-    filter(center == unique(spec.data$science_center), species == common | species == scientific, sex == "M")
+    filter(region == unique(spec.data$region), species == common | species == scientific, sex == "M")
   
   
   pred_df_F <- data.frame(
@@ -95,7 +95,7 @@ length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color d
     
     #LEGEND AND LABELS
     #add legend for lines
-    theme(legend.title = element_blank(), legend.position = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
+    theme(legend.title = element_blank(), legend.position.inside  = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
     xlab("Length (cm)") +# for the x axis label
     ylab("Weight (kg)")+
     ggtitle(unique(spec.data$common_name)) +
