@@ -28,4 +28,38 @@ convert_sex <- function(x) {
   )
 }
 
-
+#' group surveys to differentiate AK Gulf and AK BSAI surveys for later data visualization. 
+#'
+#' groups all PBS surveys under "PBS". groups Gulf of Alaska into "AK GULF". groups Bering Sea and Aleutian Island surveys into "AK BSAI"
+#' Internal function.
+#'
+#' @param data bio data
+#' @return data with renamed survey column
+#' @noRd
+group_survey <- function(data){
+    data$survey <- dplyr::case_when(
+      grepl("NWFSC", data$survey, ignore.case = TRUE) ~ "NWFSC",
+      grepl("SYN", data$survey, ignore.case = TRUE) ~ "PBS",
+      grepl("Gulf", data$survey, ignore.case = TRUE) ~ "AK GULF",
+      TRUE ~ "AK BSAI"
+    )
+    return(data)
+  }
+  
+#' cleans and standardizes common names of top fishes
+#' makes all common names lowercase and renames species with multiple common names
+#'
+#' @param data bio data
+#' @return bio data with cleaned common names
+#' @noRd
+clean_fishnames <- function(data) {
+  data <- data %>% 
+    mutate(
+      common_name = str_to_lower(common_name),
+      common_name = case_when(
+        grepl("merluccius productus", scientific_name) ~ "pacific hake",
+        grepl("squalus suckleyi", scientific_name) ~ "pacific spiny dogfish",
+        TRUE ~ common_name # keep original if no match
+        ))
+  return(data)
+}
