@@ -1,9 +1,19 @@
 # Create prediction data frame for von Bertalanffy growth function
 library(FSA)
 library(dplyr)
+library(minpack.lm)
 
+# Combine survey data from all regions
+data(pbs_bio)
+data(afsc_bio)
+data(nwfsc_bio)
+bio_data <- list(pbs = pbs_bio, afsc = afsc_bio, nwfsc = nwfsc_bio)
+
+# Function
 vb_predict <- function(data) {
-  
+  #browser()
+  species <- unique(data$common_name)[1]
+  region <- unique(data$science_center)[1]
   # Clean data
   data_clean <- data |>
     filter(!is.na(length_cm)) |>
@@ -11,7 +21,7 @@ vb_predict <- function(data) {
     filter(sex == "F" | sex == "M")
   
   if (length(unique(data_clean$age_years)) < 20) {
-    message("Not enough age data.")
+    #message(paste0(species, " -- not enough age data."))
     return(NULL)
   } 
   
@@ -26,20 +36,47 @@ vb_predict <- function(data) {
   starts_male <- try(findGrowthStarts(formula = length_cm ~ age_years, data = data_male), silent = T)
   starts_female <- try(findGrowthStarts(formula = length_cm ~ age_years, data = data_female), silent = T)
   
+  # Make fixed starts if needed
+  if (inherits(starts_male, "try-error")) {
+    message(paste0("Male ", species, " in ", region, " starts fail, using fallback values."))
+    starts_male <- c(Linf = unname(quantile(data_male$length_cm, 0.99, na.rm = TRUE)), K = 0.2, t0 = -1)
+  }
+  
+  if (inherits(starts_female, "try-error")) {
+    message(paste0("Female ", species, " in ", region, " starts fail, using fallback values."))
+    starts_female <- c(Linf = unname(quantile(data_female$length_cm, 0.99, na.rm = TRUE)), K = 0.2, t0 = -1)
+  }
+  
   #findGrowthStarts(length_cm ~ age_years, data = data_male, plot = TRUE) 
   
   # Check t0 isn't too low
   t0_m <- if (!inherits(starts_male, "try-error") && "t0" %in% names(starts_male)) starts_male["t0"] else NA
   t0_f <- if (!inherits(starts_female, "try-error") && "t0" %in% names(starts_female)) starts_female["t0"] else NA
-  if ((!is.na(t0_m) && t0_m < -6) || (!is.na(t0_f) && t0_f < -6)) {
-    message("Poor model fit: t0 too low.")
-    return(data.frame())
+  if (!is.na(t0_m) && t0_m < -6) {
+    message(paste0("Male ", species, " in ", region, " t0 of ", t0_m, " too low. Trying with fixed t0."))
+    starts_male["t0"] <- -3
+    #return(data.frame())
   }
+  if (!is.na(t0_f) && t0_f < -6) {
+    message(paste0("Female ", species, " in ", region, " t0 of ", t0_f, " too low. Trying with fixed t0."))
+    starts_female["t0"] <- -3
+    #return(data.frame())
+  }
+
   
   # Fit models using the vb and starts
   model_male <- try(nls(vb, data = data_male, start = starts_male), silent = T)
   model_female <- try(nls(vb, data = data_female, start = starts_female), silent = T)
   
+  # Debugging models for some species
+  if (inherits(model_female, "try-error")) {
+    message("nls estimation from stats package failure. Trying minpack.lm.")
+    model_female <- try(nlsLM(length_cm ~ Linf * (1 - exp(-K * (age_years - t0))),
+                              data = data_female,
+                              start = starts_female), silent = TRUE)
+  }
+  
+  # Extract model summary coefficients
   xy <- if (!inherits(model_male, "try-error")) round(coef(model_male), 2) else c(Linf = NA, K = NA, t0 = NA)
   xx <- if (!inherits(model_female, "try-error")) round(coef(model_female), 2) else c(Linf = NA, K = NA, t0 = NA)
   
@@ -56,10 +93,11 @@ vb_predict <- function(data) {
       linf = xy[1],
       k = xy[2],
       t0 = xy[3]) 
-    }
-    else {
-      data.frame()
-    }
+  }
+  else {
+    message(paste0("Male ", species, " ", region, " model did not converge."))
+    data.frame()
+  }
   
   pred_female <- if (!inherits(model_female, "try-error")) {
     data.frame(
@@ -69,13 +107,16 @@ vb_predict <- function(data) {
       linf = xx[1],
       k = xx[2],
       t0 = xx[3])
-    }
-    else {
-      data.frame()
-    }
+  }
+  else {
+    message(paste0("Female ", species, " ", region, " model did not converge."))
+    data.frame()
+  }
   
+  # Combine male and female predictions
   growth_preds <- rbind(pred_male, pred_female)
   
+  # Add metadata to the data frame
   growth_preds <- growth_preds |>
     mutate(center = unique(data$science_center)[1]) |>
     mutate(common = unique(data$common_name)[1]) |>
@@ -84,11 +125,6 @@ vb_predict <- function(data) {
   return(growth_preds)
 }
 
-# Combine suvey data from all regions
-data(pbs_bio)
-data(afsc_bio)
-data(nwfsc_bio)
-bio_data <- list(pbs = pbs_bio, afsc = afsc_bio, nwfsc = nwfsc_bio)
 
 # Create empty prediction data frame
 vb_predictions <- data.frame()
@@ -105,12 +141,12 @@ for (center in names(bio_data)) {
     outputs <- vb_predict(sp_data)
     
     #outputs <- full_join(lw_predict(sp_data), vb_predict(sp_data), by = c("center","common", "scientific", "sex"))
-    vb_predictions <- bind_rows(lw_vb_predictions, outputs)
+    vb_predictions <- bind_rows(vb_predictions, outputs)
   }
 } 
 
 # Write dataframe
-usethis::use_data(vb_predictions)
+usethis::use_data(vb_predictions, overwrite = TRUE)
 
 
 #nwfsc_bio1 <- nwfsc_bio |> select(-otosag_id)
