@@ -19,7 +19,7 @@ Function for modeled CPUE map based on prediction data
 }
 \examples{
 \dontrun{
-load("data/predictions_afsc.rda")
+data(predictions_afsc)
 fishmap(predictions_afsc, "arrowtooth flounder")
 }
 }
