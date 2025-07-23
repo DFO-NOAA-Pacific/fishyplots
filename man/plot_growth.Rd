@@ -4,16 +4,18 @@
 \alias{plot_growth}
 \title{plot von Bertalanffy function predictions}
 \usage{
-plot_growth(data, predictions, region, species)
+plot_growth(data, predictions, subregions, common, facet_all = TRUE)
 }
 \arguments{
 \item{data}{biological data containing age, length, and sex information}
 
 \item{predictions}{von Bertalanffy prediction data in /data folder}
 
-\item{region}{region AFSC, NWFSC, and/or PBS}
+\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
 
-\item{species}{species common name}
+\item{common}{species common name}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a ggplot object
@@ -27,9 +29,10 @@ data(vb_predictions)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)
+nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
 data <- rbind(pbs_bio, afsc_bio, nwfsc_bio)
 
 plot_growth(data, vb_predictions, "AFSC", "walleye pollock")
-plot_growth(data, vb_predictions, region = c("AFSC", "NWFSC", "PBS"), "arrowtooth flounder")
+plot_growth(data, vb_predictions, ("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
 }
 }

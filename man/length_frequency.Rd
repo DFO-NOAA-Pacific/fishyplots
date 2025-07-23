@@ -4,14 +4,24 @@
 \alias{length_frequency}
 \title{Function to plot length frequency of fish species}
 \usage{
-length_frequency(data, region, time_series = TRUE)
+length_frequency(
+  data,
+  subregions,
+  common,
+  time_series = TRUE,
+  facet_all = TRUE
+)
 }
 \arguments{
 \item{data}{biological fisheries data containing length information}
 
-\item{region}{choose a science center (AFSC, NWFSC, PBS)}
+\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
+
+\item{common}{species common name}
 
 \item{time_series}{TRUE or FALSE}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a ggplot object
@@ -24,10 +34,10 @@ Function to plot length frequency of fish species
 data(nwfsc_bio)
 data(afsc_bio)
 data(pbs_bio)
+nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
 all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
-data <- all_data |> filter(common_name == "arrowtooth flounder")
 
-length_frequency(data, region = c("AFSC", "PBS", "NWFSC"))
+length_frequency(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 
 }
 }
