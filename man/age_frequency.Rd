@@ -4,10 +4,14 @@
 \alias{age_frequency}
 \title{Plots distribution of ages across survey years.}
 \usage{
-age_frequency(data, sex = FALSE, cutoff = 0.95)
+age_frequency(data, region, species, sex = FALSE, cutoff = 0.95)
 }
 \arguments{
 \item{data}{biological fisheries data containing age and sex information}
+
+\item{region}{choose science center NWFSC, AFSC, PBS}
+
+\item{species}{species common name}
 
 \item{sex}{TRUE or FALSE for if you want to differentiate by sex}
 
@@ -21,19 +25,12 @@ Plots distribution of ages across survey years.
 }
 \examples{
 \dontrun{
-# US West Coast
-load("data/nwfsc_bio.rda")
-data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
-age_frequency(data)
+data("nwfsc_bio")
+data("afsc_bio")
+data("pbs_bio")
+nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
+all_data <- rbind(afsc_bio, nwfsc_bio, pbs_bio)
 
-# Canada
-load("data/pbs_bio.rda")
-data <- pbs_bio |> filter(common_name == "arrowtooth flounder")
-age_frequency(data, sex = TRUE)
-
-# Alaska 
-load("data/afsc_bio.rda")
-data <- afsc_bio |> filter(common_name == "arrowtooth flounder")
-age_frequency(data, cutoff = 0.75)
+age_frequency(all_data, region = c("PBS", "NWFSC"), species = "yellowtail rockfish")
 }
 }

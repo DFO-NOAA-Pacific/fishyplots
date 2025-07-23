@@ -4,10 +4,12 @@
 \alias{length_frequency}
 \title{Function to plot length frequency of fish species}
 \usage{
-length_frequency(data, time_series = FALSE)
+length_frequency(data, region, time_series = TRUE)
 }
 \arguments{
 \item{data}{biological fisheries data containing length information}
+
+\item{region}{choose a science center (AFSC, NWFSC, PBS)}
 
 \item{time_series}{TRUE or FALSE}
 }
@@ -19,20 +21,13 @@ Function to plot length frequency of fish species
 }
 \examples{
 \dontrun{
-# US West Coast
-load("data/nwfsc_bio.rda")
-data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
-length_frequency(data)
+data(nwfsc_bio)
+data(afsc_bio)
+data(pbs_bio)
+all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+data <- all_data |> filter(common_name == "arrowtooth flounder")
 
-# Canada 
-load("data/pbs_bio.rda")
-data <- pbs_bio |> filter(common_name == "dover sole")
-length_frequency(data, time_series = TRUE)
-
-# Alaska
-load("data/afsc_bio.rda")
-data <- afsc_bio |> filter(common_name == "rex sole")
-length_frequency(data, time_series = TRUE)
+length_frequency(data, region = c("AFSC", "PBS", "NWFSC"))
 
 }
 }

@@ -1,6 +1,8 @@
 #' Plots distribution of ages across survey years.
 #'
 #' @param data biological fisheries data containing age and sex information
+#' @param region choose science center NWFSC, AFSC, PBS
+#' @param species species common name
 #' @param sex TRUE or FALSE for if you want to differentiate by sex
 #' @param cutoff define a cutoff for grouping older ages together
 #' @return a ggplot object
@@ -14,26 +16,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' # US West Coast
-#' load("data/nwfsc_bio.rda")
-#' data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
-#' age_frequency(data)
+#' data("nwfsc_bio")
+#' data("afsc_bio")
+#' data("pbs_bio")
+#' nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
+#' all_data <- rbind(afsc_bio, nwfsc_bio, pbs_bio)
 #' 
-#' # Canada
-#' load("data/pbs_bio.rda")
-#' data <- pbs_bio |> filter(common_name == "arrowtooth flounder")
-#' age_frequency(data, sex = TRUE)
-#' 
-#' # Alaska 
-#' load("data/afsc_bio.rda")
-#' data <- afsc_bio |> filter(common_name == "arrowtooth flounder")
-#' age_frequency(data, cutoff = 0.75)
+#' age_frequency(all_data, region = c("PBS", "NWFSC"), species = "yellowtail rockfish")
 #' }
-age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
+age_frequency <- function(data, region, species, sex = FALSE, cutoff = 0.95) {
   # Clean data
   data_clean <- data |>
     filter(!is.na(age_years)) |>
     filter(sex != "U") |>
+    filter(science_center %in% region) |>
+    filter(common_name == species) |>
     complete(year = full_seq(year, 1))
   
   # Define a cutoff to start grouping bins together
@@ -47,6 +44,7 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
       age_years >= cutoff ~ paste0(5 * floor((age_years - cutoff) / 5) + cutoff, "-",
                                    5*floor((age_years-cutoff) / 5) + cutoff + 4)))
   
+  data_clean <- data_clean |> filter(!is.na(age_group))
   # Create an ordered list of age_groups by their lower bounds
   age_levels <- data_clean |>
     distinct(age_group) |>
@@ -61,6 +59,10 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
   # Create labels based off the age_group (we will use age_group_num to plot)
   labels <- levels(data_clean$age_group)
   
+  # Refactor science center labels
+  data_clean$science_center <- factor(data_clean$science_center, levels = c("AFSC", "PBS", "NWFSC"),
+                                      labels = c("Alaska", "Canada", "U.S. West Coast"))
+  
   if (sex == FALSE) {
     graph <- data_clean |> 
       ggplot(aes(x = age_group_num, y = factor(year))) +
@@ -69,6 +71,9 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
       labs(x = "Age (years)", y = "", title = "Age frequency") +
       scale_x_continuous(breaks = 1:length(labels), labels = labels) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    if (length(region) > 1) {
+      graph <- graph + facet_wrap(~science_center, ncol = 3)
+    }
     return(graph)
   }
   else if (sex == TRUE) {
@@ -80,8 +85,9 @@ age_frequency <- function(data, sex = FALSE, cutoff = 0.95) {
       scale_x_continuous(breaks = 1:length(labels), labels = labels) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       scale_fill_manual(values = c("M" = "#008b8b", "F" = "#daa520"))
+    if (length(region) > 1) {
+      graph <- graph + facet_wrap(~science_center, ncol = 3)
+    }
     return(graph)
   }
 }
-
-
