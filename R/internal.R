@@ -39,6 +39,7 @@ convert_sex <- function(x) {
 group_survey <- function(data){
     data$survey <- dplyr::case_when(
       grepl("NWFSC", data$survey, ignore.case = TRUE) ~ "NWFSC",
+      grepl("U.S. West Coast", data$survey, ignore.case = TRUE) ~ "NWFSC",
       grepl("SYN", data$survey, ignore.case = TRUE) ~ "PBS",
       grepl("Gulf", data$survey, ignore.case = TRUE) ~ "AK GULF",
       TRUE ~ "AK BSAI"
