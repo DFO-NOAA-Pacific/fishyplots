@@ -46,3 +46,22 @@ group_survey <- function(data){
     return(data)
   }
   
+#' group surveys to differentiate AK Gulf and AK BSAI surveys for later data visualization. 
+#'
+#' groups all PBS surveys under "PBS". groups Gulf of Alaska into "AK GULF". groups Bering Sea and Aleutian Island surveys into "AK BSAI"
+#' Internal function.
+#'
+#' @param x vector of haul codes or event ids
+#' @return year of haul or event
+#' @noRd
+clean_fishnames <- function(data) {
+  data <- data %>% 
+    mutate(
+      common_name = str_to_lower(common_name),
+      common_name = case_when(
+        grepl("merluccius productus", scientific_name) ~ "pacific hake",
+        grepl("squalus suckleyi", scientific_name) ~ "pacific spiny dogfish",
+        TRUE ~ common_name # keep original if no match
+        ))
+  return(data)
+}
