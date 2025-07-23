@@ -56,6 +56,7 @@ clean_fishnames <- function(data) {
   data <- data %>% 
     mutate(
       common_name = str_to_lower(common_name),
+      scientific_name = str_to_lower(scientific_name),
       common_name = case_when(
         grepl("merluccius productus", scientific_name) ~ "pacific hake",
         grepl("squalus suckleyi", scientific_name) ~ "pacific spiny dogfish",
