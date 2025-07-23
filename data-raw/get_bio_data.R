@@ -1,6 +1,6 @@
 # Tidy names and columns for bio data from NWFSC, AFSC, and PBS
 
-devtools::load_all()
+devtools::load_all() #for internals
 library(dplyr)
 library(janitor)
 
@@ -11,8 +11,8 @@ nwfsc_survey <- nwfscSurvey::pull_bio(survey = "NWFSC.Combo", common_name = NWFS
 # tidy names, select columns of interest
 nwfsc_bio <- janitor::clean_names(nwfsc_survey) %>%
   dplyr::mutate(region = "NWFSC", survey = "NWFSC") %>% # add science center
-  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years, otosag_id) #otosag_id needed for age structures calculation in survey_table function
-
+  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years, otosag_id) %>%  #otosag_id needed for age structures calculation in survey_table function
+  clean_fishnames()
 ###### AFSC data ######
 
 afsc_haul  <- readRDS("data-raw/afsc-haul.rds")
@@ -27,7 +27,8 @@ afsc_bio <- dplyr::inner_join(afsc_specimen, afsc_years, by = "event_id") %>% # 
   dplyr::mutate("length_cm" = length_mm/10, "weight_kg" = weight_g/1000, sex = convert_sex(sex)) %>% #convert mm -> cm and g -> kg, convert numeric sex
   dplyr::rename(age_years = age) %>% 
   dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years) %>% 
-  group_survey()
+  group_survey() %>% 
+  clean_fishnames()
   
 ###### PBS data ######
 
@@ -42,7 +43,8 @@ pbs_bio <- do.call(rbind, lapply(pbs_spp_list$common_name,function(spec){
   dplyr::mutate("weight_kg" = weight/1000, sex = convert_sex(sex)) %>% #g -> kg, convert sex
   dplyr::rename(length_cm = length, common_name = species_common_name, scientific_name = species_science_name, age_years = age, survey = survey_abbrev) %>% 
   dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years) %>% 
-  group_survey()
+  group_survey()%>% 
+  clean_fishnames()
 
 #alternative: using tidy_lengths_raw() and tidy_ages_raw() from gfplot package
 
