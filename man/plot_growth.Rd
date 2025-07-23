@@ -11,7 +11,7 @@ plot_growth(data, predictions, region, species)
 
 \item{predictions}{von Bertalanffy prediction data in /data folder}
 
-\item{region}{region AFSC, NWFSC, or PBS}
+\item{region}{region AFSC, NWFSC, and/or PBS}
 
 \item{species}{species common name}
 }
