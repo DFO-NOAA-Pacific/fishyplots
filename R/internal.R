@@ -41,7 +41,7 @@ group_survey <- function(data){
       grepl("NWFSC", data$survey, ignore.case = TRUE) ~ "NWFSC",
       grepl("SYN", data$survey, ignore.case = TRUE) ~ "PBS",
       grepl("Gulf", data$survey, ignore.case = TRUE) ~ "AK GULF",
-      TRUE ~ "BSAI"
+      TRUE ~ "AK BSAI"
     )
     return(data)
   }
