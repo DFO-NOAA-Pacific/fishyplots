@@ -28,4 +28,21 @@ convert_sex <- function(x) {
   )
 }
 
-
+#' group surveys to differentiate AK Gulf and AK BSAI surveys for later data visualization. 
+#'
+#' groups all PBS surveys under "PBS". groups Gulf of Alaska into "AK GULF". groups Bering Sea and Aleutian Island surveys into "AK BSAI"
+#' Internal function.
+#'
+#' @param x vector of haul codes or event ids
+#' @return year of haul or event
+#' @noRd
+group_survey <- function(data){
+    data$survey <- dplyr::case_when(
+      grepl("NWFSC", data$survey, ignore.case = TRUE) ~ "NWFSC",
+      grepl("SYN", data$survey, ignore.case = TRUE) ~ "PBS",
+      grepl("Gulf", data$survey, ignore.case = TRUE) ~ "AK GULF",
+      TRUE ~ "BSAI"
+    )
+    return(data)
+  }
+  
