@@ -26,7 +26,8 @@ afsc_bio <- dplyr::inner_join(afsc_specimen, afsc_years, by = "event_id") %>% # 
   dplyr::mutate(region = "AFSC") %>%  # add science center name
   dplyr::mutate("length_cm" = length_mm/10, "weight_kg" = weight_g/1000, sex = convert_sex(sex)) %>% #convert mm -> cm and g -> kg, convert numeric sex
   dplyr::rename(age_years = age) %>% 
-  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years)
+  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years) %>% 
+  group_survey()
   
 ###### PBS data ######
 
@@ -40,7 +41,8 @@ pbs_bio <- do.call(rbind, lapply(pbs_spp_list$common_name,function(spec){
   dplyr::filter(usability_code == c(0, 1, 2, 6)) %>% #filter for usability codes
   dplyr::mutate("weight_kg" = weight/1000, sex = convert_sex(sex)) %>% #g -> kg, convert sex
   dplyr::rename(length_cm = length, common_name = species_common_name, scientific_name = species_science_name, age_years = age, survey = survey_abbrev) %>% 
-  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years)
+  dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years) %>% 
+  group_survey()
 
 #alternative: using tidy_lengths_raw() and tidy_ages_raw() from gfplot package
 
