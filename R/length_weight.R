@@ -1,6 +1,6 @@
 #' Main function to plot length-weight relationships by sex
 #'
-#' @param data region bio data to be plotted. Preload from data file.
+#' @param data region bio data to be plotted. Preload from data file, see examples.
 #' @param species common or scientific name of target species
 #' @param subset default TRUE for a faster plotting subset of n = 2000. Set FALSE for all available data.
 #' @return a plot of sexed data with log regression slope and intercept
@@ -71,6 +71,16 @@ length_weight <- function(data, species, subset = TRUE) { # subset default
 predict_all <- predict_all%>% 
   rename(survey = fit.survey)
   
+### annotations 
+annotations <- lw_predictions %>%
+  filter(common == unique(spec.data$common)) %>%
+  filter(sex %in% c("M", "F")) %>%
+  select(survey, sex, a, b) %>%
+  mutate(
+    label = paste0(sex, "\na = ", format(a, digits = 3, scientific = TRUE),
+                   "\nb = ", round(b, 2)))
+
+
   
   plot <- ggplot(spec.data, aes(x = length_cm, y = weight_kg)) +
     theme_classic() + #removes grid
@@ -93,28 +103,22 @@ predict_all <- predict_all%>%
       values = sex.color,
       labels = c("M" = "Male", "F" = "Female")) +
     
-    facet_wrap( ~ survey) +
+    facet_wrap( ~ survey, nrow = 1) +
     #LEGEND AND LABELS
     #add legend for lines
     theme(legend.title = element_blank(), legend.position.inside  = c(0.9, 0.1), legend.text=element_text(size=10), legend.key.width = unit(1, 'cm')) + # legend position
     xlab("Length (cm)") +# for the x axis label
     ylab("Weight (kg)")+
-    ggtitle(unique(spec.data$common_name)) +
-    guides(color = guide_legend(override.aes = list(alpha = 0.5))) # increase alpha of legend
-    
-    # # ANNOTATIONS
-    # # Add text annotations for slope/intercept
-    # annotate("text", x = -Inf, y = Inf, 
-    #          label = paste0("Female", 
-    #                         "\n a = ", format(F_pred$a, digits = 3, scientific = TRUE),
-    #                         "\n   b = ", round(F_pred$b,2)), 
-    #          hjust = -0.5, vjust = 2, size = 4) +
-    # annotate("text", x = -Inf, y = Inf, 
-    #          label = paste0("  Male", 
-    #                         "\n a = ", format(M_pred$a, digits = 3, scientific = TRUE),
-    #                         "\n   b = ", round(M_pred$b,2)), 
-    #          hjust = -0.5, vjust = 3.5, size = 4)+
+    #ggtitle(unique(spec.data$common_name)) +
+    guides(color = guide_legend(override.aes = list(alpha = 0.5)))+ # increase alpha of legend
+    geom_text(
+      data = annotations,
+      aes(x = -Inf, y = Inf, label = label,
+          vjust = ifelse(sex == "F", 1.2, 2.5)),  # mapped inside aes()
+      hjust = -0.2,
+      size = 3.5,
+      inherit.aes = FALSE
+    )
   return(plot)
  
   }
-
