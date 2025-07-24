@@ -43,7 +43,7 @@ survey_table <- function(data, species, form = c(1,2)) {
       summarize(n_samples=sum(length.count))%>%
       mutate(sample_type = "Length") %>% 
       rename(yr = year) %>% 
-      na.omit()}
+      na.omit}
   else{
 length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year) %>%
   na.omit() %>% #omit rows with no data from being counted

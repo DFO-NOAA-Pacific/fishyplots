@@ -7,13 +7,15 @@ library(minpack.lm)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)
-bio_data <- list(pbs = pbs_bio, afsc = afsc_bio, nwfsc = nwfsc_bio)
+akbsai <- afsc_bio |> filter(survey == "AK BSAI")
+akgulf <- afsc_bio |> filter(survey == "AK GULF")
+bio_data <- list(pbs = pbs_bio, akbsai = akbsai, akgulf = akgulf, nwfsc = nwfsc_bio)
 
 # Function
 vb_predict <- function(data) {
   #browser()
   species <- unique(data$common_name)[1]
-  region <- unique(data$science_center)[1]
+  survey <- unique(data$survey)[1]
   # Clean data
   data_clean <- data |>
     filter(!is.na(length_cm)) |>
@@ -38,12 +40,12 @@ vb_predict <- function(data) {
   
   # Make fixed starts if needed
   if (inherits(starts_male, "try-error")) {
-    message(paste0("Male ", species, " in ", region, " starts fail, using fallback values."))
+    message(paste0("Male ", species, " in ", survey, " starts fail, using fallback values."))
     starts_male <- c(Linf = unname(quantile(data_male$length_cm, 0.99, na.rm = TRUE)), K = 0.2, t0 = -1)
   }
   
   if (inherits(starts_female, "try-error")) {
-    message(paste0("Female ", species, " in ", region, " starts fail, using fallback values."))
+    message(paste0("Female ", species, " in ", survey, " starts fail, using fallback values."))
     starts_female <- c(Linf = unname(quantile(data_female$length_cm, 0.99, na.rm = TRUE)), K = 0.2, t0 = -1)
   }
   
@@ -53,12 +55,12 @@ vb_predict <- function(data) {
   t0_m <- if (!inherits(starts_male, "try-error") && "t0" %in% names(starts_male)) starts_male["t0"] else NA
   t0_f <- if (!inherits(starts_female, "try-error") && "t0" %in% names(starts_female)) starts_female["t0"] else NA
   if (!is.na(t0_m) && t0_m < -6) {
-    message(paste0("Male ", species, " in ", region, " t0 of ", t0_m, " too low. Trying with fixed t0."))
+    message(paste0("Male ", species, " in ", survey, " t0 of ", t0_m, " too low. Trying with fixed t0."))
     starts_male["t0"] <- -3
     #return(data.frame())
   }
   if (!is.na(t0_f) && t0_f < -6) {
-    message(paste0("Female ", species, " in ", region, " t0 of ", t0_f, " too low. Trying with fixed t0."))
+    message(paste0("Female ", species, " in ", survey, " t0 of ", t0_f, " too low. Trying with fixed t0."))
     starts_female["t0"] <- -3
     #return(data.frame())
   }
@@ -95,7 +97,7 @@ vb_predict <- function(data) {
       t0 = xy[3]) 
   }
   else {
-    message(paste0("Male ", species, " ", region, " model did not converge."))
+    message(paste0("Male ", species, " ", survey, " model did not converge."))
     data.frame()
   }
   
@@ -109,7 +111,7 @@ vb_predict <- function(data) {
       t0 = xx[3])
   }
   else {
-    message(paste0("Female ", species, " ", region, " model did not converge."))
+    message(paste0("Female ", species, " ", survey, " model did not converge."))
     data.frame()
   }
   
@@ -118,16 +120,16 @@ vb_predict <- function(data) {
   
   # Add metadata to the data frame
   growth_preds <- growth_preds |>
-    mutate(center = unique(data$science_center)[1]) |>
-    mutate(common = unique(data$common_name)[1]) |>
-    mutate(scientific = unique(data$scientific_name)[1])
+    mutate(survey = unique(data$survey)[1]) |>
+    mutate(common_name = unique(data$common_name)[1]) |>
+    mutate(scientific_name = unique(data$scientific_name)[1])
   
   return(growth_preds)
 }
 
 
 # Create empty prediction data frame
-vb_predictions <- data.frame()
+predictions <- data.frame()
 
 # Loop through each region, then each species to apply the prediction function
 for (center in names(bio_data)) {
@@ -141,7 +143,7 @@ for (center in names(bio_data)) {
     outputs <- vb_predict(sp_data)
     
     #outputs <- full_join(lw_predict(sp_data), vb_predict(sp_data), by = c("center","common", "scientific", "sex"))
-    vb_predictions <- bind_rows(vb_predictions, outputs)
+    predictions <- bind_rows(predictions, outputs)
   }
 } 
 

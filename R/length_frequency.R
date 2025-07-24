@@ -1,8 +1,10 @@
 #' Function to plot length frequency of fish species
 #'
 #' @param data biological fisheries data containing length information
-#' @param region choose a science center (AFSC, NWFSC, PBS)
+#' @param subregions choose NWFSC, PBS, AK Gulf, and/or AK BSAI
+#' @param common species common name
 #' @param time_series TRUE or FALSE 
+#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
 #' @return a ggplot object
 #' @importFrom dplyr filter group_by summarize
 #' @importFrom tidyr complete full_seq
@@ -16,20 +18,29 @@
 #' data(nwfsc_bio)
 #' data(afsc_bio)
 #' data(pbs_bio)
+#' nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
 #' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
-#' data <- all_data |> filter(common_name == "arrowtooth flounder")
 #' 
-#' length_frequency(data, region = c("AFSC", "PBS", "NWFSC"))
+#' length_frequency(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 #' 
 #' }
 
-length_frequency <- function(data, region, time_series = TRUE) {
+length_frequency <- function(data, subregions, common, time_series = TRUE, facet_all = TRUE) {
+  # Clean data
+  data_clean <- data |>
+    filter(!is.na(length_cm)) |>
+    filter(survey %in% subregions) |>
+    filter(common_name == common)
+  
+  # Exit if no data
+  if (nrow(data_clean) == 0) {
+    #message(paste0("No age data available for ", common, " in ", paste(subregions, collapse = ","), "."))
+    return(ggplot() + theme_void() + ggtitle("No length frequency data available."))
+  }
+  
   if (time_series == FALSE) {
-    data_clean <- data |>
-      filter(!is.na(length_cm)) |>
-      filter(science_center %in% region) |>
+    data_clean <- data_clean |>
       complete(year = full_seq(year, 1))
-    
     graph <- data_clean |>
       ggplot(aes(x = length_cm)) +
       geom_histogram(binwidth = 4) +
@@ -40,15 +51,12 @@ length_frequency <- function(data, region, time_series = TRUE) {
     return(graph)
   }
   if (time_series == TRUE) {
-    data_clean <- data |>
-      filter(!is.na(length_cm)) |>
-      filter(science_center %in% region)
     
-    data_clean$science_center <- factor(data_clean$science_center, levels = c("AFSC", "PBS", "NWFSC"),
-                                        labels = c("Alaska", "Canada", "U.S. West Coast"))
+    data_clean$survey <- factor(data_clean$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+                                        labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
     
     summary_stats <- data_clean |>
-      group_by(year, science_center) |>
+      group_by(year, survey) |>
       summarize(median = quantile(length_cm, 0.5),
                 mean = mean(length_cm),
                 p25 = quantile(length_cm, 0.25),
@@ -63,13 +71,19 @@ length_frequency <- function(data, region, time_series = TRUE) {
       geom_point(shape = 21, fill = "grey", color = "black", size = 1.5, stroke = 1.2) +
       labs(x = "", y = "Mean length (cm)", title = "",
            caption = "Error bars show 50% and 95% quantiles.") +
-      theme(panel.grid = element_blank())
+      theme_bw() +
+      theme(panel.grid = element_blank()) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
     
-    graph <- suppressWarnings(graph + theme_sleek())
+    #graph <- suppressWarnings(graph + theme_sleek())
     
-    if (length(region) > 1) {
-      graph <- graph +
-        facet_wrap(~science_center)
+    if (length(subregions) > 1) {
+      if (facet_all == TRUE) {
+        graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
+      } else if (facet_all == FALSE) {
+        graph <- graph + facet_wrap(~survey, ncol = 4)
+      }
+      
     }
     
     return(graph)

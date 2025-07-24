@@ -15,6 +15,7 @@
 #' fishmap(predictions_afsc, "arrowtooth flounder")
 #' }
 fishmap <- function(data, common_name) {
+  # Clean data
   data <- data |> 
     filter(species == common_name)
   if (nrow(data) == 0) {
@@ -22,26 +23,24 @@ fishmap <- function(data, common_name) {
   }
   region <- unique(data$region)[1]
   
+  # Color scale transformation
   fourth_root <- trans_new(
     name = "fourth_root",
     transform = function(x) x^(1/4),
     inverse = function(x) x^4
   )
   
+  # Base map construction
   if (region == "nwfsc"){
     # US coast base map
     crs = 3157
-    # usa <- ne_countries(scale = "medium", returnclass = "sf", country = "united states of america")
-    # usa <- suppressWarnings(suppressMessages(
-    #   st_crop(usa, c(xmin = -128, xmax = -116, ymin = 32, ymax = 48))))
-    
     states <- ne_states(country = "united states of america", returnclass = "sf")
     west_coast <- states |> filter(name %in% c("California", "Oregon", "Washington")) |>
       select(name, geometry)
     west_coast <- st_crop(west_coast, c(xmin = -117, xmax = -130, ymin = 30, ymax = 50))
     
     canada <- ne_countries(scale = "medium", returnclass = "sf", country = "canada") |> select(name = admin, geometry)
-    canada <- st_crop(canada, c(xmin = -128, xmax = -117, ymin = 45, ymax = 51))
+    canada <- st_crop(canada, c(xmin = -128, xmax = -117, ymin = 45, ymax = 50))
     
     combined <- rbind(west_coast, canada)
     proj <- st_transform(combined, crs = crs)
@@ -70,6 +69,11 @@ fishmap <- function(data, common_name) {
     year <- "2022/2023"
   }
   
+  # Removing outliers
+  .q <- quantile(data$prediction, probs = 0.998, na.rm = TRUE)[[1]]
+  data$prediction[data$prediction > .q] <- .q
+  
+  # Mapping
   map <- ggplot() +
     stat_summary_hex(data = data, aes(x = X*1000, y = Y*1000, z = prediction), bins = 50) +
     scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
