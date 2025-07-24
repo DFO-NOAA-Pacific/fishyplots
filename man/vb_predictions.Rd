@@ -13,9 +13,9 @@ A data frame with 3061 rows and 9 variables:
 \item{linf}{Asymptotic length of growth curve}
 \item{k}{growth coefficient, rate of growth}
 \item{t0}{exponent, slope of length-weight regression }
-\item{center}{Region (NWFSC, AFSC, PBS)}
-\item{common}{Species common name}
-\item{scientific}{Species scientific name}
+\item{survey}{subregion (NWFSC, PBS, AK GULF, AK BSAI)}
+\item{common_name}{Species common name}
+\item{scientific_name}{Species scientific name}
 }
 }
 \usage{

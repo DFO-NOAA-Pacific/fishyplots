@@ -4,12 +4,12 @@
 \alias{plot_stan_dbi}
 \title{Function and formatted data to plot standardized design based index}
 \usage{
-plot_stan_dbi(species, regions)
+plot_stan_dbi(species, surveys)
 }
 \arguments{
-\item{species}{common name of species of interest. See unique(data$common_name) for options per dataset.}
+\item{species}{common or scientific name of species of interest.}
 
-\item{regions}{center or subregions to be plotted. Takes a character list of region names OR a single center name ( "NWFSC", "AFSC", or "PBS") . See unique(data$region) for subregion options per center dataset.}
+\item{surveys}{region or surveys to be plotted. Takes a character list of survey names OR a single region ( "NWFSC", "AFSC", or "PBS").}
 }
 \value{
 a ggplot object, plot of standardized design based indicies of 1+ surveys.

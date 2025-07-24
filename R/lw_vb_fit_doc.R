@@ -4,7 +4,7 @@
 #'
 #' @format A data frame with 130 rows and 9 variables:
 #' \describe{
-#'   \item{center}{science center of data collection}
+#'   \item{region}{science center of data collection}
 #'   \item{common}{common species name}
 #'   \item{scientific}{scientific species name}
 #'   \item{sex}{sex, M or F}
@@ -29,9 +29,9 @@
 #'   \item{linf}{Asymptotic length of growth curve}
 #'   \item{k}{growth coefficient, rate of growth}
 #'   \item{t0}{exponent, slope of length-weight regression }
-#'   \item{center}{Region (NWFSC, AFSC, PBS)}
-#'   \item{common}{Species common name}
-#'   \item{scientific}{Species scientific name}
+#'   \item{survey}{subregion (NWFSC, PBS, AK GULF, AK BSAI)}
+#'   \item{common_name}{Species common name}
+#'   \item{scientific_name}{Species scientific name}
 #' }
 #'
 "vb_predictions"

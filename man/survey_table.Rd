@@ -21,8 +21,14 @@ Main function to display survey specimen counts
 }
 \examples{
 \dontrun{
-survey_table(afsc_bio, "Atka mackerel", form = 1)
-survey_table(nwfsc_bio, "Sebastes zacentrus", form = 2)
+data(pbs_bio)
+data(afsc_bio)
+data(nwfsc_bio)
+data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
+
+
+survey_table(afsc_bio, "atka mackerel", form = 1)
+survey_table(nwfsc_bio, "sebastes zacentrus", form = 2)
 survey_table(pbs_bio,"arrowtooth flounder", form = 2)
 }
 }
