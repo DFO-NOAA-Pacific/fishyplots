@@ -5,10 +5,7 @@
 #' @format A data frame with 164 rows and 7 variables:
 #' \describe{
 #'   \item{region}{science center of data collection}
-<<<<<<< HEAD
 #'   \item{survey}{survey within region}
-=======
->>>>>>> 65000b29d4c009acb2fac4d80c1cdd30cc405caf
 #'   \item{common}{common species name}
 #'   \item{scientific}{scientific species name}
 #'   \item{sex}{sex, M or F}
