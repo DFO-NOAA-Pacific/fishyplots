@@ -4,8 +4,8 @@
 #'
 #' @format A data frame with 983297 rows and 10 variables:
 #' \describe{
-#'   \item{science_center}{science center of data collection}
 #'   \item{region}{region of data collection}
+#'   \item{survey}{subregion}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
@@ -24,8 +24,8 @@
 #'
 #' @format A data frame with 467530 rows and 9 variables:
 #' \describe{
-#'   \item{science_center}{science center of data collection}
 #'   \item{region}{region of data collection}
+#'   \item{survey}{subregion}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
@@ -43,8 +43,8 @@
 #'
 #' @format A data frame with 226600 rows and 9 variables:
 #' \describe{
-#'   \item{science_center}{science center of data collection}
 #'   \item{region}{region of data collection}
+#'   \item{survey}{subregion}
 #'   \item{year}{year specimen was collected}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
