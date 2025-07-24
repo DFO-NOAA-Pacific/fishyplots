@@ -12,7 +12,14 @@
 #'
 #' @examples
 #' \dontrun{
-#' length_weight(afsc_bio, "atka mackerel", color = T)
+#' data("nwfsc_bio")
+#' data("pbs_bio")
+#' data("afsc_bio")
+#' akgulf_bio <- afsc_bio %>% filter(survey == "AK GULF")
+#' akbsai_bio <- afsc_bio %>% filter(survey == "AK BSAI")
+#' all.data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+#' 
+#' length_weight(akgulf_bio, "atka mackerel", color = T)
 #' }
 
 length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color default, subset default
@@ -26,7 +33,7 @@ length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color d
   }
   
   #load fit dataset
-  data("lw_vb_predictions")
+  data("lw_predictions")
   
   #subset data to species
   if (any(data$common_name == species | data$scientific_name == species)) {
@@ -50,10 +57,10 @@ length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color d
   }
   
   # get regression fit for m and f of species in data
-  F_pred <- lw_vb_predictions %>% 
-    filter(region == unique(spec.data$region), species == common | species == scientific, sex == "F")
-  M_pred <- lw_vb_predictions %>% 
-    filter(region == unique(spec.data$region), species == common | species == scientific, sex == "M")
+  F_pred <- lw_predictions %>% 
+    filter(survey == unique(spec.data$survey), species == common | species == scientific, sex == "F")
+  M_pred <- lw_predictions %>% 
+    filter(survey == unique(spec.data$survey), species == common | species == scientific, sex == "M")
   
   
   pred_df_F <- data.frame(
@@ -112,8 +119,8 @@ length_weight <- function(data, species, color = TRUE, subset = TRUE) { #color d
              label = paste0("  Male", 
                             "\n a = ", format(M_pred$a, digits = 3, scientific = TRUE),
                             "\n   b = ", round(M_pred$b,2)), 
-             hjust = -0.5, vjust = 3.5, size = 4)
-  
+             hjust = -0.5, vjust = 3.5, size = 4)+
+  facet_wrap(~ survey)
   return(plot)
  
   }
