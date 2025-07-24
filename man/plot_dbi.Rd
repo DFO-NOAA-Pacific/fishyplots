@@ -4,12 +4,12 @@
 \alias{plot_dbi}
 \title{Function and formatted data to plot design based index}
 \usage{
-plot_dbi(species, reg)
+plot_dbi(species, subsurvey)
 }
 \arguments{
-\item{species}{common name of species of interest. See examples for options per dataset.}
+\item{species}{common or scientific name of species of interest. See examples for options per dataset.}
 
-\item{reg}{region, required to specify region to be plotted. See examples for options per dataset.}
+\item{subsurvey}{subsurvey, required to specify subservey and region to be plotted. See examples for options per dataset.}
 }
 \value{
 a ggplot object, plot of design based indicies
@@ -19,21 +19,21 @@ Function and formatted data to plot design based index
 }
 \examples{
 \dontrun{
-# To see options for species and region in science centers: "NWFSC", "AFSC", "PBS"
+# To see options for species and subsurveys in regions: "NWFSC", "AFSC", "PBS"
 data(all.dbi)
 
 all.dbi \%>\%
-filter(science_center == "AFSC") \%>\%
+filter(region == "AFSC") \%>\%
  distinct(common_name)
 
 all.dbi \%>\%
-filter(science_center == "AFSC") \%>\%
-distinct(region)
+filter(region == "AFSC") \%>\%
+distinct(survey) # do not use "U.S. Eastern Bering Sea Standard Region" ; use "U.S. Eastern Bering Sea Standard Plus NW Region"
 
 
 # usage examples
 plot_dbi("sablefish", "U.S. West Coast")
-plot_dbi("Dover sole", "U.S. Gulf of Alaska")
+plot_dbi("dover sole", "U.S. Gulf of Alaska")
 plot_dbi("arrowtooth flounder", "SYN QCS")
 }
 }

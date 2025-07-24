@@ -4,18 +4,27 @@
 \alias{age_frequency}
 \title{Plots distribution of ages across survey years.}
 \usage{
-age_frequency(data, region, species, sex = FALSE, cutoff = 0.95)
+age_frequency(
+  data,
+  subregions,
+  common,
+  sex = FALSE,
+  cutoff = 0.95,
+  facet_all = TRUE
+)
 }
 \arguments{
 \item{data}{biological fisheries data containing age and sex information}
 
-\item{region}{choose science center NWFSC, AFSC, PBS}
+\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
 
-\item{species}{species common name}
+\item{common}{species common name}
 
 \item{sex}{TRUE or FALSE for if you want to differentiate by sex}
 
 \item{cutoff}{define a cutoff for grouping older ages together}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a ggplot object
@@ -31,6 +40,6 @@ data("pbs_bio")
 nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
 all_data <- rbind(afsc_bio, nwfsc_bio, pbs_bio)
 
-age_frequency(all_data, region = c("PBS", "NWFSC"), species = "yellowtail rockfish")
+age_frequency(all_data, c("PBS", "NWFSC", "AK BSAI", "AK GULF"), "yellowtail rockfish")
 }
 }

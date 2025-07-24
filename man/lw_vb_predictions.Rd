@@ -7,7 +7,7 @@
 \format{
 A data frame with 130 rows and 9 variables:
 \describe{
-\item{center}{science center of data collection}
+\item{region}{science center of data collection}
 \item{common}{common species name}
 \item{scientific}{scientific species name}
 \item{sex}{sex, M or F}

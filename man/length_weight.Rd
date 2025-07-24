@@ -7,7 +7,7 @@
 length_weight(data, species, color = TRUE, subset = TRUE)
 }
 \arguments{
-\item{data}{science center bio data to be plotted. Preload from data file.}
+\item{data}{region bio data to be plotted. Preload from data file.}
 
 \item{species}{common or scientific name of target species}
 
@@ -23,6 +23,6 @@ Main function to plot length-weight relationships by sex
 }
 \examples{
 \dontrun{
-length_weight(afsc_bio, "Atka mackerel", color = T)
+length_weight(afsc_bio, "atka mackerel", color = T)
 }
 }
