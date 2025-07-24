@@ -11,7 +11,7 @@
 #' @importFrom stringr str_extract
 #' @importFrom tidyr complete full_seq
 #' @importFrom stats quantile
-#' @importFrom ggplot2 ggplot aes theme_bw labs scale_x_continuous theme scale_fill_manual
+#' @importFrom ggplot2 ggplot aes theme_bw labs scale_x_continuous theme scale_fill_manual theme_void ggtitle
 #' @importFrom ggridges geom_density_ridges 
 #' @export
 #'
@@ -32,6 +32,12 @@ age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, 
     filter(sex != "U") |>
     filter(survey %in% subregions) |>
     filter(common_name == common) 
+  
+  # Exit if no data
+  if (nrow(data_clean) == 0) {
+    #message(paste0("No age data available for ", common, " in ", paste(subregions, collapse = ","), "."))
+    return(ggplot() + theme_void() + ggtitle("No age frequency data available."))
+  }
   
   # Define a cutoff to start grouping bins together
   cutoff <- as.numeric(quantile(data_clean$age_years, cutoff, na.rm = TRUE))

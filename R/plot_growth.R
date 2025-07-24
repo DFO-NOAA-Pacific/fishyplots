@@ -41,9 +41,10 @@ plot_growth <- function(data, predictions, subregions, common, facet_all = TRUE)
   predictions$survey <- factor(predictions$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                                labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
+  # Exit if no data
   if (nrow(predictions) == 0) {
-    message("No age data available.")
-    return(NULL)
+    #message(paste0("No age data available for ", common, " in ", paste(subregions, collapse = ","), "."))
+    return(ggplot() + theme_void() + ggtitle("No growth data available."))
   }
   
   linf_m <- (predictions |> filter(sex == "M") |> pull(linf) |> unique())[1]

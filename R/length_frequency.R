@@ -32,6 +32,12 @@ length_frequency <- function(data, subregions, common, time_series = TRUE, facet
     filter(survey %in% subregions) |>
     filter(common_name == common)
   
+  # Exit if no data
+  if (nrow(data_clean) == 0) {
+    #message(paste0("No age data available for ", common, " in ", paste(subregions, collapse = ","), "."))
+    return(ggplot() + theme_void() + ggtitle("No length frequency data available."))
+  }
+  
   if (time_series == FALSE) {
     data_clean <- data_clean |>
       complete(year = full_seq(year, 1))
