@@ -77,7 +77,7 @@ age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey =
   summarize(n_samples=n())%>%
   mutate(sample_type = "Age")
 if(nrow(age_count) == 0) {
-  age_count <- data.frame(n_samples = 0, yr = weight_count$yr, sample_type = "Age")}
+  age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Age")}
 
 # unread age structures: nwfsc has otolith column for this, otherwise use age=NA as unread
 agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>% 
@@ -93,17 +93,23 @@ nwfsc_count <- spec.data %>%
   mutate(sample_type = "Age Structures (otosag_id)")
 
 # Count for other regions using age_years
-other_count <- data %>%
-  filter(region != "NWFSC", !is.na(age_years)) %>%
-  group_by(survey, yr = year) %>%
-  summarize(n_samples = n(), .groups = "drop") %>%
-  mutate(sample_type = "Age Structures (age_years)")
+# other_count <- spec.data %>%
+#   filter(region != "NWFSC", !is.na(age_years)) %>%
+#   group_by(survey, yr = year) %>%
+#   summarize(n_samples = n(), .groups = "drop") %>%
+#   mutate(sample_type = "Age Structures (age_years)")
+other_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>% 
+  group_by(yr, survey) %>%
+  summarize(n_samples=n())%>%
+  mutate(sample_type = "Age Structures") %>% 
+  filter(survey != "NWFSC")
+
 
 # Combine both into agestr_count
 agestr_count <- bind_rows(nwfsc_count, other_count)
 }
 
-unread_count <- left_join(agestr_count, age_count, by = c("yr","survey")) %>%
+unread_count <- left_join(agestr_count, age_count, by = c("yr", "survey")) %>%
   mutate(n_ages = ifelse(is.na(n_samples.y), 0, n_samples.y), #change NA to 0 for calculation ease
          n_unread = n_samples.x - n_ages, #unread age strugtures = n age str - n ages read
          n_samples = ifelse(n_unread == 0, NA, n_unread)) %>% # make 0 into NA, use common name
@@ -120,7 +126,6 @@ bio_data <-length_count %>%
   arrange(yr) %>%
   mutate(sample_type=factor(sample_type, levels=c("Unread Age Structures", "Age", "Weight", "Length"))) %>% #set order for plotting later
   mutate(common = unique(spec.data$common_name))
-
 
 
 # output table format if argument form = 1
@@ -169,7 +174,9 @@ plot <- ggplot(bio_data, aes(yr, sample_type)) +
   ggplot2::ggtitle(paste("Survey Specimen Counts -", unique(spec.data$common_name))) +
   coord_cartesian(expand = FALSE) +
   facet_wrap(~ survey, ncol = 1)
+
 return(plot)
 }
 }
+
 
