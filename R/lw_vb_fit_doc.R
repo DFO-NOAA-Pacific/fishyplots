@@ -19,7 +19,7 @@
 #'
 #' Contains von Bertalanffy growth curve estimates for each fish age bracket 
 #'
-#' @format A data frame with 3061 rows and 9 variables:
+#' @format A data frame with 3854 rows and 9 variables:
 #' \describe{
 #'   \item{age_years}{Fish age in years}
 #'   \item{fit}{Growth estimate (length cm)}
