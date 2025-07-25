@@ -27,7 +27,8 @@ Imports:
     gfplot,
     stringr,
     here,
-    ggsidekick
+    ggsidekick,
+    patchwork
 Suggests:
     devtools,
     usethis,

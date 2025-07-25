@@ -4,16 +4,9 @@ library(dplyr)
 
 # Species list
 spp_list <- read.csv("data-raw/afsc_joined.csv")
-spp_list$common_name[spp_list$common_name == "pacific spiny dogfish"] <- "spiny dogfish"
-spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "Pacific hake"
-spp_list$common_name[spp_list$common_name == "pacific cod"] <- "Pacific cod"
-spp_list$common_name[spp_list$common_name == "pacific ocean perch"] <- "Pacific ocean perch"
-spp_list$common_name[spp_list$common_name == "pacific halibut"] <- "Pacific halibut"
-spp_list$common_name[spp_list$common_name == "pacific sanddab"] <- "Pacific sanddab"
-spp_list$common_name[spp_list$common_name == "dover sole"] <- "Dover sole"
-spp_list$common_name[spp_list$common_name == "english sole"] <- "English sole"
-spp_list$common_name[spp_list$common_name == "Rex sole"] <- "rex sole"
-spp_list$common_name[spp_list$common_name == "rock sole"] <- "northern rock sole"
+spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "pacific hake"
+spp_list <- spp_list |> filter(common_name != "rock sole")
+spp_list <- clean_fishnames(spp_list)
 
 # Get catch data
 temp_file <- tempfile(fileext = ".rds")
@@ -44,6 +37,16 @@ catch_test <- dplyr::left_join(catch_data, spp_dictionary, by = "itis") |>
   select(-scientific_name.y) |>
   rename(scientific_name = scientific_name.x)
 catch_data <- catch_test
+
+# Clean up names
+test <- unique((catch_data[grepl("splitnose", catch_data$common_name), ])$common_name)
+catch_data$common_name[catch_data$common_name == "spiny dogfish"] <- "pacific spiny dogfish"
+catch_data <- clean_fishnames(catch_data)
+
+# Check missing species from catch_data (hardnose skates)
+x <- spp_list |> pull(common_name)
+y <- catch_data |> pull(common_name)
+missing_species <- setdiff(x,y)
 
 no_data_species <- data.frame(i = integer(), species = character())
 
@@ -152,7 +155,7 @@ for(i in 1:nrow(spp_list)) {
   pred <- dplyr::select(pred, lon, lat, X, Y, prediction)
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
-  pred$region <- "afsc"
+  pred$region <- "AFSC"
   pred$crs <- 32602
   
   if(i == 1) {
@@ -172,7 +175,7 @@ no_data_species
 pred_all |> filter(sanity == TRUE) |> distinct(species)
 pred_all |> filter(sanity == FALSE) |> distinct(species)
 # Test map
-fishmap(pred_all, common_name = "Alaska plaice")
+#fishmap(pred_all, common_name = "alaska plaice")
 
 predictions_afsc <- pred_all
-usethis::use_data(predictions_afsc)
+usethis::use_data(predictions_afsc, overwrite = TRUE)
