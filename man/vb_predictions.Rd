@@ -5,7 +5,7 @@
 \alias{vb_predictions}
 \title{Alternate data storage for von Bertalanffy predictions}
 \format{
-A data frame with 3061 rows and 9 variables:
+A data frame with 3854 rows and 9 variables:
 \describe{
 \item{age_years}{Fish age in years}
 \item{fit}{Growth estimate (length cm)}

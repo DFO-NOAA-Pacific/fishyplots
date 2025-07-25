@@ -13,17 +13,17 @@ bio_data <- list(pbs = pbs_bio, akbsai = akbsai, akgulf = akgulf, nwfsc = nwfsc_
 
 # Function
 vb_predict <- function(data) {
-  #browser()
   species <- unique(data$common_name)[1]
   survey <- unique(data$survey)[1]
+  #browser()
   # Clean data
   data_clean <- data |>
     filter(!is.na(length_cm)) |>
     filter(!is.na(age_years)) |>
     filter(sex == "F" | sex == "M")
   
-  if (length(unique(data_clean$age_years)) < 20) {
-    #message(paste0(species, " -- not enough age data."))
+  if (length(data_clean$age_years) < 20) {
+    message(paste0(species, " in ", survey, " -- not enough age data."))
     return(NULL)
   } 
   
@@ -146,7 +146,7 @@ for (center in names(bio_data)) {
     predictions <- bind_rows(predictions, outputs)
   }
 } 
-
+vb_predictions <- predictions
 # Write dataframe
 usethis::use_data(vb_predictions, overwrite = TRUE)
 
