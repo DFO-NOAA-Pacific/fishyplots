@@ -153,4 +153,4 @@ usethis::use_data(vb_predictions, overwrite = TRUE)
 
 #nwfsc_bio1 <- nwfsc_bio |> select(-otosag_id)
 #bio_data <- rbind(nwfsc_bio1, afsc_bio, pbs_bio)
-#plot_growth(bio_data, lw_vb_predictions, "NWFSC", "walleye pollock")
+#plot_growth(bio_data, vb_predictions, "NWFSC", "walleye pollock")
