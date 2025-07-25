@@ -55,3 +55,19 @@
 #' }
 #'
 "pbs_bio"
+
+#' ak_survey_lengths: length count data from AFSC surveys
+#'
+#' Contains biological length counts from AFSC surveys for available top species defined in data-raw/afsc_top.rds, separated by survey group.
+#' Compiled from large external dataset. Filtering can be found in data-raw/filter_ak_lengths.R
+#'
+#' @format A data frame with 997 rows and 5 variables:
+#' \describe{
+#'   \item{year}{year of data collection}
+#'   \item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska) or AK BSAI (Bering Sea and Aleutian Islands)}
+#'   \item{common_name}{common name of specien}
+#'   \item{scientific_name}{scientific name of specimen}
+#'   \item{length.count}{number of lengths taken for specimen in survey and year}
+#' }
+#'
+"ak_survey_lengths"
