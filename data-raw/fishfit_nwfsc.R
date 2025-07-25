@@ -1,17 +1,12 @@
 library(sdmTMB)
 library(surveyjoin)
 library(dplyr)
+library(stringr)
 
 # Read in species to run models for
 spp_list <- read.csv("data-raw/nwfsc_joined.csv")
-spp_list$common_name[spp_list$common_name == "pacific spiny dogfish"] <- "spiny dogfish"
-spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "Pacific hake"
-spp_list$common_name[spp_list$common_name == "pacific cod"] <- "Pacific cod"
-spp_list$common_name[spp_list$common_name == "pacific ocean perch"] <- "Pacific ocean perch"
-spp_list$common_name[spp_list$common_name == "pacific halibut"] <- "Pacific halibut"
-spp_list$common_name[spp_list$common_name == "pacific sanddab"] <- "Pacific sanddab"
-spp_list$common_name[spp_list$common_name == "dover sole"] <- "Dover sole"
-spp_list$common_name[spp_list$common_name == "english sole"] <- "english sole"
+spp_list <- spp_list |> filter(common_name != "north pacific spiny dogfish")
+spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "pacific hake"
 
 # Catch data
 temp_file <- tempfile(fileext = ".rds")
@@ -40,7 +35,13 @@ spp_dictionary <- dplyr::rename(spp_dictionary, itis = TSN) |>
                    common_name = raw_common[1])
 
 catch_data <- dplyr::left_join(catch_data, spp_dictionary)
+catch_data <- clean_fishnames(catch_data)
 
+x <- spp_list |> pull(common_name)
+y <- catch_data |> pull(common_name)
+missing_species <- setdiff(x,y)
+
+# See which species are failing
 no_data_species <- data.frame(i = integer(), species = character())
 
 # Model loop
@@ -93,12 +94,12 @@ for(i in 1:nrow(spp_list)) {
   # if (is.null(fit)) next
   tweedie <- FALSE
   fit <- tryCatch({sdmTMB(cpue ~ 1,
-                         data = joined,
-                         offset = log(joined$effort),
-                         mesh = mesh,
-                         family = delta_lognormal(),
-                         spatiotemporal="off",
-                         spatial="on")
+                          data = joined,
+                          offset = log(joined$effort),
+                          mesh = mesh,
+                          family = delta_lognormal(),
+                          spatiotemporal="off",
+                          spatial="on")
   }, error = function(e) {
     message(paste0("Model failure for ", spp_list$common_name[i], ": ", e$message))
     return(NULL)
@@ -115,12 +116,12 @@ for(i in 1:nrow(spp_list)) {
   
   if (tweedie == TRUE) {
     fit <- tryCatch({sdmTMB(cpue ~ 1,
-                           data = joined,
-                           #offset = log(joined$effort),
-                           mesh = mesh,
-                           family = tweedie(),
-                           spatiotemporal="off",
-                           spatial="on")
+                            data = joined,
+                            #offset = log(joined$effort),
+                            mesh = mesh,
+                            family = tweedie(),
+                            spatiotemporal="off",
+                            spatial="on")
     }, error = function(e) {
       message(paste0("Tweedie model failure for ", i, ": ", e$message))
       return(NULL)
@@ -150,12 +151,12 @@ for(i in 1:nrow(spp_list)) {
   } else {
     pred$prediction <- plogis(pred$est1) * exp(pred$est2)
   }
-    
+  
   # create a simplified data frame with just the columns we want
   pred <- dplyr::select(pred, lon, lat, X, Y, prediction)
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
-  pred$region <- "nwfsc"
+  pred$region <- "NWFSC"
   pred$crs <- 32610
   
   if(i == 1) {
@@ -176,7 +177,7 @@ no_data_species
 pred_all |> filter(sanity == TRUE) |> distinct(common_name)
 pred_all |> filter(sanity == FALSE) |> distinct(common_name)
 
-fishmap(pred_all, common_name = "yellowtail rockfish")
+#fishmap(pred_all, "yellowtail rockfish")
 
 predictions_nwfsc <- pred_all
-usethis::use_data(predictions_nwfsc)
+usethis::use_data(predictions_nwfsc, overwrite = TRUE)

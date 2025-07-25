@@ -2,7 +2,7 @@
 #'
 #' Contains prediction data from spatial models on NWFSC surveys for select species.
 #'
-#' @format A data frame with 1916376 rows and 9 variables:
+#' @format A data frame with 2007632 rows and 9 variables:
 #' \describe{
 #'   \item{lon}{Original longitude coordinate}
 #'   \item{lat}{Original latitude coordinate}

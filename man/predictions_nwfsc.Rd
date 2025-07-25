@@ -5,7 +5,7 @@
 \alias{predictions_nwfsc}
 \title{Modeled prediction data for NWFSC region}
 \format{
-A data frame with 1916376 rows and 9 variables:
+A data frame with 2007632 rows and 9 variables:
 \describe{
 \item{lon}{Original longitude coordinate}
 \item{lat}{Original latitude coordinate}

@@ -4,17 +4,8 @@ library(dplyr)
 
 # Species list
 spp_list <- read.csv("data-raw/pbs_joined.csv")
-spp_list$common_name[spp_list$common_name == "Pacific cod"] <- "pacific cod"
-spp_list$common_name[spp_list$common_name == "Pacific ocean perch"] <- "pacific ocean perch"
-spp_list$common_name[spp_list$common_name == "Pacific halibut"] <- "pacific halibut"
-spp_list$common_name[spp_list$common_name == "Pacific sanddab"] <- "pacific sanddab"
-spp_list$common_name[spp_list$common_name == "Rex sole"] <- "rex sole"
-spp_list$common_name[spp_list$common_name == "rock sole"] <- "northern rock sole"
-spp_list <- spp_list |> filter(common_name != "Pacific hake")
+spp_list <- spp_list |> filter(common_name != "north pacific spiny dogfish")
 spp_list <- spp_list |> filter(common_name != "north pacific hake")
-spp_list <- spp_list |> filter(common_name != "spiny dogfish")
-spp_list <- spp_list |> filter(common_name != "pacific spiny dogfish")
-
 
 # Get catch data
 temp_file <- tempfile(fileext = ".rds")
@@ -25,7 +16,6 @@ download.file(
   mode = "wb"  # Important: write as binary!
 )
 catch_data <- readRDS(temp_file)
-#catch_data <- dplyr::filter(catch_data, species_common_name %in% spp_list$common_name)
 
 # Download the .rds file from GitHub (raw)
 download.file(
@@ -36,10 +26,13 @@ download.file(
 haul <- readRDS(temp_file)
 haul$event_id <- as.numeric(haul$event_id)
 
+# Rename to match the spp_list
+catch_data$species_common_name[catch_data$species_common_name == "north pacific spiny dogfish"] <- "pacific spiny dogfish"
 
-
+# See which species fail the loop (expected: nothern rock sole)
 no_data_species <- data.frame(i = integer(), species = character())
 
+# Model each species
 for(i in 1:nrow(spp_list)) {
   # Filter catch to species
   subset_catch <- dplyr::filter(catch_data, species_common_name==spp_list$common_name[i])
@@ -144,7 +137,7 @@ for(i in 1:nrow(spp_list)) {
   pred <- dplyr::select(pred, lon, lat, X, Y, prediction)
   pred$species <- spp_list$common_name[i]
   pred$sanity <- sanity_check$all_ok
-  pred$region <- "pbs"
+  pred$region <- "PBS"
   pred$crs <- 32610
   
   if(i == 1) {
@@ -165,7 +158,7 @@ no_data_species
 pred_all |> filter(sanity == TRUE) |> distinct(species)
 pred_all |> filter(sanity == FALSE) |> distinct(species)
 # Test map
-fishmap(pred_all, common_name = "dover sole")
+#fishmap(pred_all, common_name = "dover sole")
 
 predictions_pbs <- pred_all
-usethis::use_data(predictions_pbs)
+usethis::use_data(predictions_pbs, overwrite = TRUE)
