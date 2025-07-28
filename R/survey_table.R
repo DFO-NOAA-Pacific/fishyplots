@@ -159,7 +159,10 @@ if (form == 2) {
                               ifelse(bio_data$n_samples < 950, # cutoff
                                      as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
                                      paste0(round(bio_data$n_samples / 1000), "K") )) # if over 1000, round to nearest and label with k
-
+  
+  bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+                        labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  
 #create plot
   plot <- ggplot(bio_data, aes(yr, sample_type)) +
     ggplot2::geom_tile(aes(fill = n_samples, alpha = n_samples != 0), colour = "white", show.legend = FALSE) + # to preserve rows where all years have 0 data, color 0 tiles white
@@ -180,14 +183,17 @@ if (form == 2) {
               colour = "black", 
               size = 3, alpha = 1
     ) +
-    ggplot2::scale_y_discrete(position = "left")+
+    ggplot2::scale_y_discrete(position = "left", labels = label_wrap(10))+
     scale_x_continuous(breaks = seq(
       if (min(bio_data$yr) %% 2 == 0) min(bio_data$yr) else min(bio_data$yr) + 1, # label even years 
       max(bio_data$yr),
       by = 2))+ #label every 2 years
     #ggplot2::ggtitle(paste("Survey Specimen Counts -", unique(spec.data$common_name))) +
-    coord_cartesian(expand = FALSE) +
-    facet_wrap(~ survey, ncol = 1)
+    coord_cartesian(expand = FALSE)
+  
+  if(length(unique(bio_data$survey)) > 1) {
+    plot <- plot + facet_wrap( ~ survey, ncol = 1) + theme(strip.background = element_blank())
+  }
   
   return(plot)
   }
