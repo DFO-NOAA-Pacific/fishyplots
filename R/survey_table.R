@@ -185,7 +185,7 @@ if (form == 2) {
               colour = "black", 
               size = 3, alpha = 1
     ) +
-    ggplot2::scale_y_discrete(position = "left", labels = label_wrap(10))+
+    ggplot2::scale_y_discrete(position = "left", labels = scales::label_wrap(10))+
     scale_x_continuous(breaks = seq(
       if (min(bio_data$yr) %% 2 == 0) min(bio_data$yr) else min(bio_data$yr) + 1, # label even years 
       max(bio_data$yr),
