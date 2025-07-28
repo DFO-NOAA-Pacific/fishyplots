@@ -161,7 +161,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
     if(subset == TRUE)( plot <-  plot + ggtitle("Length-Weight", subtitle = "subset of n ≤ 2000"))
   
   if(length(unique(spec.data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, nrow = 1) + theme(strip.background = element_blank())
+    plot <- plot + facet_wrap( ~ survey, nrow = 1, drop = FALSE) + theme(strip.background = element_blank())
   }
   
   return(plot)

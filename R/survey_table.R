@@ -194,7 +194,7 @@ if (form == 2) {
     coord_cartesian(expand = FALSE)
   
   if(length(unique(bio_data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, ncol = 1) + theme(strip.background = element_blank())
+    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank())
   }
   
   return(plot)
