@@ -9,6 +9,8 @@
 #' @importFrom tidyr pivot_wider
 #' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle
 #' @importFrom stats na.omit
+#' @importFrom scales label_wrap
+#' 
 #' @export
 #'
 #' @examples
