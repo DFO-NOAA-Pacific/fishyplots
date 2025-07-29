@@ -1,8 +1,8 @@
 #' nwfsc_bio: Biological data for NWFSC survey
 #'
-#' Contains biological data from NWFSC surveys for availible top species defined in data-raw/nwfsc_top.rds.
+#' Contains biological data from NWFSC surveys for available top species defined in data-raw/nwfsc_top.rds.
 #'
-#' @format A data frame with 983297 rows and 10 variables:
+#' @format A data frame with 983297 rows and 11 variables:
 #' \describe{
 #'   \item{region}{region of data collection}
 #'   \item{survey}{subregion}
@@ -14,6 +14,7 @@
 #'   \item{weight_kg}{weight of specimen, in kg}
 #'   \item{age_years}{age of specimen, in years}
 #'   \item{otosag_id}{Unique to nwfsc dataset, defines number of availible age structures}
+#'   \item{depth_m}{Depth in meters}
 #' }
 #'
 "nwfsc_bio"
@@ -22,7 +23,7 @@
 #'
 #' Contains biological data from AFSC surveys for availible top species defined in data-raw/afsc_top.rds.
 #'
-#' @format A data frame with 467530 rows and 9 variables:
+#' @format A data frame with 467530 rows and 10 variables:
 #' \describe{
 #'   \item{region}{region of data collection}
 #'   \item{survey}{subregion}
@@ -33,6 +34,7 @@
 #'   \item{length_cm}{length of specimen, in cm}
 #'   \item{weight_kg}{weight of specimen, in kg}
 #'   \item{age_years}{age of specimen, in years}
+#'   \item{depth_m}{Depth in meters}
 #' }
 #'
 "afsc_bio"
@@ -41,7 +43,7 @@
 #'
 #' Contains biological data from PBS surveys for availible top species defined in data-raw/pbs_top.rds.
 #'
-#' @format A data frame with 226600 rows and 9 variables:
+#' @format A data frame with 226600 rows and 10 variables:
 #' \describe{
 #'   \item{region}{region of data collection}
 #'   \item{survey}{subregion}
@@ -52,6 +54,7 @@
 #'   \item{length_cm}{length of specimen, in cm}
 #'   \item{weight_kg}{weight of specimen, in kg}
 #'   \item{age_years}{age of specimen, in years}
+#'   \item{depth_m}{Depth in meters}
 #' }
 #'
 "pbs_bio"

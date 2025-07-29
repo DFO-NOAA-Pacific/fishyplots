@@ -18,11 +18,15 @@
 #' depth_plot(all_data, "AFSC", "arrowtooth flounder")
 #' }
 
-depth_plot <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"), common, option = c("a", "b", "c")) {
+depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF", "Overlap"), common, option = c("a", "b", "c")) {
   option <- match.arg(option)
   
+  if (subregion == "Overlap") {
+    return(ggplot() + theme_void() + ggtitle("No overlap option yet."))
+  }
+  
   clean_data <- data |>
-    filter(region %in% subregion) |>
+    filter(survey %in% subregion) |>
     filter(common_name == common) |>
     filter(!is.na(depth_m)) |>
     filter(!is.na(age_years)) |>

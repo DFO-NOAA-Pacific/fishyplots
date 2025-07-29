@@ -6,7 +6,7 @@
 \usage{
 depth_plot(
   data,
-  subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"),
+  subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF", "Overlap"),
   common,
   option = c("a", "b", "c")
 )

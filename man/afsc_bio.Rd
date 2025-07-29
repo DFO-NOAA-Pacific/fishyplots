@@ -5,7 +5,7 @@
 \alias{afsc_bio}
 \title{afsc_bio: Biological data for AFSC survey}
 \format{
-A data frame with 467530 rows and 9 variables:
+A data frame with 467530 rows and 10 variables:
 \describe{
 \item{region}{region of data collection}
 \item{survey}{subregion}
@@ -16,6 +16,7 @@ A data frame with 467530 rows and 9 variables:
 \item{length_cm}{length of specimen, in cm}
 \item{weight_kg}{weight of specimen, in kg}
 \item{age_years}{age of specimen, in years}
+\item{depth_m}{Depth in meters}
 }
 }
 \usage{

@@ -5,7 +5,7 @@
 \alias{nwfsc_bio}
 \title{nwfsc_bio: Biological data for NWFSC survey}
 \format{
-A data frame with 983297 rows and 10 variables:
+A data frame with 983297 rows and 11 variables:
 \describe{
 \item{region}{region of data collection}
 \item{survey}{subregion}
@@ -17,12 +17,13 @@ A data frame with 983297 rows and 10 variables:
 \item{weight_kg}{weight of specimen, in kg}
 \item{age_years}{age of specimen, in years}
 \item{otosag_id}{Unique to nwfsc dataset, defines number of availible age structures}
+\item{depth_m}{Depth in meters}
 }
 }
 \usage{
 nwfsc_bio
 }
 \description{
-Contains biological data from NWFSC surveys for availible top species defined in data-raw/nwfsc_top.rds.
+Contains biological data from NWFSC surveys for available top species defined in data-raw/nwfsc_top.rds.
 }
 \keyword{datasets}
