@@ -109,7 +109,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
 
 #plot scatter subset data and model prediction line
   plot <- ggplot(spec.data, aes(x = length_cm, y = weight_kg)) +
-    theme_classic() + #remove grid
+    theme_bw() + #remove grid
     geom_point(aes(color = sex), alpha = 0.1) +
     geom_line(data = predict_all, 
               aes(x = fit.x, y = fit.y, color = sex), linewidth = 1) + # plot fit lines
@@ -131,6 +131,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
 #### LEGEND AND LABELS ####
     #add legend for lines
     theme(legend.title = element_blank(),
+          panel.grid = element_blank(),
           legend.position = "none",
           axis.text.x = element_text(angle = 45, hjust = 1),
           plot.subtitle = element_text(color = "gray40", size = 10, face = "italic")) + # tilt years to reduce overlapping text, remove legend
