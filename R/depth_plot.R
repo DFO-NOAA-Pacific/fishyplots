@@ -23,7 +23,10 @@ depth_plot <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "A
   
   clean_data <- data |>
     filter(region %in% subregion) |>
-    filter(common_name == common)
+    filter(common_name == common) |>
+    filter(!is.na(depth_m)) |>
+    filter(!is.na(age_years)) |>
+    filter(sex != "U")
   
   if (all(is.na(clean_data$depth_m)) | (nrow(clean_data) == 0)) {
     return(ggplot() + theme_void() + ggtitle("No age-depth data available."))
@@ -83,25 +86,24 @@ depth_plot <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "A
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank()) +
-    scale_x_continuous(breaks = seq(200, 600, by = 200))
+    scale_x_continuous(breaks = seq(100, max(counts1$depth_mid), by = 100))
   
   p2 <- ggplot(counts2, aes(x = depth_mid, y = age_years, fill = prop)) +
     geom_tile() +
     facet_wrap(~sex) +
     scale_fill_viridis_c(option = "magma", name = "Proportion", direction = -1) +
-    coord_cartesian(expand = FALSE) +
     labs(x = "Depth (m)", y = "Age (years)") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank()) +
-    coord_flip() +
+    coord_flip(expand = FALSE) +
     scale_x_reverse()
   
   if (option == "a") {
-    return(p1)
-  } else if (option == "b") {
-    return(p2) 
-  } else if (option == "c") {
     return(p1 + p2 + plot_layout(ncol = 1))
+  } else if (option == "b") {
+    return(p1) 
+  } else if (option == "c") {
+    return(p2)
   }
 }
