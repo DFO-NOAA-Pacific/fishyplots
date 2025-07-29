@@ -4,14 +4,12 @@
 \alias{length_weight}
 \title{Main function to plot length-weight relationships by sex}
 \usage{
-length_weight(data, species, color = TRUE, subset = TRUE)
+length_weight(data, species, subset = TRUE)
 }
 \arguments{
-\item{data}{region bio data to be plotted. Preload from data file.}
+\item{data}{region bio data to be plotted. Preload from data file, see examples.}
 
 \item{species}{common or scientific name of target species}
-
-\item{color}{default TRUE for color, FALSE  for greyscale}
 
 \item{subset}{default TRUE for a faster plotting subset of n = 2000. Set FALSE for all available data.}
 }
@@ -23,6 +21,14 @@ Main function to plot length-weight relationships by sex
 }
 \examples{
 \dontrun{
-length_weight(afsc_bio, "atka mackerel", color = T)
+data("nwfsc_bio")
+data("pbs_bio")
+data("afsc_bio")
+akgulf_bio <- afsc_bio \%>\% filter(survey == "AK GULF")
+akbsai_bio <- afsc_bio \%>\% filter(survey == "AK BSAI")
+all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+
+length_weight(all_data, "arrowtooth flounder")
+length_weight(akgulf_bio, "atka mackerel", subset = FALSE)
 }
 }

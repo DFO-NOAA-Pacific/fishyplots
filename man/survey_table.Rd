@@ -4,7 +4,7 @@
 \alias{survey_table}
 \title{Main function to display survey specimen counts}
 \usage{
-survey_table(data, species, form = c(1, 2))
+survey_table(data, species, form = 2)
 }
 \arguments{
 \item{data}{a data frame of bio data}
@@ -21,14 +21,17 @@ Main function to display survey specimen counts
 }
 \examples{
 \dontrun{
-data(pbs_bio)
-data(afsc_bio)
-data(nwfsc_bio)
-data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
+data("nwfsc_bio")
+data("pbs_bio")
+data("afsc_bio")
+akgulf_bio <- afsc_bio \%>\% filter(survey == "AK GULF")
+akbsai_bio <- afsc_bio \%>\% filter(survey == "AK BSAI")
+all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
 
 
-survey_table(afsc_bio, "atka mackerel", form = 1)
+survey_table(akgulf_bio, "atka mackerel", form = 1)
 survey_table(nwfsc_bio, "sebastes zacentrus", form = 2)
 survey_table(pbs_bio,"arrowtooth flounder", form = 2)
+survey_table(all_data, "arrowtooth flounder")
 }
 }
