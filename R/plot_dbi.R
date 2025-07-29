@@ -60,7 +60,7 @@ plot_dbi <- function(species, subsurvey) {
       ggplot2::geom_point(ggplot2::aes(x = year, y = est)) +
       ggplot2::ylab("Biomass (mt)") +
       ggplot2::xlab("Year") +
-      ggplot2::ggtitle(unique(subset$common_name)) +
+      #ggplot2::ggtitle(unique(subset$common_name)) +
       ggplot2::theme_bw() +
       ggplot2::scale_y_continuous(
         labels = function(x) format(x, big.mark = ",", scientific = FALSE))
