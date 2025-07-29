@@ -70,8 +70,9 @@ plot_stan_dbi <- function(species, surveys) {
     ggplot2::scale_fill_manual(values = ok_colors) +
     ggplot2::ylab("Standardized Biomass Index") +
     ggplot2::xlab("Year") +
-    ggplot2::ggtitle(species)  +
-    ggplot2::theme_bw()
+    #ggplot2::ggtitle(species)  +
+    ggplot2::theme_bw() +
+    theme(legend.position="bottom")
   
   return(plot)
 }
