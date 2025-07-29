@@ -20,14 +20,16 @@ plot_stan_dbi <- function(species, surveys) {
   
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
-    if (surveys == "AFSC") {
-      surveys <- c("U.S. Gulf of Alaska", "U.S. Aleutian Islands", "U.S. Eastern Bering Sea Slope", 
-                   "U.S. Eastern Bering Sea Standard Plus NW Region", "U.S. Northern Bering Sea")
-    } else if (surveys == "PBS") {
+    if (surveys == "AK BSAI") {
+      surveys <- c("U.S. Aleutian Islands", "U.S. Eastern Bering Sea Slope", 
+                     "U.S. Eastern Bering Sea Standard Plus NW Region", "U.S. Northern Bering Sea")
+    } else if (surveys == "AK GULF") {
+      surveys <- "U.S. Gulf of Alaska"
+    }else if (surveys == "PBS") {
       surveys <- c("SYN QCS","SYN WCVI", "SYN HS", "SYN WCHG")
     } else if (surveys == "NWFSC") {
       surveys <- c("U.S. West Coast")
-    }
+    } else (surveys == surveys)
   }
   
   # Create empty df to store plotting data
@@ -55,12 +57,17 @@ plot_stan_dbi <- function(species, surveys) {
     combined_df <- dplyr::bind_rows(combined_df, filtered)
   }
   
+  #set colors: Okabe-ito coloblind pallete
+  ok_colors <- setNames(palette.colors(palette = "Okabe-Ito")[2:(length(unique(combined_df$survey))+1)], unique(combined_df$survey))
+  
   # Plot using said df
   plot <- ggplot2::ggplot(data = combined_df, 
                           ggplot2::aes(x = year, y = stand_est, color = survey)) +
     ggplot2::geom_line(linewidth = 1) +
     ggplot2::geom_point() +
-    ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = stand_lwr, ymax = stand_upr, fill = survey), color = NA, alpha = 0.2) +
+    ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = stand_lwr, ymax = stand_upr, fill = survey), color = NA, alpha = 0.1) +
+    ggplot2::scale_color_manual(values = ok_colors) +
+    ggplot2::scale_fill_manual(values = ok_colors) +
     ggplot2::ylab("Standardized Biomass Index") +
     ggplot2::xlab("Year") +
     ggplot2::ggtitle(species)  +
