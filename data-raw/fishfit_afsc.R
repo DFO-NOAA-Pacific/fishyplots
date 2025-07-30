@@ -1,6 +1,8 @@
 library(sdmTMB)
 library(surveyjoin)
 library(dplyr)
+library(stringr)
+devtools::load_all()
 
 # Species list
 spp_list <- read.csv("data-raw/afsc_joined.csv")
@@ -157,6 +159,9 @@ for(i in 1:nrow(spp_list)) {
   pred$sanity <- sanity_check$all_ok
   pred$region <- "AFSC"
   pred$crs <- 32602
+  #pred$survey <- 
+  pred <- dplyr::left_join(pred, dplyr::select(grid, lon, lat, survey), by = c("lon", "lat"))
+  
   
   if(i == 1) {
     pred_all <- pred

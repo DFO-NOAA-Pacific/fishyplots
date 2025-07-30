@@ -6,14 +6,14 @@
 \usage{
 fishmap(
   data,
-  region = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"),
+  subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"),
   common_name
 )
 }
 \arguments{
 \item{data}{prediction data from fishfit scripts}
 
-\item{region}{choose AFSC, PBS, NWFSC (choosing AK BSAI and AK GULF will default to AFSC)}
+\item{subregion}{choose AK BSAI, AK GULF, PBS, NWFSC}
 
 \item{common_name}{species common name}
 }
@@ -28,7 +28,7 @@ Function for modeled CPUE map based on prediction data
 data(predictions_afsc)
 data(predictions_pbs)
 data(predictions_nwfsc)
-data <- rbind(predictions_afsc, predictions_pbs, predictions_nwfsc)
+data <- bind_rows(predictions_afsc, predictions_pbs, predictions_nwfsc)
 
 fishmap(data, c("AFSC", "PBS", "NWFSC"), "arrowtooth flounder")
 fishmap(data, c("AK BSAI", "NWFSC"), "sablefish")
