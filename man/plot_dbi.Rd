@@ -9,7 +9,7 @@ plot_dbi(species, subsurvey)
 \arguments{
 \item{species}{common or scientific name of species of interest. See examples for options per dataset.}
 
-\item{subsurvey}{subsurvey, required to specify subservey and region to be plotted. See examples for options per dataset.}
+\item{subsurvey}{subsurvey or survey group, required to specify servey/region to be plotted. See examples for options per dataset.}
 }
 \value{
 a ggplot object, plot of design based indicies
@@ -19,7 +19,7 @@ Function and formatted data to plot design based index
 }
 \examples{
 \dontrun{
-# To see options for species and subsurveys in regions: "NWFSC", "AFSC", "PBS"
+# To see options for species and surveys in regions: "NWFSC", "AFSC", "PBS"
 data(all.dbi)
 
 all.dbi \%>\%

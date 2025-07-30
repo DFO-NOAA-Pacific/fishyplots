@@ -27,6 +27,13 @@ pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
 
 #join
 all.dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass) %>% 
-  clean_fishnames()
+  clean_fishnames() %>% 
+  mutate(survey_group = case_when(
+    grepl("bering|aleutian", survey, ignore.case = TRUE) ~ "AK BSAI", #group surveys of ak bsai
+    grepl("Gulf", survey, ignore.case = FALSE) ~ "AK GULF", 
+    grepl("SYN", survey, ignore.case = FALSE) ~ "PBS", 
+    TRUE ~ "NWFSC"
+  )) %>% 
+  relocate(survey_group, .after = 1)
 #save
 usethis::use_data(all.dbi, overwrite = TRUE)
