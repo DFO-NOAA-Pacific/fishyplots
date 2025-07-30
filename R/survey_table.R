@@ -128,16 +128,18 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "Unread Age Structures") %>% #unread structures only
     na.omit() #omit NAs where n age structures = n read ages
 
-## Combine ##
+  ## Combine ##
   # Combine data into one DF
   bio_data <-length_count %>%
     bind_rows(weight_count) %>%
     bind_rows(age_count) %>%
     bind_rows(unread_count) %>% 
-    arrange(yr) %>%
-    mutate(sample_type=factor(sample_type, levels=c("Unread Age Structures", "Age", "Weight", "Length"))) %>% #set order for plotting later
-    mutate(common = unique(spec.data$common_name))
-
+    arrange(yr) %>% 
+    ungroup() %>% 
+    complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0, survey = unique(spec.data$survey))) %>% 
+    mutate(common = unique(spec.data$common_name)) %>% 
+    mutate(sample_type=factor(sample_type, levels=c("Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
+    
 
 #### TABLE ####
 if (form == 1) {
@@ -181,7 +183,7 @@ if (form == 2) {
       axis.text.x = element_text(angle = 45, hjust = 1) # tilt years to reduce overlapping text
     ) +
     ggplot2::guides(fill = "none") + xlab("") + ylab("") +
-    geom_text(aes(label = label),
+    geom_text(aes(label = ifelse(n_samples > 0, label, "")), #do not label 0s
               colour = "black", 
               size = 3, alpha = 1
     ) +
