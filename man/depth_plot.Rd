@@ -6,17 +6,19 @@
 \usage{
 depth_plot(
   data,
-  subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF", "Overlap"),
+  subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"),
   common,
-  option = c("a", "b", "c")
+  sex = FALSE
 )
 }
 \arguments{
-\item{data}{prediction data from fishfit scripts}
+\item{data}{biological data}
 
-\item{region}{choose AFSC, PBS, NWFSC (choosing AK BSAI and AK GULF will default to AFSC)}
+\item{subregion}{choose PBS, NWFSC, AK BSAI, AK GULF}
 
-\item{common_name}{species common name}
+\item{common}{species common name}
+
+\item{sex}{show sex differentiation}
 }
 \value{
 a ggplot object
@@ -26,9 +28,6 @@ Function for age-depth plot
 }
 \examples{
 \dontrun{
-# Still need depth column in the regular _bio data frames
-# Once that is added this code will work
-
 all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
 depth_plot(all_data, "AFSC", "arrowtooth flounder")
 }
