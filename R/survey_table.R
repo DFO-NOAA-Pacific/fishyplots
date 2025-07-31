@@ -52,7 +52,7 @@ survey_table <- function(data, species, form = 2) {
     group_by(yr, survey) %>%
     summarize(n_samples=n())%>% #sum sample number over grouping (year)
     mutate(sample_type = "Length") #label as length count
-  
+
   # use special dataset for AFSC lengths
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
     data("ak_survey_lengths") # get ak lengths data
@@ -136,7 +136,9 @@ survey_table <- function(data, species, form = 2) {
     bind_rows(unread_count) %>% 
     arrange(yr) %>% 
     ungroup() %>% 
-    complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0, survey = unique(spec.data$survey))) %>% 
+    group_by(survey) %>% 
+    complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0)) %>% 
+    ungroup() %>% 
     mutate(common = unique(spec.data$common_name)) %>% 
     mutate(sample_type=factor(sample_type, levels=c("Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
     
@@ -167,7 +169,7 @@ if (form == 2) {
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   bio_data <- bio_data %>%
-    group_by(sample_type) %>%
+    group_by(sample_type, survey) %>%
     mutate(n_scaled = (n_samples - min(n_samples, na.rm = TRUE)) / 
              (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE))) %>%
     ungroup()
