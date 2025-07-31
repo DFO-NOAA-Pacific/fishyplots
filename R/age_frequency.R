@@ -20,8 +20,7 @@
 #' data("nwfsc_bio")
 #' data("afsc_bio")
 #' data("pbs_bio")
-#' nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
-#' all_data <- rbind(afsc_bio, nwfsc_bio, pbs_bio)
+#' all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
 #' 
 #' age_frequency(all_data, c("PBS", "NWFSC", "AK BSAI", "AK GULF"), "yellowtail rockfish")
 #' }
