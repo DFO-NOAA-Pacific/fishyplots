@@ -166,14 +166,18 @@ if (form == 2) {
   
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  bio_data <- bio_data %>%
+    group_by(sample_type) %>%
+    mutate(n_scaled = (n_samples - min(n_samples, na.rm = TRUE)) / 
+             (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE))) %>%
+    ungroup()
   
 #create plot
   plot <- ggplot(bio_data, aes(yr, sample_type)) +
-    ggplot2::geom_tile(aes(fill = n_samples, alpha = n_samples != 0), colour = "white", show.legend = FALSE) + # to preserve rows where all years have 0 data, color 0 tiles white
+    ggplot2::geom_tile(aes(fill = n_scaled, alpha = n_samples != 0), colour = "white", show.legend = FALSE) + # to preserve rows where all years have 0 data, color 0 tiles white
     scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0)) +
     scale_fill_gradientn( # color with yellow to red gradient
-      colours = c("#ffffb2", "#fecc5c", "#fd8d3c", "#e31a1c", "red4"),
-      trans = "log10", # log transform for when AK data is soooooo large
+      colours = c("#eff3ff", "#bdd7e7", "#6baed6", "#2171b5","#1a5a90" ), 
       na.value = "white"
     ) + 
     theme_pbs() +
