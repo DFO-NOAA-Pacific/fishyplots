@@ -117,4 +117,3 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
   return(p1 + p2 + plot_layout(ncol = 1))
   
 }
-depth_plot(all_data, c("PBS"), "shortspine thornyhead")

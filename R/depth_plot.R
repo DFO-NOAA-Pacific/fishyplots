@@ -79,22 +79,36 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
   counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(age_group), is.finite(prop))
   counts2 <- counts2 |> filter(is.finite(depth_mid), is.finite(age_years), is.finite(prop))
   
-  # Determine levels
-  age_levels_to_show <- levels(counts1$age_group)[seq(1, length(levels(counts1$age_group)), by = 10)]
-  
   # Check that there is enough data
   if (nrow(subset(counts1, sex == "Male")) < 5 & nrow(subset(counts1, sex == "Female")) < 5) {
     return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
   }
+  
+  # Determine levels
+  age_levels_all <- levels(counts1$age_group) #[seq(1, length(levels(counts1$age_group)), by = 10)]
+  max_age <- max(counts2$age_years)
+  
+  start_ages <- as.numeric(gsub("^\\((\\d+),.*$", "\\1", age_levels_all))
+  valid_indices <- which(start_ages <= max_age)
+  age_levels <- age_levels_all[valid_indices]
+  selected_indices <- seq(1, length(age_levels), by = 10)
+  age_levels <- age_levels[selected_indices]
+  
+  # Determine labels
+  age_labels <- gsub("^\\((\\d+),.*$", "\\1", age_levels)
+  age_labels <- as.numeric(age_labels)
+  age_labels <- paste0(age_labels, "-", age_labels + 10)
+  
+  #browser()
   
   # Plotting
   p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = age_group)) +
     geom_col(position = "stack", width = 25) +
     facet_grid(sex ~ survey, drop = FALSE) +
     scale_fill_viridis_d(name = "Age (years)",
-                         breaks = age_levels_to_show,
-                         labels = c("0-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90"),
-                         drop = FALSE,
+                         breaks = age_levels,
+                         labels = age_labels, #c("0-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90"),
+                         #drop = FALSE,
                          direction = -1,
                          option = "magma") +
     coord_cartesian(expand = FALSE) +
