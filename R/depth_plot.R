@@ -17,25 +17,32 @@
 #' }
 
 depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common, sex = FALSE) {
+  # Sex differentiation automatic for 1 region
   if (length(subregion) == 1) {
     sex <- TRUE
     data <- data |> filter(survey == subregion)
   }
   
+  # Clean data and check
   clean_data <- data |>
     filter(common_name == common) |>
     filter(!is.na(depth_m)) |>
     filter(!is.na(age_years)) |>
     filter(sex != "U")
   
+  if (nrow(clean_data) == 0) {
+    return(ggplot() + theme_void() + ggtitle("No age-depth data available."))
+  }
   
+  # Create age and depth bins
   clean_data <- clean_data |>
     mutate(
-      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m), by = 25)),
-      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m), by = 50)),
+      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 25)),
+      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 50)),
       age_group = cut(age_years, breaks = seq(0, 90, by = 1))
     )
   
+  # Counts for each graph
   counts1 <- clean_data |>
     group_by(survey, sex, depth_bin1, age_group) |>
     summarise(count = n(), .groups = "drop") |>
@@ -62,15 +69,25 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
     ) |>
     ungroup()
   
+  # Factor relevel sex and survey
   counts1$sex <- factor(counts1$sex, levels = c("M", "F"), labels = c("Male", "Female"))
   counts2$sex <- factor(counts2$sex, levels = c("M", "F"), labels = c("Male", "Female"))
   counts1$survey <- factor(counts1$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
+  # Debug
   counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(age_group), is.finite(prop))
   counts2 <- counts2 |> filter(is.finite(depth_mid), is.finite(age_years), is.finite(prop))
+  
+  # Determine levels
   age_levels_to_show <- levels(counts1$age_group)[seq(1, length(levels(counts1$age_group)), by = 10)]
   
+  # Check that there is enough data
+  if (nrow(subset(counts1, sex == "Male")) < 5 & nrow(subset(counts1, sex == "Female")) < 5) {
+    return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
+  }
+  
+  # Plotting
   p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = age_group)) +
     geom_col(position = "stack", width = 25) +
     facet_grid(sex ~ survey, drop = FALSE) +
@@ -99,6 +116,7 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
     coord_flip(expand = FALSE) +
     scale_x_reverse()
   
+  # Construct plots based on conditionals
   if (length(subregion) > 1) {
     if (sex == TRUE) {
       p1 <- p1 + facet_grid(sex ~ survey, drop = FALSE)
