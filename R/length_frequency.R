@@ -69,13 +69,12 @@ length_frequency <- function(data, subregions, common, time_series = TRUE, facet
       geom_errorbar(aes(ymin = p2.5, ymax = p97.5), width = 0.5, linewidth = 0.5, color = "grey") +
       geom_errorbar(aes(ymin = p25, ymax = p75), width = 0.5, linewidth = 1) +
       geom_point(shape = 21, fill = "grey", color = "black", size = 1.5, stroke = 1.2) +
-      labs(x = "", y = "Mean length (cm)", title = "",
+      labs(x = "", y = "Mean length (cm)", title = "Length frequency",
            caption = "Error bars show 50% and 95% quantiles.") +
       theme_bw() +
       theme(panel.grid = element_blank()) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
     
-    #graph <- suppressWarnings(graph + theme_sleek())
     
     if (length(subregions) > 1) {
       if (facet_all == TRUE) {

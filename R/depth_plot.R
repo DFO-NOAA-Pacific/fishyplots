@@ -1,8 +1,9 @@
 #' Function for age-depth plot
 #'
-#' @param data prediction data from fishfit scripts
-#' @param region choose AFSC, PBS, NWFSC (choosing AK BSAI and AK GULF will default to AFSC)
-#' @param common_name species common name 
+#' @param data biological data
+#' @param subregion choose PBS, NWFSC, AK BSAI, AK GULF
+#' @param common species common name 
+#' @param sex show sex differentiation 
 #' @return a ggplot object
 #' @importFrom dplyr filter mutate group_by summarise ungroup
 #' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse
@@ -11,43 +12,42 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Still need depth column in the regular _bio data frames
-#' # Once that is added this code will work
-#' 
 #' all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
 #' depth_plot(all_data, "AFSC", "arrowtooth flounder")
 #' }
 
-depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF", "Overlap"), common, option = c("a", "b", "c")) {
-  option <- match.arg(option)
-  
-  if (subregion == "Overlap") {
-    return(ggplot() + theme_void() + ggtitle("No overlap option yet."))
+depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common, sex = FALSE) {
+  # Sex differentiation automatic for 1 region
+  if (length(subregion) == 1) {
+    sex <- TRUE
+    data <- data |> filter(survey == subregion)
   }
   
+  # Clean data and check
   clean_data <- data |>
-    filter(survey %in% subregion) |>
     filter(common_name == common) |>
     filter(!is.na(depth_m)) |>
     filter(!is.na(age_years)) |>
     filter(sex != "U")
   
-  if (all(is.na(clean_data$depth_m)) | (nrow(clean_data) == 0)) {
+  if (nrow(clean_data) == 0) {
     return(ggplot() + theme_void() + ggtitle("No age-depth data available."))
   }
   
+  # Create age and depth bins
   clean_data <- clean_data |>
     mutate(
-      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m), by = 25)),
-      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m), by = 50)),
+      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 25)),
+      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 50)),
       age_group = cut(age_years, breaks = seq(0, 90, by = 1))
     )
   
+  # Counts for each graph
   counts1 <- clean_data |>
-    group_by(sex, depth_bin1, age_group) |>
+    group_by(survey, sex, depth_bin1, age_group) |>
     summarise(count = n(), .groups = "drop") |>
     filter(!is.na(age_group)) |>
-    group_by(sex, depth_bin1) |>
+    group_by(survey, sex, depth_bin1) |>
     mutate(
       count = count,
       prop = count / sum(count),
@@ -57,10 +57,10 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF",
     ungroup()
   
   counts2 <- clean_data |>
-    group_by(sex, depth_bin2, age_years) |>
+    group_by(survey, sex, depth_bin2, age_years) |>
     summarise(count = n(), .groups = "drop") |>
     filter(!is.na(age_years)) |>
-    group_by(sex, depth_bin2) |>
+    group_by(survey, sex, depth_bin2) |>
     mutate(
       count = count,
       prop = count / sum(count),
@@ -69,45 +69,69 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF",
     ) |>
     ungroup()
   
-  counts1$sex <- factor(counts1$sex, levels = c("U", "M", "F"), labels = c("Unsexed", "Male", "Female"))
-  counts2$sex <- factor(counts2$sex, levels = c("U", "M", "F"), labels = c("Unsexed", "Male", "Female"))
+  # Factor relevel sex and survey
+  counts1$sex <- factor(counts1$sex, levels = c("M", "F"), labels = c("Male", "Female"))
+  counts2$sex <- factor(counts2$sex, levels = c("M", "F"), labels = c("Male", "Female"))
+  counts1$survey <- factor(counts1$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
+  counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
+  # Debug
   counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(age_group), is.finite(prop))
   counts2 <- counts2 |> filter(is.finite(depth_mid), is.finite(age_years), is.finite(prop))
   
+  # Determine levels
   age_levels_to_show <- levels(counts1$age_group)[seq(1, length(levels(counts1$age_group)), by = 10)]
   
+  # Check that there is enough data
+  if (nrow(subset(counts1, sex == "Male")) < 5 & nrow(subset(counts1, sex == "Female")) < 5) {
+    return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
+  }
+  
+  # Plotting
   p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = age_group)) +
     geom_col(position = "stack", width = 25) +
-    facet_wrap(~sex) +
+    facet_grid(sex ~ survey, drop = FALSE) +
     scale_fill_viridis_d(name = "Age (years)",
                          breaks = age_levels_to_show,
                          labels = c("0-10", "10-20", "20-30", "30-40", "40-50", "50-60", "60-70", "70-80", "80-90"),
+                         drop = FALSE,
                          direction = -1,
                          option = "magma") +
     coord_cartesian(expand = FALSE) +
-    labs(x = "Depth (m)", y = "Count") +
+    labs(title = "Age distribution across depth", x = "Depth (m)", y = "Count") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank()) +
-    scale_x_continuous(breaks = seq(100, max(counts1$depth_mid), by = 100))
+    scale_x_continuous(breaks = if (max(counts1$depth_mid, na.rm = TRUE) >= 100) 
+      seq(100, max(counts1$depth_mid), by = 100) else pretty(counts1$depth_mid))
   
   p2 <- ggplot(counts2, aes(x = depth_mid, y = age_years, fill = prop)) +
     geom_tile() +
-    facet_wrap(~sex) +
-    scale_fill_viridis_c(option = "magma", name = "Proportion", direction = -1) +
-    labs(x = "Depth (m)", y = "Age (years)") +
+    facet_grid(sex ~ survey, drop = FALSE) +
+    scale_fill_viridis_c(option = "magma", name = "Proportional \nage \ndistribution \nby depth", direction = -1) +
+    labs(title = "Age-depth heatmap", x = "Depth (m)", y = "Age (years)") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank()) +
     coord_flip(expand = FALSE) +
     scale_x_reverse()
   
-  if (option == "a") {
-    return(p1 + p2 + plot_layout(ncol = 1))
-  } else if (option == "b") {
-    return(p1) 
-  } else if (option == "c") {
-    return(p2)
+  # Construct plots based on conditionals
+  if (length(subregion) > 1) {
+    if (sex == TRUE) {
+      p1 <- p1 + facet_grid(sex ~ survey, drop = FALSE)
+      p2 <- p2 + facet_grid(sex ~ survey, drop = FALSE)
+    } else if (sex == FALSE) {
+      p1 <- p1 + facet_wrap(~survey, drop = FALSE, ncol = 4)
+      p2 <- p2 + facet_wrap(~survey, drop = FALSE, ncol = 4)
+    }
+  } else if (length(subregion) == 1) {
+    if (sex == TRUE) {
+      p1 <- p1 + facet_wrap(~sex, ncol = 1)
+      p2 <- p2 + facet_wrap(~sex, ncol = 1)
+    } 
   }
+  
+  return(p1 + p2 + plot_layout(ncol = 1))
+  
 }
