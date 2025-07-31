@@ -2,7 +2,7 @@
 #'
 #' @param data region bio data to be plotted. Preload from data file, see examples.
 #' @param species common or scientific name of target species
-#' @param subset default TRUE for a faster plotting subset of n = 2000. Set FALSE for all available data.
+#' @param subset default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.
 #' @return a plot of sexed data with log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate
@@ -25,7 +25,7 @@
 length_weight <- function(data, species, subset = TRUE) { # subset default
 
 #### DATA ####
-  #load lw fit dataset
+  #load lw prediction dataset
   data("lw_predictions")
   
   
@@ -38,61 +38,30 @@ length_weight <- function(data, species, subset = TRUE) { # subset default
     #stop(paste("Species name", "'", species,"'", "not found in this dataset.")))
     stop(return(ggplot() + theme_void() + ggtitle("No length-weight data available."))))
   
-  # when subset = TRUE, subset into 2000 random points for plotting speed
+  # when subset = TRUE, subset into 10000 random points for plotting speed
   if(subset == TRUE){
     spec.data <- spec.data %>% 
       group_by(survey) %>%
-      slice_sample(n = 2000) %>%  # in case any region has < 2000
+      slice_sample(n = 10000) %>%  # in case any region has < 10000
       ungroup()
-    if(nrow(spec.data) < 2000) {message ("Note: Species data less than 2000 rows; plotting all data with no subset")}
-    else {message (paste0("Note: Plotting a random n = 2000 subset of ", unique(spec.data$common_name), ". Model values not impacted."))}}
+    if(nrow(spec.data) < 10000) {message ("Note: Species data less than 10000 rows; plotting all data with no subset")}
+    else {message (paste0("Note: Plotting a random n = 10000 subset of ", unique(spec.data$common_name), ". Model values not impacted."))}}
   
+# filter predictions to species
+  predict_all <- lw_predictions %>% 
+    filter(species == common_name | species == scientific_name, survey %in% unique(spec.data$survey)) 
   
-  # create predictions for each survey grouping in data
-  predict_all <- data.frame()
-  for(survey_name in unique(spec.data$survey)) {
-  # get regression fit for m and f of species in data
-  F_pred <- lw_predictions %>% 
-    filter(survey == survey_name, species == common | species == scientific, sex == "F")
-  M_pred <- lw_predictions %>% 
-    filter(survey == survey_name, species == common | species == scientific, sex == "M")
-
-  # make plotting predictions to max length
-  pred_df_F <- data.frame(
-    x = seq(min(subset(spec.data, spec.data$sex == "F")$length_cm),
-            max(subset(spec.data, spec.data$sex == "F")$length_cm), 
-            length.out = 100),
-    survey = survey_name
-  ) %>%
-    mutate(y = F_pred$a * x^F_pred$b)
-  pred_df_M <- data.frame(
-    x = seq(min(subset(spec.data, spec.data$sex == "M")$length_cm),
-            max(subset(spec.data, spec.data$sex == "M")$length_cm),
-            length.out = 100),
-    survey = survey_name
-  ) %>%
-    mutate(y = M_pred$a * x^M_pred$b)
-  
-  # combine for legend plotting
-  predict_all <- rbind(predict_all,
-    data.frame(fit = pred_df_M, sex = "M"),
-    data.frame(fit = pred_df_F, sex = "F")
-  ) 
-  }
-  # put into one dataset: predict_all for prediction data plotting
-predict_all <- predict_all%>% 
-  rename(survey = fit.survey)
-
 #### ANNOTATIONS ####
 # create dataset for parameter annotations
 annotations <- lw_predictions %>%
-  filter(common == unique(spec.data$common_name), survey %in% (spec.data$survey)) %>%
+  filter(common_name == unique(spec.data$common_name), survey %in% (spec.data$survey)) %>%
   filter(sex %in% c("M", "F")) %>%
   select(survey, sex, a, b) %>%
+  distinct() %>% 
   mutate(sex.label = ifelse(sex == "M", "Male", "Female")) %>% 
   mutate(
     label = paste0(sex.label, ": a = ", format(a, digits = 3, scientific = TRUE),
-                   "  b = ", round(b, 2)))
+                   "  b = ", format(round(b, 2), nsmall = 2)))
   
 
 #rename for labeling
@@ -112,7 +81,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
     theme_bw() + #remove grid
     geom_point(aes(color = sex), alpha = 0.1) +
     geom_line(data = predict_all, 
-              aes(x = fit.x, y = fit.y, color = sex), linewidth = 1) + # plot fit lines
+              aes(x = fit_length, y = fit_weight, color = sex), linewidth = 1) + # plot fit lines
     
   # toggle visual settings for line and points
     # scale_linetype_manual(
@@ -159,10 +128,10 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
     
     
   ### add ons: 
-    if(subset == TRUE)( plot <-  plot + ggtitle("Length-Weight", subtitle = "subset of n ≤ 2000"))
+    if(subset == TRUE)( plot <-  plot + ggtitle("Length-Weight", subtitle = "plot max n = 10000"))
   
   if(length(unique(spec.data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, nrow = 1, drop = FALSE) + theme(strip.background = element_blank())
+    plot <- plot + facet_wrap( ~ survey, nrow = 1, drop = FALSE)
   }
   
   return(plot)
