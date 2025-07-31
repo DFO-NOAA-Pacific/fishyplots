@@ -57,9 +57,9 @@ plot_growth <- function(data, predictions, subregions, common, facet_all = TRUE)
   
   label_data <- predictions |>
     group_by(survey, sex) |>
-    summarize(linf = round(unique(linf)[1], 2),
-              k = round(unique(k)[1], 2),
-              t0 = round(unique(t0)[1], 2),
+    summarize(linf = sprintf("%.2f", unique(linf)[1]),
+              k = sprintf("%.2f", unique(k)[1]),
+              t0 = sprintf("%.2f", unique(t0)[1]),
               .groups = "drop") |>
     mutate(vjust = ifelse(sex == "M", -0.5, -1.5)) |>
     mutate(hjust = 1.05) |>
