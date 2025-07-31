@@ -11,7 +11,7 @@ length_weight(data, species, subset = TRUE)
 
 \item{species}{common or scientific name of target species}
 
-\item{subset}{default TRUE for a faster plotting subset of n = 2000. Set FALSE for all available data.}
+\item{subset}{default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.}
 }
 \value{
 a plot of sexed data with log regression slope and intercept
