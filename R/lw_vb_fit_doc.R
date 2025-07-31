@@ -2,16 +2,17 @@
 #'
 #' Contains log-log length-weight regression estimates for the top species of each survey group, separated by sex. 
 #'
-#' @format A data frame with 164 rows and 7 variables:
+#' @format A data frame with 8444 rows and 9 variables:
 #' \describe{
+#'   \item{fit_length}{fish lengths}
+#'   \item{fit_weight}{predicted weight at length}
+#'   \item{sex}{sex, M or F}
+#'   \item{a}{Scaling coefficient, intercept of length-weight regression }
+#'   \item{b}{exponent, slope of length-weight regression }
 #'   \item{region}{science center of data collection}
 #'   \item{survey}{survey within region}
 #'   \item{common}{common species name}
 #'   \item{scientific}{scientific species name}
-#'   \item{sex}{sex, M or F}
-#'   \item{a}{Scaling coefficient, intercept of length-weight regression }
-#'   \item{b}{exponent, slope of length-weight regression }
-#' }
 #'
 "lw_predictions"
 
