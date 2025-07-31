@@ -9,6 +9,7 @@
 #' @importFrom sf st_crop st_transform
 #' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_bw labs
 #' @importFrom patchwork wrap_plots
+#' @importFrom stringr str_wrap
 #' @export
 #'
 #' @examples
@@ -18,8 +19,7 @@
 #' data(predictions_nwfsc)
 #' data <- bind_rows(predictions_afsc, predictions_pbs, predictions_nwfsc)
 #' 
-#' fishmap(data, c("AFSC", "PBS", "NWFSC"), "arrowtooth flounder")
-#' fishmap(data, c("AK BSAI", "NWFSC"), "sablefish")
+#' fishmap(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 #' fishmap(data, "PBS", "dover sole")
 #' }
 fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"), common_name) {
@@ -51,6 +51,7 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
   
   # Creating empty list to store map data
   plot_list <- list()
+  caption <- ""
   
   # Loop for mapping
   for (i in subregion) {
@@ -66,6 +67,7 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
       combined <- rbind(west_coast, canada)
       year <- "2023"
       name <- "US West Coast"
+      caption <- "Survey year: 2024."
     }
     else if (i == "AK BSAI" | i == "AK GULF" | i == "AFSC"){
       # Alaska base map
@@ -76,8 +78,21 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
       canada <- ne_countries(scale = "medium", returnclass = "sf", country = "canada")
       canada <- st_crop(canada, c(xmin = -150, xmax = -130, ymin = 51, ymax = 70))
       combined <- rbind(alaska, canada)
-      year <- "2023/2024"
-      name <- "Alaska"
+      
+      if (i == "AFSC") {
+        year <- "2023/2024"
+        name <- "Alaska"
+        caption <- str_wrap("Survey year: Gulf of Alaska (2023), northern Bering Sea (2023), eastern Bering Sea (2024), Aleutian Islands (2024).", 45)
+      } else if (i == "AK BSAI") {
+        year <- "2023/2024"
+        name <- "Aleutians/Bering Sea"
+        caption <- str_wrap("Survey year: northern Bering Sea (2023), eastern Bering Sea (2024), Aleutian Islands (2024).", 45)
+      } else if (i == "AK GULF") {
+        year <- "2023"
+        name <- "Gulf of Alaska"
+        caption <- "Survey year: 2023."
+      }
+      
     } 
     else if (i == "PBS"){
       # Canada base map
@@ -97,6 +112,7 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
       combined <- bind_rows(west_coast, canada, alaska)
       year <- "2022/2023"
       name <- "Canada"
+      caption <- str_wrap("Survey year: Queen Charlotte Sound (2023), Hecate Strait (2023), Haida Gwaii (2022), Vancouver Island (2022).", 45)
     }
     
     proj <- st_transform(combined, crs = crs)
@@ -120,8 +136,8 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
       scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
       geom_sf(data = proj) +
       theme_bw() +
-      labs(x = "", y = "", title = paste0("Predicted Density ", name, " ", year),
-           caption = "Note: color scale is fourth-root transformed.")
+      labs(x = "", y = "", title = paste0("Predicted Density ", name),
+           caption = paste0("Note: color scale is fourth-root transformed.\n ", caption))
     
     # Adding map to the list
     plot_list[[length(plot_list) + 1]] <- p
