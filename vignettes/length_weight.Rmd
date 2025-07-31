@@ -1,0 +1,46 @@
+---
+title: "length_weight"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{length_weight}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE}
+library(fishyplots)
+```
+
+This function plots the data and prediction lines for length-weight relationships of a given species in a given dataset. Compatible biological datasets should first be loaded, :
+
+```{r}
+# Pull biological survey data
+  #individual bio datasets
+data(nwfsc_bio)
+data(pbs_bio)
+data(afsc_bio)
+bsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
+gulf_bio <- afsc_bio |> filter(survey == "AK GULF")
+  #to view all
+all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+```
+
+The prediction dataset generated from the model fits are called within the function. The function takes a biological dataset and the common or scientific name of a species.
+
+```{r}
+head(unique(all_data$common_name))
+head(unique(all_data$scientific_name))
+```
+
+Input one of the biological datasets to see plots of input species data for that region/survey. If given data with more than one survey present, facet_wrap will present plot windows for all 4 possible surveys. The argument `subset` defaults TRUE to plot a random subset of 10000 points per dataset for plotting speed. To see all available data points, set as FALSE.
+
+```{r}
+length_weight(all.data, "arrowtooth flounder")
+```
