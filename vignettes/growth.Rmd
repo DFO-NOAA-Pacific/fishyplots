@@ -1,0 +1,46 @@
+---
+title: "Plotting growth"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plotting growth}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This process is very similar to plotting age and length frequency. In addition to grabbing the biological survey data, we also need to get prediction data formulated from the von Bertalanffy function.
+
+```{r setup, message = FALSE}
+library(fishyplots)
+library(dplyr)
+```
+
+```{r}
+# Pull biological survey data
+data("nwfsc_bio")
+data("afsc_bio")
+data("pbs_bio")
+all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+
+# Pull prediction data
+data(vb_predictions)
+```
+
+This function takes in any number of subregions and 1 species.
+
+```{r}
+unique(all_data$survey)
+head(unique(all_data$common_name))
+```
+
+The function takes in both datasets, the desired region(s), and a species. The argument `facet_all` is optional and is automatically true if there are multiple subregions selected.
+
+```{r}
+plot_growth(all_data, vb_predictions, c("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
+```

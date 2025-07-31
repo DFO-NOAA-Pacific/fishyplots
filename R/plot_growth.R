@@ -17,11 +17,10 @@
 #' data(pbs_bio)
 #' data(afsc_bio)
 #' data(nwfsc_bio)
-#' nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
-#' data <- rbind(pbs_bio, afsc_bio, nwfsc_bio)
+#' data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 #' 
 #' plot_growth(data, vb_predictions, "AFSC", "walleye pollock")
-#' plot_growth(data, vb_predictions, ("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
+#' plot_growth(data, vb_predictions, c("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
 #' }
 plot_growth <- function(data, predictions, subregions, common, facet_all = TRUE) {
   data <- data |>
