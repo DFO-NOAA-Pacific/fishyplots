@@ -22,17 +22,15 @@
 #' fishmap(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 #' fishmap(data, "PBS", "dover sole")
 #' }
-fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK GULF"), common_name) {
-  
-  rrr <- unique(ifelse(subregion %in% c("AK BSAI", "AK GULF"), "AFSC", subregion))
-  Alaska_check <- ifelse(all(c("AK BSAI", "AK GULF") %in% subregion), "AFSC", subregion)
-  
+fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common_name) {
+  # 
   if(all(c("AK BSAI", "AK GULF") %in% subregion)) {
     subregion <- setdiff(subregion, c("AK BSAI", "AK GULF"))
     subregion <- unique(c("AFSC", subregion))
   }
   
   # Clean data
+  rrr <- unique(ifelse(subregion %in% c("AK BSAI", "AK GULF"), "AFSC", subregion))
   data <- data |> 
     filter(species == common_name) |>
     filter(sanity != FALSE) |>
@@ -51,7 +49,6 @@ fishmap <- function(data, subregion = c("AFSC", "NWFSC", "PBS", "AK BSAI", "AK G
   
   # Creating empty list to store map data
   plot_list <- list()
-  caption <- ""
   
   # Loop for mapping
   for (i in subregion) {
