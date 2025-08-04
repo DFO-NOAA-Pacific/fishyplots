@@ -72,7 +72,10 @@ plot_stan_dbi <- function(species, surveys) {
     ggplot2::xlab("Year") +
     #ggplot2::ggtitle(species)  +
     ggplot2::theme_bw() +
-    theme(legend.position="bottom")
+    labs(caption = "Note: Each survey is standardized to its own mean.") +
+    theme(legend.position="bottom", plot.caption.position = "plot",         # places it below the plot area
+          plot.caption = element_text(hjust = 0))
+    
   
   return(plot)
 }
