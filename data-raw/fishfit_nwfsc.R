@@ -12,7 +12,7 @@ spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "pacific h
 temp_file <- tempfile(fileext = ".rds")
 # Download the .rds file from GitHub (raw)
 download.file(
-  "https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/main/nwfsc-catch.rds",
+  "https://raw.githubusercontent.com/DFO-NOAA-Pacific/surveyjoin-data/main/nwfsc-catch-all.rds",
   destfile = temp_file,
   mode = "wb"  # Important: write as binary!
 )
@@ -35,7 +35,7 @@ spp_dictionary <- dplyr::rename(spp_dictionary, itis = TSN) |>
                    common_name = raw_common[1])
 
 catch_data <- dplyr::left_join(catch_data, spp_dictionary)
-catch_data <- clean_fishnames(catch_data)
+catch_data <- fishyplots:::clean_fishnames(catch_data)
 
 x <- spp_list |> pull(common_name)
 y <- catch_data |> pull(common_name)
@@ -60,7 +60,7 @@ for(i in 1:nrow(spp_list)) {
   joined <- dplyr::left_join(haul, subset_catch)
   
   # Fill in the 0s
-  joined$catch_weight[which(is.na(joined$catch_weight))] <- 0
+  joined$catch_wt[which(is.na(joined$catch_wt))] <- 0
   
   # Filter to most recent year
   joined <- dplyr::filter(joined, year %in% c(2024))
@@ -70,7 +70,7 @@ for(i in 1:nrow(spp_list)) {
   joined <- sdmTMB::add_utm_columns(joined, ll_names = c("lon_start", "lat_start"), utm_crs = 32610)
   
   # Create cpue column
-  joined$cpue <- joined$catch_weight / joined$effort
+  joined$cpue <- joined$catch_wt / joined$effort
   
   # Make mesh
   mesh <- sdmTMB::make_mesh(
@@ -174,10 +174,10 @@ table(pred_all$species)
 # Check species with no data
 no_data_species
 # Check which species have successful vs. unsuccessful models
-pred_all |> filter(sanity == TRUE) |> distinct(common_name)
-pred_all |> filter(sanity == FALSE) |> distinct(common_name)
+pred_all |> filter(sanity == TRUE) |> distinct(species)
+pred_all |> filter(sanity == FALSE) |> distinct(species)
 
-#fishmap(pred_all, "yellowtail rockfish")
+#fishmap(pred_all, "NWFSC", "chilipepper")
 
 predictions_nwfsc <- pred_all
 usethis::use_data(predictions_nwfsc, overwrite = TRUE)
