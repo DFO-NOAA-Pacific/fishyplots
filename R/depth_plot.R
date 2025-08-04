@@ -6,7 +6,7 @@
 #' @param sex show sex differentiation 
 #' @return a ggplot object
 #' @importFrom dplyr filter mutate group_by summarise ungroup
-#' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse
+#' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse facet_grid
 #' @importFrom patchwork plot_layout
 #' @export
 #'
@@ -84,23 +84,30 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
     return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
   }
   
-  # Determine levels
+  # Determine levels for plotting
+  # Get all age levels
   age_levels_all <- levels(counts1$age_group) #[seq(1, length(levels(counts1$age_group)), by = 10)]
+  # Get max age
   max_age <- max(counts2$age_years)
-  
+  # Extract age from age group
   start_ages <- as.numeric(gsub("^\\((\\d+),.*$", "\\1", age_levels_all))
+  # Get the indices for the actual ages of that species
   valid_indices <- which(start_ages <= max_age)
+  # Get the actual ages from all ages based on those indices
   age_levels <- age_levels_all[valid_indices]
+  # Get the indices for actual ages by 10 for the scale
   selected_indices <- seq(1, length(age_levels), by = 10)
+  # Get the by-10 age levels from valid ages
   age_levels <- age_levels[selected_indices]
   
-  # Determine labels
+  # Determine labels for plotting
+  # Extract all ages from age groups
   age_labels <- gsub("^\\((\\d+),.*$", "\\1", age_levels)
   age_labels <- as.numeric(age_labels)
+  # Format labels
   age_labels <- paste0(age_labels, "-", age_labels + 10)
   
-  #browser()
-  
+
   # Plotting
   p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = age_group)) +
     geom_col(position = "stack", width = 25) +

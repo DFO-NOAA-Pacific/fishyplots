@@ -1,0 +1,49 @@
+---
+title: "Plot age-depth relationship"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plot age-depth relationship}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+For this plot we will need biological data stored in three data frames in the `fishyplots` package which we can combine with `bind_rows` from `dplyr`.
+
+```{r setup, message = FALSE}
+library(fishyplots)
+library(dplyr)
+```
+
+```{r}
+data(afsc_bio)
+data(pbs_bio)
+data(nwfsc_bio)
+data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
+
+```
+
+This function takes in the data, specified region(s), and 1 species.
+
+```{r plot, fig.height = 5, fig.width = 7}
+depth_plot(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+```
+
+You can also view just one region and differentiate by sex.
+
+```{r plot2, fig.height = 5, fig.width = 5}
+depth_plot(data, c("NWFSC"), "arrowtooth flounder", sex = TRUE)
+```
+
+And if you really want to see sex differentiation across all regions, you can do that too! 
+```{r plot3, fig.height = 7, fig.width = 7}
+depth_plot(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder", sex= TRUE)
+```
+
+
