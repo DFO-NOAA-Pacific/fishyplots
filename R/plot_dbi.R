@@ -30,7 +30,7 @@
 
   
 # DBI plot function
-plot_dbi <- function(species, survey) {
+plot_dbi <- function(species, surveys) {
   
   data(all.dbi)
   
