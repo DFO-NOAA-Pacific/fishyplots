@@ -5,9 +5,10 @@
 #' @param common_name species common name 
 #' @return a ggplot object
 #' @importFrom scales trans_new
+#' @importFrom dplyr bind_rows
 #' @importFrom rnaturalearth ne_countries ne_states
 #' @importFrom sf st_crop st_transform
-#' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_bw labs
+#' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_minimal labs geom_sf_text coord_sf
 #' @importFrom patchwork wrap_plots
 #' @importFrom stringr str_wrap
 #' @export
@@ -50,31 +51,26 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
   # Creating empty list to store map data
   plot_list <- list()
   
+  # Map data
+  states <- ne_states(country = "united states of america", returnclass = "sf")
+  canada <- ne_states(returnclass = "sf", country = "canada") |> select(name, geometry)
+  mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = admin, geometry)
+  alaska <- states |> filter(name == "Alaska")
+  
   # Loop for mapping
   for (i in subregion) {
-    if (i == "NWFSC"){
-      # US coast base map
-      crs = 3157
-      states <- ne_states(country = "united states of america", returnclass = "sf")
-      west_coast <- states |> filter(name %in% c("California", "Oregon", "Washington")) |>
-        select(name, geometry)
-      west_coast <- st_crop(west_coast, c(xmin = -117, xmax = -130, ymin = 30, ymax = 50))
-      canada <- ne_countries(scale = "medium", returnclass = "sf", country = "canada") |> select(name = admin, geometry)
-      canada <- st_crop(canada, c(xmin = -128, xmax = -117, ymin = 45, ymax = 50))
-      combined <- rbind(west_coast, canada)
+    if (i == "NWFSC"){ 
+      combined <- bind_rows(states, canada, mexico)
+      proj <- st_transform(combined, crs = 3157)
+      proj <- suppressWarnings(st_crop(proj, c(xmin = -1000000, ymin = 3350000, xmax = 1200000, ymax = 5600000)))
       year <- "2023"
       name <- "US West Coast"
       caption <- "Survey year: 2024."
     }
     else if (i == "AK BSAI" | i == "AK GULF" | i == "AFSC"){
-      # Alaska base map
-      crs = 32602
-      alaska <- ne_countries(scale = "medium", returnclass = "sf", country = "united states of america")
-      alaska <- suppressWarnings(suppressMessages(
-        st_crop(alaska, c(xmin = -180, xmax = -129, ymin = 50, ymax = 72))))
-      canada <- ne_countries(scale = "medium", returnclass = "sf", country = "canada")
-      canada <- st_crop(canada, c(xmin = -150, xmax = -130, ymin = 51, ymax = 70))
-      combined <- rbind(alaska, canada)
+      combined <- bind_rows(alaska, canada, states)
+      proj <- st_transform(combined, crs = 32602)
+      proj <- suppressWarnings(st_crop(proj, c(xmin = -606409.9, ymin = 3190000, xmax = 3250000, ymax = 8000000)))
       
       if (i == "AFSC") {
         year <- "2023/2024"
@@ -91,28 +87,16 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
       }
       
     } 
-    else if (i == "PBS"){
-      # Canada base map
-      crs = 32610
-      canada <- ne_countries(scale = "medium", returnclass = "sf", country = "canada")
-      canada <- st_crop(canada, c(xmin = -140, xmax = -120, ymin = 48, ymax = 58))
-      
-      states <- ne_states(country = "united states of america", returnclass = "sf")
-      west_coast <- states |> filter(name %in% c("California", "Oregon", "Washington")) |>
-        select(name, geometry)
-      west_coast <- st_crop(west_coast, c(xmin = -120, xmax = -135, ymin = 47, ymax = 50))
-      
-      alaska <- ne_countries(scale = "medium", returnclass = "sf", country = "united states of america")
-      alaska <- suppressWarnings(suppressMessages(
-        st_crop(alaska, c(xmin = -135, xmax = -120, ymin = 50, ymax = 58))))
-      
-      combined <- bind_rows(west_coast, canada, alaska)
+    else if (i == "PBS"){ 
+      alaska <- states |> filter(name %in% "Alaska")
+      combined <- bind_rows(states, canada, alaska)
+      proj <- st_transform(combined, crs = 32610)
+      proj <- suppressWarnings(st_crop(proj, c(xmin = -5336622, ymin = 5150000, xmax = 850000, ymax = 6300000)))
       year <- "2022/2023"
       name <- "Canada"
       caption <- str_wrap("Survey year: Queen Charlotte Sound (2023), Hecate Strait (2023), Haida Gwaii (2022), Vancouver Island (2022).", 45)
     }
     
-    proj <- st_transform(combined, crs = crs)
     
     if (i == "AK GULF") {
       subset <- data |> filter(survey == "Gulf of Alaska Bottom Trawl Survey")
@@ -132,7 +116,9 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
       stat_summary_hex(data = subset, aes(x = X*1000, y = Y*1000, z = prediction), bins = 50) +
       scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
       geom_sf(data = proj) +
-      theme_bw() +
+      coord_sf(expand = FALSE) +
+      geom_sf_text(data = proj, aes(label = name), size = 2.7, fontface = "bold", check_overlap = TRUE) +
+      theme_minimal() +
       labs(x = "", y = "", title = paste0("Predicted Density ", name),
            caption = paste0("Note: color scale is fourth-root transformed.\n ", caption))
     
