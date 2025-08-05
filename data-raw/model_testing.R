@@ -76,12 +76,13 @@ get_parameters <- function(data, common_name) {
   share_range <- data |> select(share_range) |> pull()
   return(list(knots = knots, formula = formula, spatiotemporal1 = spatiotemporal1, spatiotemporal2 = spatiotemporal2, anisotropy = anisotropy, family = family, share_range = share_range))
 }
+params <- get_parameters(config_data, "arrowtooth flounder")
 
+# 50 knots 
 mesh <- sdmTMB::make_mesh(clean_dat, xy_cols = c("X", "Y"),
-                          n_knots = knots)
+                          n_knots = params[["knots"]])
 clean_dat$fyear <- as.factor(clean_dat$year)
 
-params <- get_parameters(config_data, "arrowtooth flounder")
 
 fit <- NULL
 fit <- try(sdmTMB(formula = catch_weight ~ 0 + fyear,
@@ -115,5 +116,12 @@ grid <- replicate_df(grid, time_name = "year",
 grid$fyear <- as.factor(grid$year)
 
 # Make predictions
+# return_tmb_object in order to use other functions afterwards
 pred_all <- predict(fit, grid, return_tmb_object = TRUE)
 
+index <- get_index(pred_all)
+ggplot(index, aes(year, est)) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.5) +
+  geom_line()
+
+cog <- get_cog(pred_all)
