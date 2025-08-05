@@ -4,10 +4,10 @@
 #' @param species species of interest common or scientific name 
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @return a tibble or ggplot object
-#' @importFrom dplyr group_by summarize mutate arrange bind_rows
+#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup
 #' @importFrom gfplot theme_pbs
-#' @importFrom tidyr pivot_wider
-#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle
+#' @importFrom tidyr pivot_wider complete
+#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete
 #' @importFrom stats na.omit
 #' @importFrom scales label_wrap
 #' 

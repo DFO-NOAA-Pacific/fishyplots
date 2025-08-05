@@ -10,10 +10,10 @@
 #'   \item{a}{Scaling coefficient, intercept of length-weight regression }
 #'   \item{b}{exponent, slope of length-weight regression }
 #'   \item{region}{science center of data collection}
+#'   \item{common_name}{common species name}
 #'   \item{survey}{survey within region}
-#'   \item{common}{common species name}
-#'   \item{scientific}{scientific species name}
-#'
+#'   \item{scientific_name}{scientific species name}
+#' }
 "lw_predictions"
 
 #' Alternate data storage for von Bertalanffy predictions
