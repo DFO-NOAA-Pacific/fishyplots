@@ -5,7 +5,7 @@
 #' Joined data from design based biomass estimates calculated separately by each science center
 #'
 #' @format ## `all.dbi`
-#' A data frame with 3986 rows and 8 columns:
+#' A data frame with 4154 rows and 8 columns:
 #' \describe{
 #'   \item{region}{Research center that gathered data}
 #'   \item{survey_group}{Grouping of surveys used for shiny app}
