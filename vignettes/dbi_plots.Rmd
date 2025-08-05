@@ -1,0 +1,43 @@
+---
+title: "dbi_plots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dbi_plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE}
+library(fishyplots)
+library(dplyr)
+```
+
+ Design-based index (DBI) functions use data collected and calculated by associated science centers. These calculation methods may differ among science centers, but in general they give an estimate of fish biomass for a survey year with upper and lower 95% confidence intervals.
+ This data set is available in this package's data-raw and are called within the DBI functions `plot_dbi()` and `plot_stan_dbi()`. The standardized indices are calculated within the `plot_stan_dbi()` function by dividing a survey's data by the survey's mean. 
+```{r}
+data("all.dbi")
+```
+ 
+ 
+The functions take a species common or scientific name and one or more `surveys`. `surveys` may be a single survey area, a list of survey areas, or a survey group. 
+For survey group "AK BSAI" (Alaska Bering Sea, Aleutian Islands), the survey "U.S. Eastern Bering Sea Standard Region" is excluded in favor of the extended "U.S. Eastern Bering Sea Standard Plus NW Region" data.
+
+```{r}
+#survey names
+unique(all.dbi$survey)
+#grouped survey names
+unique(all.dbi$survey_group)
+```
+If multiple surveys or a survey group is passed in `plot_dbi()`, multiple plots will be shown separately. If multiple surveys or a survey group is passed in `plot_stan_dbi()`, data will be overlayed. 
+```{r}
+plot_dbi(species = "arrowtooth flounder", surveys = c("SYN HS", "SYN QCS", "SYN WCHG"))
+plot_stan_dbi(species = "arrowtooth flounder", surveys = "PBS")
+```
+

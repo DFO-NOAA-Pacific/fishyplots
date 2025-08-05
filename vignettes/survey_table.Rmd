@@ -1,0 +1,45 @@
+---
+title: "survey_table"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{survey_table}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE}
+library(fishyplots)
+library(dplyr)
+```
+
+The survey_table function creates a tile plot with labels to represent the number and type of samples taken from each region yearly. First, load compatible datasets from the package:
+```{r}
+# Pull biological survey data
+data("nwfsc_bio")
+data("afsc_bio")
+data("pbs_bio")
+all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+```
+
+The function takes a biological dataset and a species common or scientific name.
+```{r}
+head(unique(all_data$common_name))
+head(unique(all_data$scientific_name))
+```
+
+The optional argument `form` controls the structure of the output. The default, `form = 2` outputs a ggplot object. Alternatively, `form = 1` outputs a completed tibble of the same information. 
+```{r}
+survey_table(data = all_data,
+             species = "arrowtooth flounder",
+             form = 2)
+survey_table(data = all_data,
+             species = "arrowtooth flounder",
+             form = 1)
+```

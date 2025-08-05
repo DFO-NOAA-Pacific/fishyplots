@@ -42,5 +42,7 @@ head(unique(all_data$scientific_name))
 Input one of the biological datasets to see plots of input species data for that region/survey. If given data with more than one survey present, facet_wrap will present plot windows for all 4 possible surveys. The argument `subset` defaults TRUE to plot a random subset of 10000 points per dataset for plotting speed. To see all available data points, set as FALSE.
 
 ```{r}
-length_weight(all.data, "arrowtooth flounder")
+length_weight(data = all.data,
+              species = "arrowtooth flounder",
+              subset = TRUE)
 ```
