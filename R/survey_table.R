@@ -186,12 +186,12 @@ if (form == 2) {
     theme(
       axis.ticks.x = element_blank(),
       axis.ticks.y = element_blank(), 
-      axis.text.x = element_text(angle = 45, hjust = 1) # tilt years to reduce overlapping text
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 8) # tilt years to reduce overlapping text
     ) +
     ggplot2::guides(fill = "none") + xlab("") + ylab("") +
     geom_text(aes(label = ifelse(n_samples > 0, label, "")), #do not label 0s
               colour = "black", 
-              size = 3, alpha = 1
+              size = 3, alpha = 1, fontface = "bold"
     ) +
     ggplot2::scale_y_discrete(position = "left", labels = scales::label_wrap(10))+
     scale_x_continuous(breaks = seq(
@@ -202,7 +202,7 @@ if (form == 2) {
     coord_cartesian(expand = FALSE)
   
   if(length(unique(bio_data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank())
+    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 10))
   }
   
   return(plot)
