@@ -96,8 +96,12 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
     if (nrow(subset(counts1, sex_group == "Male")) < 5 & nrow(subset(counts1, sex_group == "Female")) < 5) {
       return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
     }
+  } else {
+    if (nrow(counts1) < 5) {
+      return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
+    }
   }
-  
+  #browser()
   # Determine levels for plotting
   # Get all age levels
   age_levels_all <- levels(counts1$age_group) #[seq(1, length(levels(counts1$age_group)), by = 10)]
