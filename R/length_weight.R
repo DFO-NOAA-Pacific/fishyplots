@@ -3,7 +3,7 @@
 #' @param data region bio data to be plotted. Preload from data file, see examples.
 #' @param species common or scientific name of target species
 #' @param subset default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.
-#' @return a plot of sexed data with log regression slope and intercept
+#' @return a plot of sexed data with log-log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate
 #' @importFrom grid unit
