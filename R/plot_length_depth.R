@@ -38,7 +38,11 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   }
   
   # Get rid of decimals in length
-  clean_data$length_cm <- round(clean_data$length_cm)
+  # Correct for even number bias by creating function instead of using round()
+  get_rounded_lengths <- function(x) {
+    floor(x + 0.5)
+  }
+  clean_data$length_cm <- get_rounded_lengths(clean_data$length_cm)
   
   # Check for enough data
   if (nrow(clean_data) == 0) {
@@ -94,11 +98,11 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   # Check that there is enough data in the counts
   if (by_sex == TRUE) {
     if (nrow(subset(counts1, sex_group == "Male")) < 5 & nrow(subset(counts1, sex_group == "Female")) < 5) {
-      return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
+      return(ggplot() + theme_void() + ggtitle("Not enough length-depth data available."))
     }
   } else {
     if (nrow(counts1) < 5) {
-      return(ggplot() + theme_void() + ggtitle("!!!Not enough age-depth data available."))
+      return(ggplot() + theme_void() + ggtitle("Not enough length-depth data available."))
     }
   }
   
