@@ -14,7 +14,7 @@ length_weight(data, species, subset = TRUE)
 \item{subset}{default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.}
 }
 \value{
-a plot of sexed data with log regression slope and intercept
+a plot of sexed data with log-log regression slope and intercept
 }
 \description{
 Main function to plot length-weight relationships by sex
