@@ -3,6 +3,7 @@
 export(age_frequency)
 export(fishmap)
 export(length_frequency)
+export(length_ts)
 export(length_weight)
 export(map_cpue)
 export(my_func)

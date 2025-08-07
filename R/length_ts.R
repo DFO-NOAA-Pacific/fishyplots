@@ -1,0 +1,88 @@
+#' Main function to plot mean lengths over time by sex
+#'
+#' @param data region bio data to be plotted. Preload from data file, see examples.
+#' @param species common or scientific name of target species
+#' @return a time series plot of mean lengths by sex
+#' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual scale_fill_manual theme_bw theme element_blank element_text xlab ylab geom_label geom_ribbon
+#' @importFrom dplyr filter mutate
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data("nwfsc_bio")
+#' data("pbs_bio")
+#' data("afsc_bio")
+#' akgulf_bio <- afsc_bio %>% filter(survey == "AK GULF")
+#' akbsai_bio <- afsc_bio %>% filter(survey == "AK BSAI")
+#' all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+#' 
+#' length_ts(all_data, "arrowtooth flounder")
+#' length_ts(akgulf_bio, "atka mackerel")
+#' }
+
+length_ts <- function(data, species) {
+  
+  if (any(data$common_name == species | data$scientific_name == species)) {
+    spec.data <- data  %>% 
+      filter(species == common_name | species == scientific_name) %>%
+      filter(!sex == "U", !is.na(length_cm)) #remove U sex, rows with NA lengths or widths
+  } else (
+    #stop(paste("Species name", "'", species,"'", "not found in this dataset.")))
+    stop(return(ggplot() + theme_void() + ggtitle("No length data available."))))
+  
+  plot.data <- spec.data %>% 
+    select(survey, year, common_name, sex, length_cm ) %>% 
+    group_by(survey, year, sex ) %>% 
+    summarise(avg.length = mean(length_cm),
+              se = sd(length_cm, na.rm = TRUE) / sqrt(n())) 
+  
+  total.data <- spec.data %>% 
+    select(survey, year, common_name, length_cm ) %>% 
+    group_by(survey, year) %>% 
+    summarise(avg.length.tot = mean(length_cm),
+              se.tot = sd(length_cm, na.rm = TRUE) / sqrt(n())) 
+  
+  sex.color <- c("M" = "#E69F00", "F" = "#009E73")
+  legend <- data.frame(label = c("M", "F"),
+                       color = c("M","F"),
+                       hjust = c(2.5,1.75),
+                       vjust = c(3,2))
+
+  plot <-  ggplot(data = plot.data, mapping = aes(x = year, y = avg.length, color = sex, fill = sex)) +
+    geom_point()+
+    geom_line(linewidth = 1)+
+    geom_ribbon(aes(x = year, ymin = avg.length - se, ymax = avg.length + se), alpha = 0.2, color = NA)+
+    scale_color_manual(values = sex.color,
+                       labels = c("M" = "Male", "F" = "Female"))+
+    scale_fill_manual(values = sex.color,
+                      labels = c("M" = "Male", "F" = "Female"))+
+    ggtitle("Average Length") +
+    ylab("Length (cm)") +
+    xlab("Year") +
+    theme_bw()+ 
+    theme(legend.title = element_blank(),
+          panel.grid = element_blank(),
+          legend.position = "none",
+          axis.text.x = element_text(angle = 45, hjust = 1))+
+    geom_label( #f/m legend
+      data = legend %>% filter(label == "M"),
+      aes(x = -Inf, y = Inf, label = label, color = color, fill = color),
+      hjust = -1.6, vjust = 1,
+      alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3) +
+    geom_label( #f/m legend
+      data = legend %>% filter(label == "F"),
+      aes(x = -Inf, y = Inf, label = label, color = color, fill = color),
+      hjust = -0.5, vjust = 1,
+      alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
+  
+  if(any(spec.data$region %in% "AFSC")) {
+    plot <- plot + labs(caption = "Note: AFSC may have additional length samples not availible in this app's datasets. Please see our 'Data' tab.") 
+  } 
+  
+  if(length(unique(spec.data$survey)) > 1){
+    plot <-  plot + facet_wrap( ~ survey, nrow = 1, drop = FALSE)
+  }
+ 
+  
+  return(plot)
+} 

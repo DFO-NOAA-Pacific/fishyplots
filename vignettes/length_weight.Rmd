@@ -1,8 +1,8 @@
 ---
-title: "length_weight"
+title: "length_weight_ts"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{length_weight}
+  %\VignetteIndexEntry{length_weight_ts}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,7 +19,7 @@ library(fishyplots)
 library(dplyr)
 ```
 
-This function plots the data and prediction lines for length-weight relationships of a given species in a given dataset. Compatible biological datasets should first be loaded, :
+The functions `length_weight()` and `length_ts()` have similar input structures. `length_weight()` plots the data and prediction lines for length-weight relationships of a given species in a given dataset. `length_ts()` plots a time series of average lengths by sex for a given species and dataset. Compatible biological datasets should first be loaded :
 
 ```{r}
 # Pull biological survey data
@@ -33,17 +33,20 @@ gulf_bio <- afsc_bio |> filter(survey == "AK GULF")
 all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
 ```
 
-The prediction dataset generated from the model fits are called within the function. The function takes a biological dataset and the common or scientific name of a species.
+For `length_weight()`, the prediction dataset generated from the model fits are called within the function. The function takes a biological dataset and the common or scientific name of a species.
 
 ```{r}
 head(unique(all_data$common_name))
 head(unique(all_data$scientific_name))
 ```
 
-Input one of the biological datasets to see plots of input species data for that region/survey. If given data with more than one survey present, facet_wrap will present plot windows for all 4 possible surveys. The argument `subset` defaults TRUE to plot a random subset of 10000 points per dataset for plotting speed. To see all available data points, set as FALSE.
+Input one of the biological datasets to see plots of input species data for that region/survey. If given data with more than one survey present, facet_wrap will present plot windows for all 4 possible surveys. 
+For `length_weight()`, the argument `subset` defaults TRUE to plot a random subset of 10000 points per dataset for plotting speed. To see all available data points, set as FALSE.
 
 ```{r}
 length_weight(data = all_data,
               species = "arrowtooth flounder",
               subset = TRUE)
+length_ts(data = all_data,
+              species = "arrowtooth flounder")
 ```
