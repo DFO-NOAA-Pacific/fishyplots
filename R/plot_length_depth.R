@@ -5,7 +5,7 @@
 #' @param common species common name 
 #' @param by_sex show sex differentiation 
 #' @return a ggplot object
-#' @importFrom dplyr filter mutate group_by summarise ungroup distinct slice ungroup
+#' @importFrom dplyr filter mutate group_by summarise ungroup distinct slice_min ungroup arrange
 #' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse facet_grid
 #' @importFrom patchwork plot_layout
 #' @export
@@ -16,7 +16,7 @@
 #' data(pbs_bio)
 #' data(nwfsc_bio)
 #' all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
-#' depth_plot(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+#' plot_length_depth(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 #' }
 plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common, by_sex = FALSE) {
   # Sex differentiation automatic for 1 region
@@ -111,14 +111,15 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
              floor(length_start / 20) * 20, "-",
              floor(length_start / 20) * 20 + 20
            ))
-  labels <- unique(counts1$length_group20)
   # For each 20cm bin, pick the first representative break
   rep_bins <- counts1 |>
-    distinct(length_group, length_group20) |>
+    distinct(length_group, length_group20, length_start) |>
     group_by(length_group20) |>
-    slice(1) |>   # first 1cm bin per 20cm group
-    ungroup()
+    slice_min(order_by = length_start, n = 1) |>   # first 1cm bin per 20cm group
+    ungroup() |>
+    arrange(length_start)
   breaks <- rep_bins$length_group
+  labels <- rep_bins$length_group20
   
   # Plotting
   p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = length_group)) +
@@ -147,7 +148,7 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
     scale_x_reverse()
   
   # Construct plots based on conditionals
-  caption <- "Note: unsexed fish removed."
+  caption <- "Note: unsexed fish have been removed."
   if (length(subregion) > 1) {
     if (by_sex == TRUE) {
       p1 <- p1 + facet_grid(sex_group ~ survey, drop = FALSE) 

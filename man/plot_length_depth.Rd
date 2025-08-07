@@ -32,6 +32,6 @@ data(afsc_bio)
 data(pbs_bio)
 data(nwfsc_bio)
 all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
-depth_plot(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+plot_length_depth(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 }
 }
