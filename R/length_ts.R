@@ -22,6 +22,7 @@
 
 length_ts <- function(data, species) {
   
+  #subset data
   if (any(data$common_name == species | data$scientific_name == species)) {
     spec.data <- data  %>% 
       filter(species == common_name | species == scientific_name) %>%
@@ -29,6 +30,9 @@ length_ts <- function(data, species) {
   } else (
     #stop(paste("Species name", "'", species,"'", "not found in this dataset.")))
     stop(return(ggplot() + theme_void() + ggtitle("No length data available."))))
+  
+  spec.data$survey <- factor(spec.data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+                             labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   plot.data <- spec.data %>% 
     select(survey, year, common_name, sex, length_cm ) %>% 
@@ -47,7 +51,7 @@ length_ts <- function(data, species) {
                        color = c("M","F"),
                        hjust = c(2.5,1.75),
                        vjust = c(3,2))
-
+  
   plot <-  ggplot(data = plot.data, mapping = aes(x = year, y = avg.length, color = sex, fill = sex)) +
     geom_point()+
     geom_line(linewidth = 1)+
