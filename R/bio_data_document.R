@@ -74,3 +74,23 @@
 #' }
 #'
 "ak_survey_lengths"
+
+#' all_catch: Catch data (occurrences) for all surveys/regions
+#'
+#' Contains catch data from all surveys/regions for available top species. Catch data pulled from packages nwfscSurvey and surveyjoin
+#'
+#' @format A data frame with 983297 rows and 11 variables:
+#' \describe{
+#'   \item{region}{region of data collection}
+#'   \item{survey}{subregion}
+#'   \item{common_name}{common name of specimen}
+#'   \item{scientific_name}{scientific name of specimen}
+#'   \item{year}{year tows were conducted}
+#'   \item{n_tows}{total number of tows conducted}
+#'   \item{n_pos}{number of positive tows}
+#'   \item{proportion_pos}{proportion of total tows that were positive}
+#'   
+#'   
+#' }
+#'
+"all_catch"
