@@ -2,7 +2,7 @@
 # to be used in survey_table
 
 #local large file: 
-#afsc_lengths <- read.csv("~/Callie/School/uw senior/SU 25/Varanasi/ak_akfin_length_composition.csv") 
+#afsc_lengths <- read.csv(local file : ak_akfin_length_composition.csv) 
 afsc_haul  <- readRDS("data-raw/afsc-haul.rds")
 afsc_specimen  <- readRDS("data-raw/afsc-specimen.rds")
 afsc_spp_list <- read.csv("data-raw/afsc_joined.csv")
