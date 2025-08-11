@@ -128,19 +128,38 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "Unread Age Structures") %>% #unread structures only
     na.omit() #omit NAs where n age structures = n read ages
 
-  ## Combine ##
+ ## trawl counts ##
+  data(all_catch)
+  
+  total_count <- all_catch %>% 
+    filter(common_name == species | scientific_name == species, survey %in% spec.data$survey) %>% 
+    ungroup() %>% 
+    rename(yr = year, n_samples = n_tows) %>% 
+    select(yr, survey, n_samples) %>% 
+    mutate(sample_type = "Total Tows") %>% 
+    filter(!n_samples == 0)
+    
+  pos_prop <- all_catch %>% 
+    filter(common_name == species | scientific_name == species, survey %in% spec.data$survey) %>% 
+    ungroup() %>%
+    rename(yr = year, n_samples = proportion_pos) %>% 
+    select(yr, survey, n_samples) %>% 
+    mutate(sample_type = "Percent Positive Tows")%>% 
+    filter(!n_samples == 0)
+  
+  
+  
+   ## Combine ##
   # Combine data into one DF
   bio_data <-length_count %>%
-    bind_rows(weight_count) %>%
-    bind_rows(age_count) %>%
-    bind_rows(unread_count) %>% 
+    bind_rows(weight_count,age_count, unread_count, total_count, pos_prop) %>%
     arrange(yr) %>% 
     ungroup() %>% 
     group_by(survey) %>% 
     complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0)) %>% 
     ungroup() %>% 
     mutate(common = unique(spec.data$common_name)) %>% 
-    mutate(sample_type=factor(sample_type, levels=c("Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
+    mutate(sample_type=factor(sample_type, levels=c("Percent Positive Tows","Total Tows", "Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
     
 
 #### TABLE ####
@@ -160,11 +179,13 @@ if (form == 1) {
 if (form == 2) {
 
 # Convert count to label with "K" for thousands
-  bio_data$label <- ifelse(bio_data$n_samples < 100,
+  bio_data$label <- ifelse(bio_data$n_samples < 1,
+                           paste0(round(bio_data$n_samples * 100, 0), "%"), # formats percents
+                           ifelse(bio_data$n_samples < 100,
                               as.character(bio_data$n_samples), # keep as number if under 100
                               ifelse(bio_data$n_samples < 950, # cutoff
                                      as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
-                                     paste0(round(bio_data$n_samples / 1000), "K") )) # if over 1000, round to nearest and label with k
+                                     paste0(round(bio_data$n_samples / 1000), "K") ))) # if over 1000, round to nearest and label with k
   
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
@@ -173,6 +194,7 @@ if (form == 2) {
     mutate(n_scaled = (n_samples - min(n_samples, na.rm = TRUE)) / 
              (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE))) %>%
     ungroup()
+
   
 #create plot
   plot <- ggplot(bio_data, aes(yr, sample_type)) +
