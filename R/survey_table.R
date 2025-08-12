@@ -147,7 +147,13 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "Percent Positive Tows")%>% 
     filter(!n_samples == 0)
   
-  
+  if(nrow(total_count) == 0){
+    total_count <- weight_count[1:3] %>% mutate(sample_type = "Total Tows")
+    pos_prop <- weight_count[1:3] %>% mutate(sample_type = "Percent Positive Tows")
+    #fill with 0s
+    total_count[3] <- NA
+    pos_prop[3] <- NA
+    } 
   
    ## Combine ##
   # Combine data into one DF
@@ -160,8 +166,7 @@ survey_table <- function(data, species, form = 2) {
     ungroup() %>% 
     mutate(common = unique(spec.data$common_name)) %>% 
     mutate(sample_type=factor(sample_type, levels=c("Percent Positive Tows","Total Tows", "Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
-    
-
+  
 #### TABLE ####
 if (form == 1) {
   # Return wide table
@@ -179,22 +184,21 @@ if (form == 1) {
 if (form == 2) {
 
 # Convert count to label with "K" for thousands
-  bio_data$label <- ifelse(bio_data$n_samples < 1,
+  bio_data$label <-  ifelse(bio_data$n_samples < 1,
                            paste0(round(bio_data$n_samples * 100, 0), "%"), # formats percents
                            ifelse(bio_data$n_samples < 100,
                               as.character(bio_data$n_samples), # keep as number if under 100
                               ifelse(bio_data$n_samples < 950, # cutoff
                                      as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
-                                     paste0(round(bio_data$n_samples / 1000), "K") ))) # if over 1000, round to nearest and label with k
+                                     paste0(round(bio_data$n_samples / 1000), "K") )))# if over 1000, round to nearest and label with k
   
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   bio_data <- bio_data %>%
     group_by(sample_type, survey) %>%
     mutate(n_scaled = (n_samples - min(n_samples, na.rm = TRUE)) / 
-             (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE))) %>%
-    ungroup()
-
+             (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE)))
+  
   
 #create plot
   plot <- ggplot(bio_data, aes(yr, sample_type)) +
@@ -222,6 +226,23 @@ if (form == 2) {
       by = 2))+ #label every 2 years
     #ggplot2::ggtitle(paste("Survey Specimen Counts -", unique(spec.data$common_name))) +
     coord_cartesian(expand = FALSE)
+  
+  #check for no catch data: 
+  no_catch <- bio_data %>%
+    filter(sample_type == "Total Tows") %>%
+    group_by(survey) %>%
+    summarize(all_zero = all(n_samples == 0), .groups = "drop") %>%
+    filter(all_zero) %>%
+    pull(survey)
+  if(any(unique(bio_data$survey) %in% no_catch)) {
+    plot <- plot +
+      annotate(
+        "text", 
+        x = -Inf, y = -Inf, label = "No catch data available",
+        hjust = -0.2, vjust = -1.5,
+        size = 4, color = "black"
+      )
+  }
   
   if(length(unique(bio_data$survey)) > 1) {
     plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 10))
