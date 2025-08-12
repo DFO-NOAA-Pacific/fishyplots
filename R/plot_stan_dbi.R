@@ -16,7 +16,6 @@
 plot_stan_dbi <- function(species, surveys) {
   
  data(all.dbi)
- 
   
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
@@ -57,8 +56,13 @@ plot_stan_dbi <- function(species, surveys) {
     combined_df <- dplyr::bind_rows(combined_df, filtered)
   }
   
-  #set colors: Okabe-ito coloblind pallete
-  ok_colors <- setNames(palette.colors(palette = "Okabe-Ito")[2:(length(unique(combined_df$survey))+1)], unique(combined_df$survey))
+  #manually extend okabe ito  coloblind pallete
+  ok_base <- palette.colors(palette = "Okabe-Ito")[2:9]
+  ok_extend <- c(ok_base, "#555555", "#999933")
+  
+  # Assign to surveys
+  ok_colors <- setNames(ok_extend[seq_along(unique(combined_df$survey))],
+                        unique(combined_df$survey))
   
   # Plot using said df
   plot <- ggplot2::ggplot(data = combined_df, 
@@ -74,7 +78,7 @@ plot_stan_dbi <- function(species, surveys) {
     ggplot2::theme_bw() +
     labs(caption = "Note: Each survey is standardized to its own mean.") +
     theme(legend.position="bottom", plot.caption.position = "plot",         # places it below the plot area
-          plot.caption = element_text(hjust = 0))
+          plot.caption = element_text(hjust = 0, size = 10))
     
   
   return(plot)
