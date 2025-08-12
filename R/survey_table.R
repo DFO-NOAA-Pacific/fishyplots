@@ -243,7 +243,7 @@ if (form == 2) {
   }
   
   if(length(unique(bio_data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 10))
+    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 10), strip.text.x = element_text(hjust = 0))
   }
   
   return(plot)
