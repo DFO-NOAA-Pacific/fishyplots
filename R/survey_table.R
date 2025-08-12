@@ -186,11 +186,9 @@ if (form == 2) {
 # Convert count to label with "K" for thousands
   bio_data$label <-  ifelse(bio_data$n_samples < 1,
                            paste0(round(bio_data$n_samples * 100, 0), "%"), # formats percents
-                           ifelse(bio_data$n_samples < 100,
-                              as.character(bio_data$n_samples), # keep as number if under 100
-                              ifelse(bio_data$n_samples < 950, # cutoff
-                                     as.character(round(bio_data$n_samples, digits = -2)),  # round to nearest hundred if under 950 (above will round to 1000 -> 1K)
-                                     paste0(round(bio_data$n_samples / 1000), "K") )))# if over 1000, round to nearest and label with k
+                           ifelse(bio_data$n_samples < 1000,
+                              as.character(bio_data$n_samples), # keep as number if under 1000
+                                     paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
   
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
