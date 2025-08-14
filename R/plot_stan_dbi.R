@@ -63,23 +63,32 @@ plot_stan_dbi <- function(species, surveys) {
   # Assign to surveys
   ok_colors <- setNames(ok_extend[seq_along(unique(combined_df$survey))],
                         unique(combined_df$survey))
-  
-  # Plot using said df
+
+    # Plot using said df
   plot <- ggplot2::ggplot(data = combined_df, 
                           ggplot2::aes(x = year, y = stand_est, color = survey)) +
-    ggplot2::geom_line(linewidth = 1) +
-    ggplot2::geom_point() +
+    ggplot2::geom_line(linewidth = 1, alpha = 0.6) +
+    ggplot2::geom_point(size = 4) +
     ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = stand_lwr, ymax = stand_upr, fill = survey), color = NA, alpha = 0.1) +
     ggplot2::scale_color_manual(values = ok_colors) +
     ggplot2::scale_fill_manual(values = ok_colors) +
+    scale_x_continuous(minor_breaks = 1990:2024,
+                       breaks = seq(1990, 2024, by = 5),
+                       labels = function(x) ifelse(x %% 5 == 0, x, "")) +
     ggplot2::ylab("Standardized Biomass Index") +
     ggplot2::xlab("Year") +
     #ggplot2::ggtitle(species)  +
     ggplot2::theme_bw() +
     labs(caption = "Note: Each survey is standardized to its own mean.") +
-    theme(legend.position="bottom", plot.caption.position = "plot",         # places it below the plot area
-          plot.caption = element_text(hjust = 0, size = 10))
-    
+    theme(legend.position="bottom",panel.grid.major.y = element_blank(),panel.grid.minor.y = element_blank(),
+          plot.caption.position = "plot",         # places it below the plot area
+          plot.caption = element_text(hjust = 0, size = 12),
+          axis.text.x = element_text(size = 12),
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          panel.grid.major.x = element_line(size = 1.5, color = "grey95"),       # thicker for major
+          panel.grid.minor.x = element_line(size = 0.7, color = "grey95"))
   
   return(plot)
+  
 }

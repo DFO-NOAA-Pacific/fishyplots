@@ -55,15 +55,25 @@ plot_dbi <- function(species, surveys) {
   
   
     plot <- ggplot2::ggplot(data = subset) +
-      ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = lwr, ymax = upr), fill = "lightgray") +
+      ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = lwr, ymax = upr), fill = "gray75", alpha = 0.7) +
       ggplot2::geom_line(ggplot2::aes(x = year, y = est)) +
-      ggplot2::geom_point(ggplot2::aes(x = year, y = est)) +
+      ggplot2::geom_point(ggplot2::aes(x = year, y = est), size = 2.5) +
       ggplot2::ylab("Biomass (mt)") +
       ggplot2::xlab("Year") +
       #ggplot2::ggtitle(unique(subset$common_name)) +
       ggplot2::theme_bw() +
+      scale_x_continuous(minor_breaks = 1990:2024,
+                         breaks = seq(1990, 2024, by = 5),
+                         labels = function(x) ifelse(x %% 5 == 0, x, "")) +
       ggplot2::scale_y_continuous(
-        labels = function(x) format(x, big.mark = ",", scientific = FALSE))
+        labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
+      theme(axis.text.x = element_text(size = 12),
+          axis.title.x = element_text(size = 15),
+          axis.title.y = element_text(size = 15),
+          panel.grid.major.x = element_line(size = 1.5, color = "grey95"),       # thicker for major
+          panel.grid.minor.x = element_line(size = 0.7, color = "grey95"),
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank())
     
     if(length(surveys) > 1) {
       plot <- plot + facet_wrap( ~ survey, nrow = 2, scales = "free_y", drop = FALSE) + theme(strip.background = element_blank())
