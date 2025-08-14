@@ -51,7 +51,7 @@ survey_table <- function(data, species, form = 2) {
     na.omit() %>% #omit rows with no data from being counted
     group_by(yr, survey) %>%
     summarize(n_samples=n())%>% #sum sample number over grouping (year)
-    mutate(sample_type = "Length") #label as length count
+    mutate(sample_type = "Lengths") #label as length count
 
   # use special dataset for AFSC lengths
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
@@ -59,7 +59,7 @@ survey_table <- function(data, species, form = 2) {
     ak_length_count <-  ak_survey_lengths %>% 
       group_by(year, survey) %>%
       summarize(n_samples=sum(length.count))%>%
-      mutate(sample_type = "Length") %>% 
+      mutate(sample_type = "Lengths") %>% 
       rename(yr = year) %>% 
       na.omit()
     
@@ -79,7 +79,7 @@ survey_table <- function(data, species, form = 2) {
     na.omit() %>% 
     group_by(yr, survey) %>%
     summarize(n_samples=n())%>%
-    mutate(sample_type = "Weight")
+    mutate(sample_type = "Weights")
 
 ## Ages ##
   #count ages
@@ -87,7 +87,7 @@ survey_table <- function(data, species, form = 2) {
     na.omit() %>% 
     group_by(yr, survey) %>%
     summarize(n_samples=n())%>%
-    mutate(sample_type = "Age")
+    mutate(sample_type = "Ages")
   # fill with 0 if no ages taken (ex nwfsc Sebastes zacentrus)
   if(nrow(age_count) == 0) {
     age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Age")}
@@ -125,7 +125,7 @@ survey_table <- function(data, species, form = 2) {
            n_unread = n_samples.x - n_ages, #unread age strugtures = n age str - n ages read
            n_samples = ifelse(n_unread == 0, NA, n_unread)) %>% # make 0 into NA
     select(survey, yr, n_samples) %>%
-    mutate(sample_type = "Unread Age Structures") %>% #unread structures only
+    mutate(sample_type = "Unread Ages") %>% #unread structures only
     na.omit() #omit NAs where n age structures = n read ages
 
  ## trawl counts ##
@@ -144,12 +144,12 @@ survey_table <- function(data, species, form = 2) {
     ungroup() %>%
     rename(yr = year, n_samples = proportion_pos) %>% 
     select(yr, survey, n_samples) %>% 
-    mutate(sample_type = "Percent Positive Tows")%>% 
+    mutate(sample_type = "% Positive Tows")%>% 
     filter(!n_samples == 0)
   
   if(nrow(total_count) == 0){
     total_count <- weight_count[1:3] %>% mutate(sample_type = "Total Tows")
-    pos_prop <- weight_count[1:3] %>% mutate(sample_type = "Percent Positive Tows")
+    pos_prop <- weight_count[1:3] %>% mutate(sample_type = "% Positive Tows")
     #fill with 0s
     total_count[3] <- NA
     pos_prop[3] <- NA
@@ -162,10 +162,10 @@ survey_table <- function(data, species, form = 2) {
     arrange(yr) %>% 
     ungroup() %>% 
     group_by(survey) %>% 
-    complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0)) %>% 
+    tidyr::complete(yr = seq(min(yr), max(yr)), sample_type = unique(sample_type), fill = list(n_samples = 0)) %>% 
     ungroup() %>% 
     mutate(common = unique(spec.data$common_name)) %>% 
-    mutate(sample_type=factor(sample_type, levels=c("Percent Positive Tows","Total Tows", "Unread Age Structures", "Age", "Weight", "Length"))) #set order for plotting later
+    mutate(sample_type=factor(sample_type, levels=c("% Positive Tows","Total Tows", "Unread Ages", "Ages", "Weights", "Lengths"))) #set order for plotting later
   
 #### TABLE ####
 if (form == 1) {
@@ -185,7 +185,7 @@ if (form == 2) {
 
 # Convert count to label with "K" for thousands
   bio_data$label <-  ifelse(bio_data$n_samples < 1,
-                           paste0(round(bio_data$n_samples * 100, 0), "%"), # formats percents
+                           paste0(round(bio_data$n_samples * 100, 0)), # formats percents
                            ifelse(bio_data$n_samples < 1000,
                               as.character(bio_data$n_samples), # keep as number if under 1000
                                      paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
@@ -210,12 +210,13 @@ if (form == 2) {
     theme(
       axis.ticks.x = element_blank(),
       axis.ticks.y = element_blank(), 
-      axis.text.x = element_text(angle = 45, hjust = 1, size = 8) # tilt years to reduce overlapping text
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 10), # tilt years to reduce overlapping text
+      axis.text.y = element_text(size = 11)
     ) +
     ggplot2::guides(fill = "none") + xlab("") + ylab("") +
     geom_text(aes(label = ifelse(n_samples > 0, label, "")), #do not label 0s
               colour = "black", 
-              size = 3, alpha = 1, fontface = "bold"
+              size = 3.5, alpha = 1, fontface = "bold"
     ) +
     ggplot2::scale_y_discrete(position = "left", labels = scales::label_wrap(10))+
     scale_x_continuous(breaks = seq(
@@ -243,7 +244,7 @@ if (form == 2) {
   }
   
   if(length(unique(bio_data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 10), strip.text.x = element_text(hjust = 0))
+    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 13), strip.text.x = element_text(hjust = 0))
   }
   
   return(plot)
