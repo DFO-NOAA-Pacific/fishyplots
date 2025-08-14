@@ -57,6 +57,7 @@ survey_table <- function(data, species, form = 2) {
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
     data("ak_survey_lengths") # get ak lengths data
     ak_length_count <-  ak_survey_lengths %>% 
+      filter(common_name == species) %>% 
       group_by(year, survey) %>%
       summarize(n_samples=sum(length.count))%>%
       mutate(sample_type = "Lengths") %>% 
@@ -72,7 +73,6 @@ survey_table <- function(data, species, form = 2) {
       bind_rows(ak_length_count %>% filter(survey %in% which.asfc))
   }
 
-  
 ## Weights ##
   # nothing species, just count of weight data
   weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) %>%
