@@ -90,7 +90,7 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "Ages")
   # fill with 0 if no ages taken (ex nwfsc Sebastes zacentrus)
   if(nrow(age_count) == 0) {
-    age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Age")}
+    age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Ages")}
   
 ## Unread Ages ##
   # for most data, n age structures is total specimen count
