@@ -8,6 +8,7 @@
 #' @importFrom dplyr filter mutate group_by summarise ungroup
 #' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse facet_grid
 #' @importFrom patchwork plot_layout
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -23,20 +24,20 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
   # Sex differentiation automatic for 1 region
   if (length(subregion) == 1) {
     by_sex <- TRUE
-    data <- data |> filter(survey == subregion)
+    data <- data |> filter(.data$survey == subregion)
   }
   
   # Clean data 
   clean_data <- data |>
-    filter(survey %in% subregion) |>
-    filter(common_name == common) |>
-    filter(!is.na(depth_m)) |>
-    filter(!is.na(age_years)) |>
-    filter(sex != "U")
+    filter(.data$survey %in% subregion) |>
+    filter(.data$common_name == common) |>
+    filter(!is.na(.data$depth_m)) |>
+    filter(!is.na(.data$age_years)) |>
+    filter(.data$sex != "U")
   
   # Remove unsexed fish if user inputs sex differentiation
   if (by_sex) {
-    clean_data <- clean_data |> filter(sex != "U")
+    clean_data <- clean_data |> filter(.data$sex != "U")
   }
   
   # Check for enough data
@@ -47,34 +48,34 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
   # Create age, length, sex, and depth bins
   clean_data <- clean_data |>
     mutate(
-      sex_group = if (by_sex == TRUE) sex else "all", # dummy grouping for when no sex differentiation
-      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 25)),
-      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 50)),
-      age_group = cut(age_years, breaks = seq(0, 90, by = 1))
+      sex_group = if (by_sex == TRUE) .data$sex else "all", # dummy grouping for when no sex differentiation
+      depth_bin1 = cut(.data$depth_m, breaks = seq(0, max(.data$depth_m, na.rm = TRUE), by = 25)),
+      depth_bin2 = cut(.data$depth_m, breaks = seq(0, max(.data$depth_m, na.rm = TRUE), by = 50)),
+      age_group = cut(.data$age_years, breaks = seq(0, 90, by = 1))
     )
   
   # Counts for each graph
   counts1 <- clean_data |>
-    group_by(survey, sex_group, depth_bin1, age_group) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin1, .data$age_group) |>
     summarise(count = n(), .groups = "drop") |>
-    filter(!is.na(age_group)) |>
-    group_by(survey, sex_group, depth_bin1) |>
+    filter(!is.na(.data$age_group)) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin1) |>
     mutate(
-      prop = count / sum(count),
-      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(depth_bin1)))) +
-                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(depth_bin1))))) / 2
+      prop = .data$count / sum(.data$count),
+      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(.data$depth_bin1)))) +
+                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(.data$depth_bin1))))) / 2
     ) |>
     ungroup()
   
   counts2 <- clean_data |>
-    filter(!is.na(age_years)) |>
-    group_by(survey, sex_group, depth_bin2, age_years) |>
+    filter(!is.na(.data$age_years)) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin2, .data$age_years) |>
     summarise(count = n(), .groups = "drop") |>
-    group_by(survey, sex_group, depth_bin2) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin2) |>
     mutate(
-      prop = count / sum(count),
-      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(depth_bin2)))) +
-                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(depth_bin2))))) / 2
+      prop = .data$count / sum(.data$count),
+      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(.data$depth_bin2)))) +
+                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(.data$depth_bin2))))) / 2
     ) |>
     ungroup()
   
@@ -88,12 +89,12 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
   counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
   # Debug
-  counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(age_group), is.finite(prop))
-  counts2 <- counts2 |> filter(is.finite(depth_mid), is.finite(age_years), is.finite(prop))
+  counts1 <- counts1 |> filter(is.finite(.data$depth_mid), is.finite(.data$age_group), is.finite(.data$prop))
+  counts2 <- counts2 |> filter(is.finite(.data$depth_mid), is.finite(.data$age_years), is.finite(.data$prop))
   
   # Check that there is enough data
   if (by_sex == TRUE) {
-    if (nrow(subset(counts1, sex_group == "Male")) < 5 & nrow(subset(counts1, sex_group == "Female")) < 5) {
+    if (nrow(subset(counts1, counts1$sex_group == "Male")) < 5 & nrow(subset(counts1, counts1$sex_group == "Female")) < 5) {
       return(ggplot() + theme_void() + ggtitle("Not enough age-depth data available."))
     }
   } else {
@@ -126,7 +127,7 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
   age_labels <- paste0(age_labels, "-", age_labels + 10)
   
   # Plotting
-  p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = age_group)) +
+  p1 <- ggplot(counts1, aes(x = .data$depth_mid, y = .data$count, fill = .data$age_group)) +
     geom_col(position = "stack", width = 25) +
     scale_fill_viridis_d(name = "Age (years)",
                          breaks = age_levels,
@@ -142,7 +143,7 @@ plot_age_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GU
     scale_x_continuous(breaks = if (max(counts1$depth_mid, na.rm = TRUE) >= 100) 
       seq(100, max(counts1$depth_mid), by = 100) else pretty(counts1$depth_mid))
   
-  p2 <- ggplot(counts2, aes(x = depth_mid, y = age_years, fill = prop)) +
+  p2 <- ggplot(counts2, aes(x = .data$depth_mid, y = .data$age_years, fill = .data$prop)) +
     geom_tile() +
     scale_fill_viridis_c(option = "magma", name = "Proportional \nage \ndistribution \nby depth", direction = -1) +
     labs(title = "Age-depth heatmap", x = "Depth (m)", y = "Age (years)") +

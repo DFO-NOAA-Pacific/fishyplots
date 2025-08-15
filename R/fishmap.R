@@ -11,6 +11,7 @@
 #' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_minimal labs geom_sf_text coord_sf
 #' @importFrom patchwork wrap_plots
 #' @importFrom stringr str_wrap
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -33,9 +34,9 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
   # Clean data
   rrr <- unique(ifelse(subregion %in% c("AK BSAI", "AK GULF"), "AFSC", subregion))
   data <- data |> 
-    filter(species == common_name) |>
-    filter(sanity != FALSE) |>
-    filter(region %in% rrr)
+    filter(.data$species == common_name) |>
+    filter(.data$sanity != FALSE) |>
+    filter(.data$region %in% rrr)
   
   if (nrow(data) == 0) {
     stop(paste0("No data for ", common_name, " in ", region, "."))
@@ -99,11 +100,11 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
     
     
     if (i == "AK GULF") {
-      subset <- data |> filter(survey == "Gulf of Alaska Bottom Trawl Survey")
+      subset <- data |> filter(.data$survey == "Gulf of Alaska Bottom Trawl Survey")
     } else if (i == "AK BSAI") {
-      subset <- data |> filter(survey != "Gulf of Alaska Bottom Trawl Survey")
+      subset <- data |> filter(.data$survey != "Gulf of Alaska Bottom Trawl Survey")
     } else {
-      subset <- data |> filter(region == i)
+      subset <- data |> filter(.data$region == i)
     }
     
     
@@ -113,7 +114,7 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
     
     # Constructing map
     p <- ggplot() +
-      stat_summary_hex(data = subset, aes(x = X*1000, y = Y*1000, z = prediction), bins = 50) +
+      stat_summary_hex(data = subset, aes(x = .data$X*1000, y = .data$Y*1000, z = .data$prediction), bins = 50) +
       scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
       geom_sf(data = proj) +
       coord_sf(expand = FALSE) +

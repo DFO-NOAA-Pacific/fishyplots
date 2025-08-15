@@ -8,6 +8,7 @@
 #' @importFrom dplyr filter mutate group_by summarise ungroup distinct slice_min ungroup arrange
 #' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse facet_grid
 #' @importFrom patchwork plot_layout
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -22,19 +23,19 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   # Sex differentiation automatic for 1 region
   if (length(subregion) == 1) {
     by_sex <- TRUE
-    data <- data |> filter(survey == subregion)
+    data <- data |> filter(.data$survey == subregion)
   }
   
   # Clean data 
   clean_data <- data |>
-    filter(survey %in% subregion) |>
-    filter(common_name == common) |>
-    filter(!is.na(depth_m)) |>
-    filter(!is.na(length_cm))
+    filter(.data$survey %in% subregion) |>
+    filter(.data$common_name == common) |>
+    filter(!is.na(.data$depth_m)) |>
+    filter(!is.na(.data$length_cm))
   
   # Remove unsexed fish if user inputs sex differentiation
   if (by_sex) {
-    clean_data <- clean_data |> filter(sex != "U")
+    clean_data <- clean_data |> filter(.data$sex != "U")
   }
   
   # Get rid of decimals in length
@@ -52,34 +53,34 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   # Create age, length, sex, and depth bins
   clean_data <- clean_data |>
     mutate(
-      sex_group = if (by_sex == TRUE) sex else "all", # dummy grouping for when no sex differentiation
-      depth_bin1 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 25)),
-      depth_bin2 = cut(depth_m, breaks = seq(0, max(depth_m, na.rm = TRUE), by = 50)),
-      length_group = cut(length_cm, breaks = seq(0, max(length_cm, na.rm = TRUE), by = 1))
+      sex_group = if (by_sex == TRUE) .data$sex else "all", # dummy grouping for when no sex differentiation
+      depth_bin1 = cut(.data$depth_m, breaks = seq(0, max(.data$depth_m, na.rm = TRUE), by = 25)),
+      depth_bin2 = cut(.data$depth_m, breaks = seq(0, max(.data$depth_m, na.rm = TRUE), by = 50)),
+      length_group = cut(.data$length_cm, breaks = seq(0, max(.data$length_cm, na.rm = TRUE), by = 1))
     )
   
   # Counts for each graph
   counts1 <- clean_data |>
-    group_by(survey, sex_group, depth_bin1, length_group) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin1, .data$length_group) |>
     summarise(count = n(), .groups = "drop") |>
-    filter(!is.na(length_group)) |>
-    group_by(survey, sex_group, depth_bin1) |>
+    filter(!is.na(.data$length_group)) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin1) |>
     mutate(
-      prop = count / sum(count),
-      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(depth_bin1)))) +
-                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(depth_bin1))))) / 2
+      prop = .data$count / sum(.data$count),
+      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(.data$depth_bin1)))) +
+                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(.data$depth_bin1))))) / 2
     ) |>
     ungroup()
   
   counts2 <- clean_data |>
-    filter(!is.na(length_cm)) |>
-    group_by(survey, sex_group, depth_bin2, length_cm) |>
+    filter(!is.na(.data$length_cm)) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin2, .data$length_cm) |>
     summarise(count = n(), .groups = "drop") |>
-    group_by(survey, sex_group, depth_bin2) |>
+    group_by(.data$survey, .data$sex_group, .data$depth_bin2) |>
     mutate(
-      prop = count / sum(count),
-      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(depth_bin2)))) +
-                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(depth_bin2))))) / 2
+      prop = .data$count / sum(.data$count),
+      depth_mid = (as.numeric(sub("\\[|\\(|\\]", "", sub(",.*", "", as.character(.data$depth_bin2)))) +
+                     as.numeric(sub("\\]|\\)", "", sub(".*,", "", as.character(.data$depth_bin2))))) / 2
     ) |>
     ungroup()
   
@@ -92,12 +93,12 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
   # Debug
-  counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(length_group), is.finite(prop))
-  counts2 <- counts2 |> filter(is.finite(depth_mid), is.finite(length_cm), is.finite(prop))
+  counts1 <- counts1 |> filter(is.finite(.data$depth_mid), is.finite(.data$length_group), is.finite(.data$prop))
+  counts2 <- counts2 |> filter(is.finite(.data$depth_mid), is.finite(.data$length_cm), is.finite(.data$prop))
   
   # Check that there is enough data in the counts
   if (by_sex == TRUE) {
-    if (nrow(subset(counts1, sex_group == "Male")) < 5 & nrow(subset(counts1, sex_group == "Female")) < 5) {
+    if (nrow(subset(counts1, counts1$sex_group == "Male")) < 5 & nrow(subset(counts1, counts1$sex_group == "Female")) < 5) {
       return(ggplot() + theme_void() + ggtitle("Not enough length-depth data available."))
     }
   } else {
@@ -110,23 +111,23 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
   # Create a new column for 20cm bins
   counts1$length_group <- factor(counts1$length_group)
   counts1 <- counts1 |>
-    mutate(length_start = as.numeric(gsub("^\\((\\d+),.*$", "\\1", length_group)),
+    mutate(length_start = as.numeric(gsub("^\\((\\d+),.*$", "\\1", .data$length_group)),
            length_group20 = paste0(
-             floor(length_start / 20) * 20, "-",
-             floor(length_start / 20) * 20 + 20
+             floor(.data$length_start / 20) * 20, "-",
+             floor(.data$length_start / 20) * 20 + 20
            ))
   # For each 20cm bin, pick the first representative break
   rep_bins <- counts1 |>
-    distinct(length_group, length_group20, length_start) |>
-    group_by(length_group20) |>
-    slice_min(order_by = length_start, n = 1) |>   # first 1cm bin per 20cm group
+    distinct(.data$length_group, .data$length_group20, .data$length_start) |>
+    group_by(.data$length_group20) |>
+    slice_min(order_by = .data$length_start, n = 1) |>   # first 1cm bin per 20cm group
     ungroup() |>
-    arrange(length_start)
+    arrange(.data$length_start)
   breaks <- rep_bins$length_group
   labels <- rep_bins$length_group20
   
   # Plotting
-  p1 <- ggplot(counts1, aes(x = depth_mid, y = count, fill = length_group)) +
+  p1 <- ggplot(counts1, aes(x = .data$depth_mid, y = .data$count, fill = .data$length_group)) +
     geom_col(position = "stack", width = 25) +
     scale_fill_viridis_d(name = "Length (cm)",
                          breaks = breaks,
@@ -141,7 +142,7 @@ plot_length_depth <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK
     scale_x_continuous(breaks = if (max(counts1$depth_mid, na.rm = TRUE) >= 100) 
       seq(100, max(counts1$depth_mid), by = 100) else pretty(counts1$depth_mid))
   
-  p2 <- ggplot(counts2, aes(x = depth_mid, y = length_cm, fill = prop)) +
+  p2 <- ggplot(counts2, aes(x = .data$depth_mid, y = .data$length_cm, fill = .data$prop)) +
     geom_tile() +
     scale_fill_viridis_c(option = "mako", name = "Proportional \nlength \ndistribution \nby depth", direction = -1) +
     labs(title = "Length-depth heatmap", x = "Depth (m)", y = "Length (cm)") +

@@ -11,6 +11,7 @@
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot aes geom_histogram facet_wrap theme_bw labs geom_errorbar geom_point theme
 #' @importFrom ggsidekick theme_sleek
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -28,9 +29,9 @@
 length_frequency <- function(data, subregions, common, time_series = TRUE, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
-    filter(!is.na(length_cm)) |>
-    filter(survey %in% subregions) |>
-    filter(common_name == common)
+    filter(!is.na(.data$length_cm)) |>
+    filter(.data$survey %in% subregions) |>
+    filter(.data$common_name == common)
   
   # Exit if no data
   if (nrow(data_clean) == 0) {
@@ -40,9 +41,9 @@ length_frequency <- function(data, subregions, common, time_series = TRUE, facet
   
   if (time_series == FALSE) {
     data_clean <- data_clean |>
-      complete(year = full_seq(year, 1))
+      complete(year = full_seq(.data$year, 1))
     graph <- data_clean |>
-      ggplot(aes(x = length_cm)) +
+      ggplot(aes(x = .data$length_cm)) +
       geom_histogram(binwidth = 4) +
       facet_wrap(~year, nrow = 3, drop = FALSE) +
       theme_bw() +
@@ -56,18 +57,18 @@ length_frequency <- function(data, subregions, common, time_series = TRUE, facet
                                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
     
     summary_stats <- data_clean |>
-      group_by(year, survey) |>
-      summarize(median = quantile(length_cm, 0.5),
-                mean = mean(length_cm),
-                p25 = quantile(length_cm, 0.25),
-                p75 = quantile(length_cm, 0.75),
-                p97.5 = quantile(length_cm, 0.975),
-                p2.5 = quantile(length_cm, 0.025),
+      group_by(.data$year, .data$survey) |>
+      summarize(median = quantile(.data$length_cm, 0.5),
+                mean = mean(.data$length_cm),
+                p25 = quantile(.data$length_cm, 0.25),
+                p75 = quantile(.data$length_cm, 0.75),
+                p97.5 = quantile(.data$length_cm, 0.975),
+                p2.5 = quantile(.data$length_cm, 0.025),
                 .groups = "drop")
     
-    graph <- ggplot(data = summary_stats, aes(x = year, y = mean)) +
-      geom_errorbar(aes(ymin = p2.5, ymax = p97.5), width = 0.5, linewidth = 0.5, color = "grey") +
-      geom_errorbar(aes(ymin = p25, ymax = p75), width = 0.5, linewidth = 1) +
+    graph <- ggplot(data = summary_stats, aes(x = .data$year, y = .data$mean)) +
+      geom_errorbar(aes(ymin = .data$p2.5, ymax = .data$p97.5), width = 0.5, linewidth = 0.5, color = "grey") +
+      geom_errorbar(aes(ymin = .data$p25, ymax = .data$p75), width = 0.5, linewidth = 1) +
       geom_point(shape = 21, fill = "grey", color = "black", size = 1.5, stroke = 1.2) +
       labs(x = "", y = "Mean length (cm)", title = "Length frequency",
            caption = "Error bars show 50% and 95% quantiles.") +

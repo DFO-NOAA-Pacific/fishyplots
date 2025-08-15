@@ -13,6 +13,7 @@
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot aes theme_bw labs scale_x_continuous theme scale_fill_manual theme_void ggtitle
 #' @importFrom ggridges geom_density_ridges 
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -27,10 +28,10 @@
 age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
-    filter(!is.na(age_years)) |>
-    filter(sex != "U") |>
-    filter(survey %in% subregions) |>
-    filter(common_name == common) 
+    filter(!is.na(.data$age_years)) |>
+    filter(.data$sex != "U") |>
+    filter(.data$survey %in% subregions) |>
+    filter(.data$common_name == common) 
   
   # Exit if no data
   if (nrow(data_clean) == 0) {
@@ -45,20 +46,20 @@ age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, 
   # Eg. cutoff = 7 and age = 15, so 15-7 = 8, 8/5 = 1.6, floor = 1, 5*1+7 = 12, 12 is the lower bound of the cutoff
   data_clean <- data_clean |>
     mutate(age_group = case_when(
-      age_years < cutoff ~ as.character(age_years),
-      age_years >= cutoff ~ paste0(5 * floor((age_years - cutoff) / 5) + cutoff, "-",
-                                   5*floor((age_years-cutoff) / 5) + cutoff + 4)))
+      .data$age_years < cutoff ~ as.character(.data$age_years),
+      .data$age_years >= cutoff ~ paste0(5 * floor((.data$age_years - cutoff) / 5) + cutoff, "-",
+                                   5*floor((.data$age_years - cutoff) / 5) + cutoff + 4)))
   
   # Create an ordered list of age_groups by their lower bounds
   age_levels <- data_clean |>
-    distinct(age_group) |>
-    mutate(age_group_lower = as.numeric(str_extract(age_group, "^[0-9]+"))) |>
-    arrange(age_group_lower)
+    distinct(.data$age_group) |>
+    mutate(age_group_lower = as.numeric(str_extract(.data$age_group, "^[0-9]+"))) |>
+    arrange(.data$age_group_lower)
   
   # Convert age_group to a factor with customized sorting from age_levels 
   data_clean <- data_clean |>
-    mutate(age_group = factor(age_group, levels = age_levels$age_group)) |>
-    mutate(age_group_num = as.numeric(age_group))
+    mutate(age_group = factor(.data$age_group, levels = age_levels$age_group)) |>
+    mutate(age_group_num = as.numeric(.data$age_group))
   
   # Create labels based off the age_group (we will use age_group_num to plot)
   labels <- levels(data_clean$age_group)
@@ -68,20 +69,14 @@ age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, 
   region_labels <- c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast")
   data_clean$survey <- factor(data_clean$survey, levels = region_levels, labels = region_labels)
   
-  # Create dummy data so that all surveys are faceted regardless of missing data
-  # dummy <- data_clean |>
-  #   complete(survey = factor(region_labels, levels = region_labels),
-  #            year = full_seq(min(data_clean$year, na.rm = TRUE):max(data_clean$year, na.rm = TRUE), 1),
-  #            fill = list(age_years = NA, age_group = NA, age_group_num = NA))
-  # 
   # Create base graph 
   if (sex == FALSE) {
     graph <- data_clean |> 
-      ggplot(aes(x = age_group_num, y = factor(year))) +
+      ggplot(aes(x = .data$age_group_num, y = factor(.data$year))) +
       geom_density_ridges(stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE)
   } else if (sex == TRUE) {
     graph <- data_clean |> 
-      ggplot(aes(x = age_group_num, y = factor(year), fill = sex)) +
+      ggplot(aes(x = .data$age_group_num, y = factor(.data$year), fill = .data$sex)) +
       geom_density_ridges(alpha = 0.5, stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE) +
       scale_fill_manual(values = c("M" = "#008b8b", "F" = "#daa520"))
     }
@@ -102,7 +97,6 @@ age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, 
     scale_x_continuous(breaks = 1:length(labels), labels = labels) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank())
-    #geom_blank(data = dummy, aes(x = 1, y = factor(min(year, na.rm = TRUE))))
   
   return(graph)
 }

@@ -3,8 +3,9 @@
 #' @param species common or scientific name of species of interest. See examples for options per dataset.
 #' @param surveys surveys or survey group, required to specify servey/region to be plotted. See examples for options per dataset.
 #' @return a ggplot object, plot of design based indicies
-#' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab ggtitle
+#' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab ggtitle element_line element_text element_blank theme facet_wrap
 #' @importFrom dplyr %>% select rename
+#' @importFrom utils data
 #' @export
 #'
 #' @examples
@@ -18,7 +19,9 @@
 #' 
 #' all.dbi %>%
 #' filter(region == "AFSC") %>%
-#' distinct(survey) # do not use "U.S. Eastern Bering Sea Standard Region" ; use "U.S. Eastern Bering Sea Standard Plus NW Region"
+#' distinct(survey) 
+#' # do not use "U.S. Eastern Bering Sea Standard Region"; 
+#' # use "U.S. Eastern Bering Sea Standard Plus NW Region"
 #' 
 #' 
 #' # usage examples

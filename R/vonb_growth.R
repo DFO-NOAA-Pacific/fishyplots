@@ -6,6 +6,7 @@
 #' @importFrom FSA findGrowthStarts
 #' @importFrom stats nls predict
 #' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs annotate
+#' @importFrom rlang .data
 #' @export
 #'
 #' @examples
@@ -28,16 +29,16 @@
 vonb_growth <- function(data) {
   # Clean data
   data_clean <- data |>
-    filter(!is.na(length_cm)) |>
-    filter(!is.na(age_years)) |>
-    filter(sex == "F" | sex == "M")
+    filter(!is.na(.data$length_cm)) |>
+    filter(!is.na(.data$age_years)) |>
+    filter(.data$sex == "F" | .data$sex == "M")
   
   # Define the von Bertalanffy growth function
   vb <- length_cm ~ Linf * (1 - exp(-K * (age_years - t0)))
   
   # Subset data by sex
-  data_male <- subset(data_clean, sex == "M")
-  data_female <- subset(data_clean, sex == "F")
+  data_male <- subset(data_clean, .data$sex == "M")
+  data_female <- subset(data_clean, .data$sex == "F")
   
   # Get starting values for Linf, K, and t0 using FSA package
   starts_male <- findGrowthStarts(formula = length_cm ~ age_years, data = data_male)
@@ -69,10 +70,10 @@ vonb_growth <- function(data) {
   growth_preds <- rbind(pred_male, pred_female)
   
   # Plot growth function
-  ggplot(data = data_clean, aes(x = age_years, y = length_cm, color = sex)) +
+  ggplot(data = data_clean, aes(x = .data$age_years, y = .data$length_cm, color = .data$sex)) +
     geom_jitter(alpha = 0.1) +
     scale_color_manual(values = c("M" = "#E69F00", "F" = "#009E73")) +
-    geom_line(data = growth_preds, aes(x = age_years, y = fit, color = sex), inherit.aes = FALSE) +
+    geom_line(data = growth_preds, aes(x = .data$age_years, y = .data$fit, color = .data$sex), inherit.aes = FALSE) +
     theme_bw() +
     labs(x = "Age (years)", y = "Length (cm)", title = "Growth") +
     annotate("label", x = Inf, y = -Inf, label = paste0("k = ", xx[2], "; Lmin = ", xx[3], "; Linf = ", xx[1]), 
