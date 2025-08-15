@@ -56,9 +56,9 @@ group_survey <- function(data){
 clean_fishnames <- function(data) {
   data <- data %>% 
     mutate(
-      common_name = str_to_lower(common_name),
-      scientific_name = str_to_lower(scientific_name),
-      common_name = case_when(
+      common_name = stringr::str_to_lower(.data$common_name),
+      scientific_name = stringr::str_to_lower(.data$scientific_name),
+      common_name = dplyr::case_when(
         grepl("merluccius productus", scientific_name) ~ "pacific hake",
         grepl("squalus suckleyi", scientific_name) ~ "pacific spiny dogfish",
         TRUE ~ common_name # keep original if no match

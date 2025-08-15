@@ -39,7 +39,7 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
     filter(.data$region %in% rrr)
   
   if (nrow(data) == 0) {
-    stop(paste0("No data for ", common_name, " in ", region, "."))
+    stop(paste0("No data for ", common_name, " in this region."))
   }
   
   # Color scale transformation
@@ -54,9 +54,9 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
   
   # Map data
   states <- ne_states(country = "united states of america", returnclass = "sf")
-  canada <- ne_states(returnclass = "sf", country = "canada") |> select(name, geometry)
-  mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = admin, geometry)
-  alaska <- states |> filter(name == "Alaska")
+  canada <- ne_states(returnclass = "sf", country = "canada") |> select(.data$name, .data$geometry)
+  mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = .data$admin, .data$geometry)
+  alaska <- states |> filter(.data$name == "Alaska")
   
   # Loop for mapping
   for (i in subregion) {
@@ -118,7 +118,7 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
       scale_fill_viridis_c(trans = fourth_root, option = "magma", name = "CPUE (kg/km\u00B2)") +
       geom_sf(data = proj) +
       coord_sf(expand = FALSE) +
-      geom_sf_text(data = proj, aes(label = name), size = 2.7, fontface = "bold", check_overlap = TRUE) +
+      geom_sf_text(data = proj, aes(label = .data$name), size = 2.7, fontface = "bold", check_overlap = TRUE) +
       theme_minimal() +
       labs(x = "", y = "", title = paste0("Predicted Density ", name),
            caption = paste0("Note: color scale is fourth-root transformed.\n ", caption))

@@ -5,7 +5,7 @@
 #' @param common species common name 
 #' @param by_sex show sex differentiation 
 #' @return a ggplot object
-#' @importFrom dplyr filter mutate group_by summarise ungroup distinct slice_min ungroup arrange
+#' @importFrom dplyr filter mutate group_by summarise ungroup distinct slice_min ungroup arrange n
 #' @importFrom ggplot2 ggplot theme_void ggtitle geom_col geom_tile facet_wrap scale_fill_viridis_c scale_fill_viridis_d coord_cartesian labs theme_bw theme scale_x_continuous coord_flip scale_x_reverse facet_grid
 #' @importFrom patchwork plot_layout
 #' @importFrom rlang .data
