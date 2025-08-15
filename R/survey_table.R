@@ -184,8 +184,9 @@ if (form == 1) {
 if (form == 2) {
 
 # Convert count to label with "K" for thousands
-  bio_data$label <-  ifelse(bio_data$n_samples < 1,
-                           paste0(round(bio_data$n_samples * 100, 0)), # formats percents
+  bio_data$label <-  ifelse(bio_data$n_samples < 1 & bio_data$n_samples > 0,
+                            ifelse(round(bio_data$n_samples * 100, 0) == 0, "<1", #if a positive percent rounds to 0, label as <1
+                                   as.character(round(bio_data$n_samples * 100, 0))), # formats decimals to whole number percents
                            ifelse(bio_data$n_samples < 1000,
                               as.character(bio_data$n_samples), # keep as number if under 1000
                                      paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
@@ -196,7 +197,6 @@ if (form == 2) {
     group_by(sample_type, survey) %>%
     mutate(n_scaled = (n_samples - min(n_samples, na.rm = TRUE)) / 
              (max(n_samples, na.rm = TRUE) - min(n_samples, na.rm = TRUE)))
-  
   
 #create plot
   plot <- ggplot(bio_data, aes(yr, sample_type)) +
