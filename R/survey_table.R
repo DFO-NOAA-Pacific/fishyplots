@@ -148,10 +148,20 @@ survey_table <- function(data, species, form = 2) {
     filter(!n_samples == 0)
   
   if(nrow(total_count) == 0){
-    total_count <- weight_count[1:3] %>% mutate(sample_type = "Total Tows")
+    total_count <- weight_count[1:2]
     pos_prop <- weight_count[1:3] %>% mutate(sample_type = "% Positive Tows")
-    #fill with 0s
-    total_count[3] <- NA
+    
+    #fill count with data from a complete species (same number of tows are conducted no matter the species collected, some species data is just not available)
+    #arrowtooth is complete
+    arrow.fill<-all_catch %>% 
+      filter(common_name == "arrowtooth flounder", survey %in% spec.data$survey) %>% 
+      ungroup() %>% 
+      rename(yr = year, n_samples = n_tows) %>% 
+      select(yr, survey, n_samples) %>% 
+      filter(!n_samples == 0)
+    total_count <- left_join(total_count, arrow.fill, by = c("yr", "survey")) %>% 
+      mutate(sample_type = "Total Tows")
+    #fill % with NAs
     pos_prop[3] <- NA
     } 
   
@@ -228,7 +238,7 @@ if (form == 2) {
   
   #check for no catch data: 
   no_catch <- bio_data %>%
-    filter(sample_type == "Total Tows") %>%
+    filter(sample_type == "% Positive Tows") %>%
     group_by(survey) %>%
     summarize(all_zero = all(n_samples == 0), .groups = "drop") %>%
     filter(all_zero) %>%
