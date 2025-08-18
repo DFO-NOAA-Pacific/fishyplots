@@ -8,7 +8,7 @@ library(stringr)
 ###### NWFSC data ######
 NWFSC_spp_list <- read.csv("data-raw/nwfsc_joined.csv") # top species in NWFSC
 nwfsc_survey <- nwfscSurvey::pull_bio(survey = "NWFSC.Combo", common_name = NWFSC_spp_list$common_name) #pull bio data for top species
-copy <- nwfsc_survey
+
 # tidy names, select columns of interest
 nwfsc_bio <- janitor::clean_names(nwfsc_survey) %>%
   dplyr::mutate(region = "NWFSC", survey = "NWFSC") %>% # add science center
@@ -29,7 +29,11 @@ afsc_bio <- dplyr::inner_join(afsc_specimen, afsc_years, by = "event_id") %>% # 
   dplyr::rename(age_years = age) %>% 
   dplyr::select(region, survey, year, common_name, scientific_name, sex, length_cm, weight_kg, age_years, depth_m) %>% 
   group_survey() %>% 
-  clean_fishnames()
+  clean_fishnames() %>% 
+  #remove early afsc years where arrowtooth and kamchatka flounder were conflated
+  filter(!(survey == "AK BSAI" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>% 
+  filter(!(survey == "AK GULF" & common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% 
+  filter(!(survey == "AK GULF" & common_name == "kamchatka founder" & year %in% 1982:1994))
   
 ###### PBS data ######
 

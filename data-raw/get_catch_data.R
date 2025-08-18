@@ -77,7 +77,10 @@ akgulf_catch <- akgulf_surveys%>%
   mutate(proportion_pos = n_pos/n_tows) %>% 
   group_by(region, survey, common_name, scientific_name) %>% 
   complete(year = 1982:2024, fill = list(n_tows = 0, n_pos = 0, proportion_pos = 0)) %>% 
-  fishyplots:::clean_fishnames() 
+  fishyplots:::clean_fishnames() %>% 
+  #remove early afsc years where arrowtooth and kamchatka flounder were conflated
+  filter(!(common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% # remove species in years with no pos catch data
+  filter(!(common_name == "kamchatka flounder" & year %in% 1982:1994))
 
 akbsai_catch <- akbsai_surveys%>% 
   group_by(region, survey, common_name,scientific_name, year) %>% 
@@ -87,7 +90,9 @@ akbsai_catch <- akbsai_surveys%>%
   mutate(proportion_pos = n_pos/n_tows) %>% 
   group_by(region, survey, common_name, scientific_name) %>% 
   complete(year = 1982:2024, fill = list(n_tows = 0, n_pos = 0, proportion_pos = 0)) %>% 
-  fishyplots:::clean_fishnames() 
+  fishyplots:::clean_fishnames() %>% 
+  #remove early afsc years where arrowtooth and kamchatka flounder were conflated
+  filter(!(common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) # remove species in years with no pos catch data (species unidentifiable)
 
 
 

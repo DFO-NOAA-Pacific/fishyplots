@@ -19,9 +19,15 @@ ak_survey_lengths <- ak_lengths_year %>%
   left_join(species_lookup, by = "species_code") %>% 
   filter(common_name %in% afsc_spp_list$common_name) %>% 
   clean_fishnames() %>%
+  rename(survey = survey_name) %>% 
   group_survey() %>% 
   select(survey, year, common_name, scientific_name, LENGTH_MM, FREQUENCY) %>% 
   group_by(year, survey, common_name, scientific_name) %>%
-  summarise(length.count = sum(FREQUENCY))
+  summarise(length.count = sum(FREQUENCY)) %>% 
+  #remove early afsc years where arrowtooth and kamchatka flounder were conflated
+  filter(!(survey == "AK BSAI" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>% 
+  filter(!(survey == "AK GULF" & common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% 
+  filter(!(survey == "AK GULF" & common_name == "kamchatka founder" & year %in% 1982:1994))
 
-  usethis::use_data(ak_survey_lengths)
+  usethis::use_data(ak_survey_lengths, overwrite = TRUE)
+  
