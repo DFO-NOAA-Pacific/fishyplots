@@ -36,10 +36,10 @@ head(unique(all_data$scientific_name))
 
 The optional argument `form` controls the structure of the output. The default, `form = 2` outputs a ggplot object. Alternatively, `form = 1` outputs a completed tibble of the same information. 
 ```{r}
-survey_table(data = all_data,
+survey_table(data = nwfsc_bio,
              species = "arrowtooth flounder",
              form = 2)
-survey_table(data = all_data,
+survey_table(data = nwfsc_bio,
              species = "arrowtooth flounder",
              form = 1)
 ```
