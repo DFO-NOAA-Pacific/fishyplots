@@ -5,7 +5,7 @@
 \alias{all_catch}
 \title{all_catch: Catch data (occurrences) for all surveys/regions}
 \format{
-A data frame with 983297 rows and 11 variables:
+A data frame with 3708 rows and 8 variables:
 \describe{
 \item{region}{region of data collection}
 \item{survey}{subregion}

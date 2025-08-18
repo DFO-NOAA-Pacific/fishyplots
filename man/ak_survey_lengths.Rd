@@ -5,7 +5,7 @@
 \alias{ak_survey_lengths}
 \title{ak_survey_lengths: length count data from AFSC surveys}
 \format{
-A data frame with 997 rows and 5 variables:
+A data frame with 986 rows and 5 variables:
 \describe{
 \item{year}{year of data collection}
 \item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska) or AK BSAI (Bering Sea and Aleutian Islands)}
