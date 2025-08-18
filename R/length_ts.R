@@ -81,7 +81,7 @@ length_ts <- function(data, species) {
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
   
   if(any(spec.data$region %in% "AFSC")) {
-    plot <- plot + labs(caption = "Note: AFSC may have additional length samples not availible in this app's datasets. Please see our 'Data' tab.") 
+    plot <- plot + labs(caption = "Note: AFSC may have additional length samples not available in this app's datasets. Please see our 'Data' tab.") 
   } 
   
   if(length(unique(spec.data$survey)) > 1){
