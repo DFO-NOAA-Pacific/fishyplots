@@ -10,13 +10,13 @@ Description: This package houses functions that can be used on NOAA groundfish s
 License: GPL-3
 Depends:
     R (>= 4.0.0)
-Remotes: pbs-assess/gfplot
+Remotes: 
+    pbs-assess/gfplot
 Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
     ggplot2,
     tidyr,
-    gganimate,
     rnaturalearth,
     scales,
     sf,
@@ -26,13 +26,14 @@ Imports:
     grid,
     gfplot,
     stringr,
-    here,
     ggsidekick,
-    patchwork
+    patchwork,
+    grDevices
 Suggests:
     devtools,
     usethis,
     rnaturalearthdata,
+    rnaturalearthhires,
     knitr,
     MASS,
     rmarkdown,

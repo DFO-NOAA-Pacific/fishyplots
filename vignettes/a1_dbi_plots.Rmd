@@ -1,8 +1,8 @@
 ---
-title: "dbi_plots"
+title: "Biomass"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{dbi_plots}
+  %\VignetteIndexEntry{Biomass}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

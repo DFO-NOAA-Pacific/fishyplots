@@ -5,6 +5,9 @@
 #' @return a ggplot object, plot of standardized design based indicies of 1+ surveys. 
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
 #' @importFrom dplyr %>% select rename
+#' @importFrom stats setNames
+#' @importFrom grDevices palette.colors
+#' @importFrom utils data
 #' @export
 #'
 #' @examples

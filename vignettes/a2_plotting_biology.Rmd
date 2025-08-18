@@ -1,0 +1,115 @@
+---
+title: "Plotting biology"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plotting biology}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+For these plots we will need biological data stored in three data frames in the `fishyplots` package which we can combine with `bind_rows` from `dplyr`.
+
+```{r setup, message = FALSE}
+library(fishyplots)
+library(utils)
+library(dplyr)
+```
+
+```{r}
+data("nwfsc_bio")
+data("afsc_bio")
+data("pbs_bio")
+all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+```
+
+These functions take in any number of subregions and 1 species (although note that not all species occur in all regions). If multiple regions are selected, plots will be faceted by region.
+```{r}
+unique(all_data$survey)
+head(unique(all_data$common_name))
+```
+
+Once you have chosen your desired region(s) and species, you can call the functions. We can start with age frequency. 
+
+In order to manage the right skew caused by older groundfish, ages are binned at a certain age percentile. The argument `cutoff` can be used to specify the age percentile at which the graph will start binning (it is automatically set at 0.95). 
+
+Since some species have limited age data, some of the facets in the age frequency plot may be blank. If you wish to drop these subplots with missing data, set `facet_all` to FALSE. You may also choose to set `sex` to TRUE if you want to differentiate by sex.
+```{r plot1, warning = FALSE, fig.height = 5, fig.width = 7}
+age_frequency(data = all_data, 
+              subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+              common = "arrowtooth flounder")
+
+```
+
+The following function generates a length frequency plot. If you want to instead see a histogram of lengths by year you may choose to set the `time_series` argument to FALSE (although in doing so you must subset all_data to the desired regions before calling the function).
+```{r plot2, fig.height = 5, fig.width = 7}
+length_frequency(data = all_data, 
+                 subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+                 common = "arrowtooth flounder")
+
+length_frequency(data = nwfsc_bio, 
+                 subregions = "NWFSC", 
+                 common = "arrowtooth flounder",
+                 time_series = FALSE)
+```
+
+We also have a function that provides mean length over time differentiated by sex. This function requires a dataset already subset by the desired region.
+
+```{r fig.height = 5, fig.width = 5}
+length_ts(data = nwfsc_bio, 
+          species = "arrowtooth flounder")
+```
+
+The next function plots both a histogram and heatmap for the age-depth relationship. Sex differentiation with `by_sex` works best when just looking at one region, although looking at this across all regions is also an option.
+
+```{r plot3, fig.height = 6, fig.width = 7}
+plot_age_depth(data = all_data, 
+               subregion = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), 
+               common = "arrowtooth flounder")
+
+```
+
+```{r plot4, fig.height = 5, fig.width = 5}
+plot_age_depth(data = all_data,
+               subregion = "NWFSC", 
+               common = "arrowtooth flounder",
+               by_sex = TRUE)
+```
+
+You can make the same types of graphs for the length-depth relationship as well. Again, the `by_sex` argument can be specified here. 
+
+```{r plot5, warning = FALSE, fig.height = 5, fig.width = 5}
+plot_length_depth(data = all_data,
+                  subregion = "NWFSC",
+                  common = "sablefish")
+```
+
+To make growth plots, we will need prediction data formulated from the von Bertalanffy function that is stored in the `fishyplots` package.
+
+```{r}
+data(vb_predictions)
+```
+
+The function takes in both the biological data and prediction data, the desired region(s), and 1 species. The argument `facet_all` will automatically include all subregions regardless of missing data, but can be turned off when set to FALSE.
+
+```{r plot6, fig.height = 4, fig.width = 7}
+plot_growth(data = all_data,
+            predictions = vb_predictions,
+            subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+            common = "arrowtooth flounder")
+```
+
+Finally, we can also plot the length-weight relationship. The predictions used here are generated from model fits within the function itself. The argument `subset` defaults TRUE to plot a random subset of 10000 points per dataset for plotting speed. To see all available data points, set as FALSE.
+
+```{r fig.height = 4, fig.width = 7}
+length_weight(data = all_data,
+              species = "arrowtooth flounder",
+              subset = TRUE)
+```
+

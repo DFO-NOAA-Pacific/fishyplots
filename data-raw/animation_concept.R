@@ -1,27 +1,4 @@
-#' Function for empirical CPUE map for NOAA survey data
-#'
-#' @param data catch data from get_data() function from surveyjoin or pull_catch() from nwfscSurvey
-#' @param type choose either "static" or "dynamic" 
-#' @return a ggplot object
-#' @importFrom dplyr rename mutate filter
-#' @importFrom scales trans_new
-#' @importFrom rnaturalearth ne_countries
-#' @importFrom sf st_crop st_transform
-#' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_bw labs
-#' @importFrom gganimate transition_states animate
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' catch1 <- get_data(regions = "afsc", common = "sablefish")
-#' map_cpue(catch1)
-#' 
-#' catch2 <- get_data(regions = "pbs", common = "arrowtooth flounder")
-#' map_cpue(catch2, type = "dynamic")
-#' 
-#' catch3 <- pull_catch(survey = "NWFSC.Combo", common_name = "arrowtooth flounder")
-#' map_cpue(catch3)
-#' }
+
 map_cpue <- function(data, type = "static") {
   if ("Year" %in% colnames(data)) {
     data <- data |> rename(year = Year, lon_start = Longitude_dd, lat_start = Latitude_dd)
@@ -93,3 +70,12 @@ map_cpue <- function(data, type = "static") {
     return(animate(gif, nframes = 150, fps = 10))
   }
 }
+
+catch1 <- get_data(regions = "afsc", common = "sablefish")
+map_cpue(catch1)
+
+catch2 <- get_data(regions = "pbs", common = "arrowtooth flounder")
+map_cpue(catch2, type = "dynamic")
+
+catch3 <- pull_catch(survey = "NWFSC.Combo", common_name = "arrowtooth flounder")
+map_cpue(catch3)

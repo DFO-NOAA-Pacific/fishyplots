@@ -28,7 +28,9 @@ filter(region == "AFSC") \%>\%
 
 all.dbi \%>\%
 filter(region == "AFSC") \%>\%
-distinct(survey) # do not use "U.S. Eastern Bering Sea Standard Region" ; use "U.S. Eastern Bering Sea Standard Plus NW Region"
+distinct(survey) 
+# do not use "U.S. Eastern Bering Sea Standard Region"; 
+# use "U.S. Eastern Bering Sea Standard Plus NW Region"
 
 
 # usage examples

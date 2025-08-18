@@ -5,6 +5,7 @@
 #' @return a time series plot of mean lengths by sex
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual scale_fill_manual theme_bw theme element_blank element_text xlab ylab geom_label geom_ribbon
 #' @importFrom dplyr filter mutate
+#' @importFrom stats sd
 #' @export
 #'
 #' @examples
@@ -80,7 +81,7 @@ length_ts <- function(data, species) {
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
   
   if(any(spec.data$region %in% "AFSC")) {
-    plot <- plot + labs(caption = "Note: AFSC may have additional length samples not availible in this app's datasets. Please see our 'Data' tab.") 
+    plot <- plot + labs(caption = "Note: AFSC may have additional length samples not available in this app's datasets. Please see our 'Data' tab.") 
   } 
   
   if(length(unique(spec.data$survey)) > 1){

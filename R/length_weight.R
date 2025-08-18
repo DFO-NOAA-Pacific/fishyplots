@@ -7,6 +7,7 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate
 #' @importFrom grid unit
+#' @importFrom utils data
 #' @export
 #'
 #' @examples
