@@ -5,7 +5,7 @@
 #' @param subset default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.
 #' @return a plot of sexed data with log-log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
-#' @importFrom dplyr filter mutate
+#' @importFrom dplyr filter mutate slice_sample
 #' @importFrom grid unit
 #' @importFrom utils data
 #' @export
@@ -27,14 +27,12 @@ length_weight <- function(data, species, subset = TRUE) { # subset default
 
 #### DATA ####
   #load lw prediction dataset
-  data("lw_predictions")
-  
   
   #subset data to species (spec.data), or give error message
   if (any(data$common_name == species | data$scientific_name == species)) {
     spec.data <- data  %>% 
-      filter(species == common_name | species == scientific_name) %>%
-      filter(!sex == "U", !is.na(length_cm), !is.na(weight_kg)) #remove U sex, rows with NA lengths or widths
+      filter(species == .data$common_name | species == .data$scientific_name) %>%
+      filter(!.data$sex == "U", !is.na(.data$length_cm), !is.na(.data$weight_kg)) #remove U sex, rows with NA lengths or widths
  } else (
     #stop(paste("Species name", "'", species,"'", "not found in this dataset.")))
     stop(return(ggplot() + theme_void() + ggtitle("No length-weight data available."))))
@@ -42,27 +40,27 @@ length_weight <- function(data, species, subset = TRUE) { # subset default
   # when subset = TRUE, subset into 10000 random points for plotting speed
   if(subset == TRUE){
     spec.data <- spec.data %>% 
-      group_by(survey) %>%
-      slice_sample(n = 10000) %>%  # in case any region has < 10000
+      group_by(.data$survey) %>%
+      dplyr::slice_sample(n = 10000) %>%  # in case any region has < 10000
       ungroup()
     if(nrow(spec.data) < 10000) {message ("Note: Species data less than 10000 rows; plotting all data with no subset")}
     else {message (paste0("Note: Plotting a random n = 10000 subset of ", unique(spec.data$common_name), ". Model values not impacted."))}}
   
 # filter predictions to species
-  predict_all <- lw_predictions %>% 
-    filter(species == common_name | species == scientific_name, survey %in% unique(spec.data$survey)) 
+  predict_all <- fishyplots::lw_predictions %>% 
+    filter(species == .data$common_name | species == .data$scientific_name, survey %in% unique(spec.data$survey)) 
   
 #### ANNOTATIONS ####
 # create dataset for parameter annotations
-annotations <- lw_predictions %>%
-  filter(common_name == unique(spec.data$common_name), survey %in% (spec.data$survey)) %>%
-  filter(sex %in% c("M", "F")) %>%
-  select(survey, sex, a, b) %>%
+annotations <- fishyplots::lw_predictions %>%
+  filter(.data$common_name == unique(spec.data$common_name), .data$survey %in% (spec.data$survey)) %>%
+  filter(.data$sex %in% c("M", "F")) %>%
+  select(.data$survey, .data$sex, .data$a, .data$b) %>%
   distinct() %>% 
-  mutate(sex.label = ifelse(sex == "M", "Male", "Female")) %>% 
+  mutate(sex.label = ifelse(.data$sex == "M", "Male", "Female")) %>% 
   mutate(
-    label = paste0(sex.label, ": a = ", format(a, digits = 3, scientific = TRUE),
-                   "  b = ", format(round(b, 2), nsmall = 2)))
+    label = paste0(.data$sex.label, ": a = ", format(.data$a, digits = 3, scientific = TRUE),
+                   "  b = ", format(round(.data$b, 2), nsmall = 2)))
   
 
 #rename for labeling
@@ -78,11 +76,11 @@ predict_all$survey <- factor(predict_all$survey, levels = c("AK BSAI", "AK GULF"
 sex.color <- c("M" = "#E69F00", "F" = "#009E73")
 
 #plot scatter subset data and model prediction line
-  plot <- ggplot(spec.data, aes(x = length_cm, y = weight_kg)) +
+  plot <- ggplot(spec.data, aes(x = .data$length_cm, y = .data$weight_kg)) +
     theme_bw() + #remove grid
-    geom_point(aes(color = sex), alpha = 0.1) +
+    geom_point(aes(color = .data$sex), alpha = 0.1) +
     geom_line(data = predict_all, 
-              aes(x = fit_length, y = fit_weight, color = sex), linewidth = 1) + # plot fit lines
+              aes(x = .data$fit_length, y = .data$fit_weight, color = .data$sex), linewidth = 1) + # plot fit lines
     
   # toggle visual settings for line and points
     # scale_linetype_manual(
@@ -111,14 +109,14 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
     #ggtitle(unique(spec.data$common_name)) +
     #guides(color = guide_legend(override.aes = list(alpha = 0.5)))+ # increase alpha of legend
     geom_label(
-      data = dplyr::filter(annotations, sex == "M"),
-      aes(x = -Inf, y = Inf, color = sex, fill = sex, label = label),
+      data = dplyr::filter(annotations, .data$sex == "M"),
+      aes(x = -Inf, y = Inf, color = .data$sex, fill = .data$sex, label = .data$label),
       hjust = -0.1, vjust = 3,
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3
     ) +
     geom_label(
-      data = dplyr::filter(annotations, sex == "F"),
-      aes(x = -Inf, y = Inf, color = sex, fill = sex, label =label),
+      data = dplyr::filter(annotations, .data$sex == "F"),
+      aes(x = -Inf, y = Inf, color = .data$sex, fill = .data$sex, label =.data$label),
       hjust = -0.1, vjust = 2,
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3
     ) 

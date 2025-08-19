@@ -34,8 +34,7 @@
   
 # DBI plot function
 plot_dbi <- function(species, surveys) {
-  
-  data(all.dbi)
+
   
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
@@ -52,15 +51,15 @@ plot_dbi <- function(species, surveys) {
   }
   
   
-    subset <- all.dbi %>% 
-    filter(common_name == species | scientific_name == species) %>%
-    filter(survey %in% surveys | region %in% surveys) 
+    subset <- fishyplots::all.dbi %>% 
+    filter(.data$common_name == species | .data$scientific_name == species) %>%
+    filter(.data$survey %in% surveys | .data$region %in% surveys) 
   
   
     plot <- ggplot2::ggplot(data = subset) +
-      ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = lwr, ymax = upr), fill = "gray75", alpha = 0.7) +
-      ggplot2::geom_line(ggplot2::aes(x = year, y = est)) +
-      ggplot2::geom_point(ggplot2::aes(x = year, y = est), size = 2.5) +
+      ggplot2::geom_ribbon(ggplot2::aes(x =.data$year, ymin = .data$lwr, ymax = .data$upr), fill = "gray75", alpha = 0.7) +
+      ggplot2::geom_line(ggplot2::aes(x = .data$year, y = .data$est)) +
+      ggplot2::geom_point(ggplot2::aes(x = .data$year, y = .data$est), size = 2.5) +
       ggplot2::ylab("Biomass (mt)") +
       ggplot2::xlab("Year") +
       #ggplot2::ggtitle(unique(subset$common_name)) +

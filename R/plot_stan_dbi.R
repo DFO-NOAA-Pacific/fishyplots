@@ -4,7 +4,7 @@
 #' @param surveys region or surveys to be plotted. Takes a character list of survey names OR a single region ( "NWFSC", "AFSC", or "PBS").
 #' @return a ggplot object, plot of standardized design based indicies of 1+ surveys. 
 #' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point theme_bw scale_y_continuous xlab ylab
-#' @importFrom dplyr %>% select rename
+#' @importFrom dplyr %>% rename
 #' @importFrom stats setNames
 #' @importFrom grDevices palette.colors
 #' @importFrom utils data
@@ -15,10 +15,11 @@
 #' plot_stan_dbi("sablefish", "PBS")
 #' plot_stan_dbi("sablefish", c("U.S. West Coast", "U.S. Gulf of Alaska"))
 #' }
+#silence notes
+utils::globalVariables("region")
 
 plot_stan_dbi <- function(species, surveys) {
   
- data(all.dbi)
   
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
@@ -38,30 +39,30 @@ plot_stan_dbi <- function(species, surveys) {
   combined_df <- data.frame()
   
   # for each region (all data...)
-  for (center in unique(all.dbi$region)) {
+  for (center in unique(fishyplots::all.dbi$region)) {
     
-    data <- subset(all.dbi, all.dbi$region == center)
+    data <- subset(fishyplots::all.dbi, region == center)
     
     # Calculate standardized index
     stand_data <- data %>%
-      dplyr::group_by(common_name, survey) %>%
-      dplyr::filter(!is.na(est)) %>%
-      dplyr::mutate(stand_est = est / mean(est), 
-        stand_lwr = lwr / mean(est),
-        stand_upr = upr / mean(est))
+      dplyr::group_by(.data$common_name, .data$survey) %>%
+      dplyr::filter(!is.na(.data$est)) %>%
+      dplyr::mutate(stand_est = .data$est / mean(.data$est), 
+        stand_lwr = .data$lwr / mean(.data$est),
+        stand_upr = .data$upr / mean(.data$est))
       
     
     # Filter for selected species and selected surveys
     filtered <- stand_data %>%
-      dplyr::filter(common_name == species|scientific_name == species, survey %in% surveys)
+      dplyr::filter(.data$common_name == species|.data$scientific_name == species, .data$survey %in% surveys)
     
     # Add to combined dataframe
     combined_df <- dplyr::bind_rows(combined_df, filtered)
   }
   
   #manually extend okabe ito  coloblind pallete
-  ok_base <- palette.colors(palette = "Okabe-Ito")[2:9]
-  ok_extend <- c(ok_base, "#555555", "#999933")
+  ok_base <- palette.colors(palette = "Okabe-Ito")[2:9] #skip black as first color
+  ok_extend <- c(ok_base, "#555555", "#999933") #extend palette to fit length of surveys
   
   # Assign to surveys
   ok_colors <- setNames(ok_extend[seq_along(unique(combined_df$survey))],
@@ -69,10 +70,10 @@ plot_stan_dbi <- function(species, surveys) {
 
     # Plot using said df
   plot <- ggplot2::ggplot(data = combined_df, 
-                          ggplot2::aes(x = year, y = stand_est, color = survey)) +
+                          ggplot2::aes(x = .data$year, y = .data$stand_est, color = .data$survey)) +
     ggplot2::geom_line(linewidth = 1, alpha = 0.6) +
     ggplot2::geom_point(size = 4) +
-    ggplot2::geom_ribbon(ggplot2::aes(x = year, ymin = stand_lwr, ymax = stand_upr, fill = survey), color = NA, alpha = 0.1) +
+    ggplot2::geom_ribbon(ggplot2::aes(x = .data$year, ymin = .data$stand_lwr, ymax = .data$stand_upr, fill = .data$survey), color = NA, alpha = 0.1) +
     ggplot2::scale_color_manual(values = ok_colors) +
     ggplot2::scale_fill_manual(values = ok_colors) +
     scale_x_continuous(minor_breaks = 1990:2024,
@@ -89,7 +90,7 @@ plot_stan_dbi <- function(species, surveys) {
           axis.text.x = element_text(size = 12),
           axis.title.x = element_text(size = 15),
           axis.title.y = element_text(size = 15),
-          panel.grid.major.x = element_line(size = 1.5, color = "grey95"),       # thicker for major
+          panel.grid.major.x = element_line(size = 1.5, color = "grey95"), # thicker for major
           panel.grid.minor.x = element_line(size = 0.7, color = "grey95"))
   
   return(plot)
