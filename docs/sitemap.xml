@@ -1,6 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/a1_dbi_plots.html</loc></url>
+<url><loc>/articles/a2_plotting_biology.html</loc></url>
+<url><loc>/articles/a3_fishmap.html</loc></url>
+<url><loc>/articles/a4_survey_table.html</loc></url>
 <url><loc>/articles/dbi_plots.html</loc></url>
 <url><loc>/articles/fishmap.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
