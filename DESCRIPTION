@@ -1,7 +1,7 @@
 Type: Package
 Package: fishyplots
 Title: Plotting Utilities For Coastwide Synopsis
-Version: 0.0.1
+Version: 0.1.1
 Authors@R: c(
     person("Zoe", "Khan", email="zkhan@smith.edu", role = c("aut", "cre")),
     person("Callie", "Murakami", email="muracal2@uw.edu", role = "aut")
@@ -9,7 +9,7 @@ Authors@R: c(
 Description: This package houses functions that can be used on NOAA groundfish survey data. It is being used to create a coastwide synopsis.
 License: GPL-3
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Remotes: 
     pbs-assess/gfplot
 Imports:
