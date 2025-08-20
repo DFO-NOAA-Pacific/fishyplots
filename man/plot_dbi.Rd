@@ -20,13 +20,13 @@ Function and formatted data to plot design based index
 \examples{
 \dontrun{
 # To see options for species and surveys in regions: "NWFSC", "AFSC", "PBS"
-data(all.dbi)
+data(all_dbi)
 
-all.dbi \%>\%
+all_dbi \%>\%
 filter(region == "AFSC") \%>\%
  distinct(common_name)
 
-all.dbi \%>\%
+all_dbi \%>\%
 filter(region == "AFSC") \%>\%
 distinct(survey) 
 # do not use "U.S. Eastern Bering Sea Standard Region"; 

@@ -1,3 +1,6 @@
+#silence build notes
+utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
+
 #' Main function to display survey specimen counts
 #'
 #' @param data a data frame of bio data
@@ -28,9 +31,6 @@
 #' survey_table(pbs_bio,"arrowtooth flounder", form = 2)
 #' survey_table(all_data, "arrowtooth flounder")
 #' }
-#silence build notes
-utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
-
 survey_table <- function(data, species, form = 2) {
   
   #check if form = 1 or 2 (2 default) for table vs plot

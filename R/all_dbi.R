@@ -1,10 +1,10 @@
-#all.dbi.R
+#all_dbi.R
 
 #' Dataset of design based biomass indices for all science centers
 #'
 #' Joined data from design based biomass estimates calculated separately by each science center
 #'
-#' @format ## `all.dbi`
+#' @format ## `all_dbi`
 #' A data frame with 4154 rows and 8 columns:
 #' \describe{
 #'   \item{region}{Research center that gathered data}
@@ -19,4 +19,4 @@
 #'   ...
 #' }
 #'
-"all.dbi"
+"all_dbi"

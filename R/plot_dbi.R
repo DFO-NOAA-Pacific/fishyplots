@@ -11,13 +11,13 @@
 #' @examples
 #' \dontrun{
 #' # To see options for species and surveys in regions: "NWFSC", "AFSC", "PBS"
-#' data(all.dbi)
+#' data(all_dbi)
 #' 
-#' all.dbi %>%
+#' all_dbi %>%
 #' filter(region == "AFSC") %>%
 #'  distinct(common_name)
 #' 
-#' all.dbi %>%
+#' all_dbi %>%
 #' filter(region == "AFSC") %>%
 #' distinct(survey) 
 #' # do not use "U.S. Eastern Bering Sea Standard Region"; 
@@ -51,7 +51,7 @@ plot_dbi <- function(species, surveys) {
   }
   
   
-    subset <- fishyplots::all.dbi %>% 
+    subset <- fishyplots::all_dbi %>% 
     filter(.data$common_name == species | .data$scientific_name == species) %>%
     filter(.data$survey %in% surveys | .data$region %in% surveys) 
   

@@ -26,7 +26,7 @@ pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
           upr = upperci)#rename to have same format as NOAA data : object pbs_biomass
 
 #join
-all.dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass) %>% 
+all_dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass) %>% 
   clean_fishnames() %>% 
   mutate(survey_group = case_when(
     grepl("bering|aleutian", survey, ignore.case = TRUE) ~ "AK BSAI", #group surveys of ak bsai
@@ -36,4 +36,5 @@ all.dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass) %>%
   )) %>% 
   relocate(survey_group, .after = 1)
 #save
-usethis::use_data(all.dbi, overwrite = TRUE)
+usethis::use_data(all_dbi, overwrite = TRUE)
+

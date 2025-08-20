@@ -1,3 +1,6 @@
+#silence notes
+utils::globalVariables("region")
+
 #' Function and formatted data to plot standardized design based index
 #'
 #' @param species common or scientific name of species of interest. 
@@ -15,9 +18,6 @@
 #' plot_stan_dbi("sablefish", "PBS")
 #' plot_stan_dbi("sablefish", c("U.S. West Coast", "U.S. Gulf of Alaska"))
 #' }
-#silence notes
-utils::globalVariables("region")
-
 plot_stan_dbi <- function(species, surveys) {
   
   
@@ -39,9 +39,9 @@ plot_stan_dbi <- function(species, surveys) {
   combined_df <- data.frame()
   
   # for each region (all data...)
-  for (center in unique(fishyplots::all.dbi$region)) {
+  for (center in unique(fishyplots::all_dbi$region)) {
     
-    data <- subset(fishyplots::all.dbi, region == center)
+    data <- subset(fishyplots::all_dbi, region == center)
     
     # Calculate standardized index
     stand_data <- data %>%
