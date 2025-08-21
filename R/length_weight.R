@@ -54,13 +54,13 @@ length_weight <- function(data, species, subset = TRUE) { # subset default
 # create dataset for parameter annotations
 annotations <- fishyplots::lw_predictions %>%
   filter(.data$common_name == unique(spec.data$common_name), .data$survey %in% (spec.data$survey)) %>%
-  filter(.data$sex %in% c("M", "F")) %>%
+  filter(.data$sex %in% c("M", "F")) %>% # removes Unsexed
   select(.data$survey, .data$sex, .data$a, .data$b) %>%
   distinct() %>% 
-  mutate(sex.label = ifelse(.data$sex == "M", "Male", "Female")) %>% 
+  mutate(sex.label = ifelse(.data$sex == "M", "Male", "Female")) %>% # col to have M and F spelled out
   mutate(
     label = paste0(.data$sex.label, ": a = ", format(.data$a, digits = 3, scientific = TRUE),
-                   "  b = ", format(round(.data$b, 2), nsmall = 2)))
+                   "  b = ", format(round(.data$b, 2), nsmall = 2))) # add formatted parameter labels
   
 
 #rename for labeling

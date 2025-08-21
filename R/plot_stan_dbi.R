@@ -20,7 +20,6 @@ utils::globalVariables("region")
 #' }
 plot_stan_dbi <- function(species, surveys) {
   
-  
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
     if (surveys == "AK BSAI") {
@@ -43,7 +42,7 @@ plot_stan_dbi <- function(species, surveys) {
     
     data <- subset(fishyplots::all_dbi, region == center)
     
-    # Calculate standardized index
+    # Calculate standardized index (divide by own mean per survey, set mean =1)
     stand_data <- data %>%
       dplyr::group_by(.data$common_name, .data$survey) %>%
       dplyr::filter(!is.na(.data$est)) %>%
@@ -60,6 +59,8 @@ plot_stan_dbi <- function(species, surveys) {
     combined_df <- dplyr::bind_rows(combined_df, filtered)
   }
   
+  
+  # set color palette 
   #manually extend okabe ito  coloblind pallete
   ok_base <- palette.colors(palette = "Okabe-Ito")[2:9] #skip black as first color
   ok_extend <- c(ok_base, "#555555", "#999933") #extend palette to fit length of surveys
@@ -68,7 +69,7 @@ plot_stan_dbi <- function(species, surveys) {
   ok_colors <- setNames(ok_extend[seq_along(unique(combined_df$survey))],
                         unique(combined_df$survey))
 
-    # Plot using said df
+    # Plot using said combined df
   plot <- ggplot2::ggplot(data = combined_df, 
                           ggplot2::aes(x = .data$year, y = .data$stand_est, color = .data$survey)) +
     ggplot2::geom_line(linewidth = 1, alpha = 0.6) +
@@ -76,22 +77,22 @@ plot_stan_dbi <- function(species, surveys) {
     ggplot2::geom_ribbon(ggplot2::aes(x = .data$year, ymin = .data$stand_lwr, ymax = .data$stand_upr, fill = .data$survey), color = NA, alpha = 0.1) +
     ggplot2::scale_color_manual(values = ok_colors) +
     ggplot2::scale_fill_manual(values = ok_colors) +
-    scale_x_continuous(minor_breaks = 1990:2024,
-                       breaks = seq(1990, 2024, by = 5),
+    scale_x_continuous(minor_breaks = seq(1990, max(all_dbi$year), by = 1),# set minor ticks
+                       breaks = seq(1990, max(all_dbi$year), by = 5), #set major ticks and labels on 5 year intervals
                        labels = function(x) ifelse(x %% 5 == 0, x, "")) +
     ggplot2::ylab("Standardized Biomass Index") +
     ggplot2::xlab("Year") +
     #ggplot2::ggtitle(species)  +
     ggplot2::theme_bw() +
-    labs(caption = "Note: Each survey is standardized to its own mean.") +
+    labs(caption = "Note: Each survey is standardized to its own mean.") + #make a note about standardization
     theme(legend.position="bottom",panel.grid.major.y = element_blank(),panel.grid.minor.y = element_blank(),
-          plot.caption.position = "plot",         # places it below the plot area
+          plot.caption.position = "plot",         # places note below the plot area
           plot.caption = element_text(hjust = 0, size = 12),
           axis.text.x = element_text(size = 12),
           axis.title.x = element_text(size = 15),
           axis.title.y = element_text(size = 15),
-          panel.grid.major.x = element_line(size = 1.5, color = "grey95"), # thicker for major
-          panel.grid.minor.x = element_line(size = 0.7, color = "grey95"))
+          panel.grid.major.x = element_line(size = 1.5, color = "grey95"), # thicker for major gridlines
+          panel.grid.minor.x = element_line(size = 0.7, color = "grey95")) # thin for minor gridlines
   
   return(plot)
   

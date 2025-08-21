@@ -75,7 +75,7 @@ survey_table <- function(data, species, form = 2) {
   }
 
 ## Weights ##
-  # nothing species, just count of weight data
+  # nothing special, just count of weight data
   weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) %>%
     na.omit() %>% 
     group_by(.data$yr, .data$survey) %>%
@@ -83,7 +83,7 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "Weights")
 
 ## Ages ##
-  #count ages
+  #count of read ages
   age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>%
     na.omit() %>% 
     group_by(.data$yr, .data$survey) %>%
@@ -94,7 +94,7 @@ survey_table <- function(data, species, form = 2) {
     age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Ages")}
   
 ## Unread Ages ##
-  # for most data, n age structures is total specimen count
+  # for most data, n age structures = total specimen count (don't need to worry about multiple age str. per specimen)
   agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>% 
     group_by(.data$yr, .data$survey) %>%
     summarize(n_samples=n())%>%
@@ -102,7 +102,7 @@ survey_table <- function(data, species, form = 2) {
   
   # for NWFSC, use otolith ID as n age structures
   # if nwfsc data present, rewrite agestr_count
-  if ("otosag_id" %in% names(data)) { # for nwfsc data
+  if ("otosag_id" %in% names(data)) { # Otosag ony present if given dataset contains nwfsc data
   nwfsc_count <- spec.data %>%
     filter(.data$region == "NWFSC", !is.na(.data$otosag_id)) %>%
     group_by(.data$survey, yr = .data$year) %>%
@@ -130,7 +130,6 @@ survey_table <- function(data, species, form = 2) {
     na.omit() #omit NAs where n age structures = n read ages
 
  ## trawl counts ##
-  
   total_count <- fishyplots::all_catch %>% 
     filter(.data$common_name == species | .data$scientific_name == species, survey %in% spec.data$survey) %>% 
     ungroup() %>% 
@@ -147,6 +146,7 @@ survey_table <- function(data, species, form = 2) {
     mutate(sample_type = "% Positive Tows")%>% 
     filter(!.data$n_samples == 0)
   
+  # IF there is no catch data for a species, use other trawl data in the same region and years to fill
   if(nrow(total_count) == 0){
     total_count <- weight_count[1:2]
     pos_prop <- weight_count[1:3] %>% mutate(sample_type = "% Positive Tows")
@@ -200,9 +200,11 @@ if (form == 2) {
                            ifelse(bio_data$n_samples < 1000,
                               as.character(bio_data$n_samples), # keep as number if under 1000
                                      paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
-  
+  #give region descriptive labels
   bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  
+  #scale counts to 0-1 per region/sample type to project color
   bio_data <- bio_data %>%
     group_by(.data$sample_type, .data$survey) %>%
     mutate(n_scaled = (.data$n_samples - min(.data$n_samples, na.rm = TRUE)) / 
@@ -212,7 +214,7 @@ if (form == 2) {
   plot <- ggplot(bio_data, aes(.data$yr, .data$sample_type)) +
     ggplot2::geom_tile(aes(fill = .data$n_scaled, alpha = .data$n_samples != 0), colour = "white", show.legend = FALSE) + # to preserve rows where all years have 0 data, color 0 tiles white
     scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0)) +
-    scale_fill_gradientn( # color with yellow to red gradient
+    scale_fill_gradientn( # color with white/blue gradient
       colours = c("#eff3ff", "#bdd7e7", "#6baed6", "#2171b5","#1a5a90" ), 
       na.value = "white"
     ) + 
@@ -236,14 +238,14 @@ if (form == 2) {
     #ggplot2::ggtitle(paste("Survey Specimen Counts -", unique(spec.data$common_name))) +
     coord_cartesian(expand = FALSE)
   
-  #check for no catch data: 
+  #check for no pos catch data: put note that pos catch data not available 
   no_catch <- bio_data %>%
     filter(.data$sample_type == "% Positive Tows") %>%
     group_by(.data$survey) %>%
     summarize(all_zero = all(n_samples == 0), .groups = "drop") %>%
     filter(.data$all_zero) %>%
     pull(.data$survey)
-  if(any(unique(bio_data$survey) %in% no_catch)) {
+  if(any(unique(bio_data$survey) %in% no_catch)) { #if there is no 
     plot <- plot +
       annotate(
         "text", 
@@ -253,6 +255,7 @@ if (form == 2) {
       )
   }
   
+  #facet wrap if plotting multiple regions
   if(length(unique(bio_data$survey)) > 1) {
     plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 13), strip.text.x = element_text(hjust = 0))
   }

@@ -80,10 +80,12 @@ length_ts <- function(data, species) {
       hjust = -0.5, vjust = 1,
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3)
   
+  #make a note if containing afsc data ( length data used for survey_table uses a larger count of lengths that we do not have access to in our afsc_bio dataset)
   if(any(spec.data$region %in% "AFSC")) {
     plot <- plot + labs(caption = "Note: AFSC may have additional length samples not available in this app's datasets. Please see our 'Data' tab.") 
   } 
   
+  #facet wrap if plotting all regions
   if(length(unique(spec.data$survey)) > 1){
     plot <-  plot + facet_wrap( ~ survey, nrow = 1, drop = FALSE)
   }
