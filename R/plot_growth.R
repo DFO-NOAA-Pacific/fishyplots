@@ -7,7 +7,6 @@
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
 #' @return a ggplot object
 #' @importFrom dplyr filter rename pull mutate summarize group_by
-#' @importFrom ggsidekick theme_sleek
 #' @importFrom ggplot2 ggplot aes geom_point scale_color_manual scale_fill_manual geom_line labs geom_label
 #' @importFrom rlang .data
 #' @export

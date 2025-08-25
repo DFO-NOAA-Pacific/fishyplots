@@ -10,7 +10,6 @@
 #' @importFrom tidyr complete full_seq
 #' @importFrom stats quantile
 #' @importFrom ggplot2 ggplot aes geom_histogram facet_wrap theme_bw labs geom_errorbar geom_point theme
-#' @importFrom ggsidekick theme_sleek
 #' @importFrom rlang .data
 #' @export
 #'
