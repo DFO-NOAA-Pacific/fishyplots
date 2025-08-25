@@ -12,6 +12,8 @@ Depends:
     R (>= 4.1.0)
 Remotes: 
     pbs-assess/gfplot
+    seananderson/ggsidekick
+    ropensci/rnaturalearthhires
 Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
