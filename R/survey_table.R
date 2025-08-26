@@ -7,9 +7,9 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' @param species species of interest common or scientific name 
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @return a tibble or ggplot object
-#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join
+#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join theme_light
 #' @importFrom tidyr pivot_wider complete
-#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete
+#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text element_rect ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete rel
 #' @importFrom stats na.omit
 #' @importFrom scales label_wrap
 #' 
@@ -218,7 +218,7 @@ if (form == 2) {
       na.value = "white"
     ) + 
     #theme_pbs() +  -> had issues using gfplot package as a remote, next few lines and theme are is most of the formatting for the theme_pbs function
-    theme_light(base_size = 11, base_family = "") +
+    ggplot2::theme_light(base_size = 11, base_family = "") +
     theme(
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
