@@ -11,8 +11,7 @@ License: GPL-3
 Depends:
     R (>= 4.1.0)
 Remotes: 
-    pbs-software/PBSdata,
-    pbs-assess/gfplot
+    github::pbs-assess/gfplot
 Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
