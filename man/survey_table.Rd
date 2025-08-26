@@ -24,8 +24,8 @@ Main function to display survey specimen counts
 data("nwfsc_bio")
 data("pbs_bio")
 data("afsc_bio")
-akgulf_bio <- afsc_bio \%>\% filter(survey == "AK GULF")
-akbsai_bio <- afsc_bio \%>\% filter(survey == "AK BSAI")
+akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
+akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
 all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
 
 

@@ -10,9 +10,6 @@ Description: This package houses functions that can be used on NOAA groundfish s
 License: GPL-3
 Depends:
     R (>= 4.1.0)
-Remotes: 
-    pbs-software/pbs-data/PBSdata,
-    pbs-assess/gfplot
 Imports:
     dplyr (>= 1.0.2),
     rlang (>= 0.4.1),
