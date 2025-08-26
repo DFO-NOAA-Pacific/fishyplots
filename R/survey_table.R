@@ -7,10 +7,9 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' @param species species of interest common or scientific name 
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @return a tibble or ggplot object
-#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join
-#' @importFrom gfplot theme_pbs
+#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join theme_light
 #' @importFrom tidyr pivot_wider complete
-#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete
+#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text element_rect ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete rel
 #' @importFrom stats na.omit
 #' @importFrom scales label_wrap
 #' 
@@ -21,8 +20,8 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' data("nwfsc_bio")
 #' data("pbs_bio")
 #' data("afsc_bio")
-#' akgulf_bio <- afsc_bio %>% filter(survey == "AK GULF")
-#' akbsai_bio <- afsc_bio %>% filter(survey == "AK BSAI")
+#' akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
+#' akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
 #' all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
 #' 
 #' 
@@ -48,46 +47,46 @@ survey_table <- function(data, species, form = 2) {
   
 ## Lengths ##
   #number of lengths counted per year
-  length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year, survey = spec.data$survey) %>%
-    na.omit() %>% #omit rows with no data from being counted
-    group_by(.data$yr, .data$survey) %>%
-    summarize(n_samples=n())%>% #sum sample number over grouping (year)
+  length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year, survey = spec.data$survey) |>
+    na.omit() |> #omit rows with no data from being counted
+    group_by(.data$yr, .data$survey) |>
+    summarize(n_samples=n())|> #sum sample number over grouping (year)
     mutate(sample_type = "Lengths") #label as length count
 
   # use special dataset for AFSC lengths
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
 
-    ak_length_count <-  fishyplots::ak_survey_lengths %>% 
-      filter(.data$common_name == species) %>% 
-      group_by(.data$year, .data$survey) %>%
-      summarize(n_samples=sum(.data$length.count))%>%
-      mutate(sample_type = "Lengths") %>% 
-      rename(yr = .data$year) %>% 
+    ak_length_count <-  fishyplots::ak_survey_lengths |> 
+      filter(.data$common_name == species) |> 
+      group_by(.data$year, .data$survey) |>
+      summarize(n_samples=sum(.data$length.count))|>
+      mutate(sample_type = "Lengths") |> 
+      rename(yr = .data$year) |> 
       na.omit()
     
     #which afsc surveys are being called  (akgulf vs akbsai)
     which.asfc<- unique(spec.data$survey[spec.data$region == "AFSC"])
     
     # replace original AK lengths with special dataset
-    length_count <- length_count %>%
-      filter(!(.data$survey %in% which.asfc)) %>%
-      bind_rows(ak_length_count %>% filter(.data$survey %in% which.asfc))
+    length_count <- length_count |>
+      filter(!(.data$survey %in% which.asfc)) |>
+      bind_rows(ak_length_count |> filter(.data$survey %in% which.asfc))
   }
 
 ## Weights ##
   # nothing special, just count of weight data
-  weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) %>%
-    na.omit() %>% 
-    group_by(.data$yr, .data$survey) %>%
-    summarize(n_samples=n())%>%
+  weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) |>
+    na.omit() |> 
+    group_by(.data$yr, .data$survey) |>
+    summarize(n_samples=n())|>
     mutate(sample_type = "Weights")
 
 ## Ages ##
   #count of read ages
-  age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>%
-    na.omit() %>% 
-    group_by(.data$yr, .data$survey) %>%
-    summarize(n_samples=n())%>%
+  age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |>
+    na.omit() |> 
+    group_by(.data$yr, .data$survey) |>
+    summarize(n_samples=n())|>
     mutate(sample_type = "Ages")
   # fill with 0 if no ages taken (ex nwfsc Sebastes zacentrus)
   if(nrow(age_count) == 0) {
@@ -95,25 +94,25 @@ survey_table <- function(data, species, form = 2) {
   
 ## Unread Ages ##
   # for most data, n age structures = total specimen count (don't need to worry about multiple age str. per specimen)
-  agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>% 
-    group_by(.data$yr, .data$survey) %>%
-    summarize(n_samples=n())%>%
+  agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
+    group_by(.data$yr, .data$survey) |>
+    summarize(n_samples=n())|>
     mutate(sample_type = "Age Structures") 
   
   # for NWFSC, use otolith ID as n age structures
   # if nwfsc data present, rewrite agestr_count
   if ("otosag_id" %in% names(data)) { # Otosag ony present if given dataset contains nwfsc data
-  nwfsc_count <- spec.data %>%
-    filter(.data$region == "NWFSC", !is.na(.data$otosag_id)) %>%
-    group_by(.data$survey, yr = .data$year) %>%
-    summarize(n_samples = n(), .groups = "drop") %>%
+  nwfsc_count <- spec.data |>
+    filter(.data$region == "NWFSC", !is.na(.data$otosag_id)) |>
+    group_by(.data$survey, yr = .data$year) |>
+    summarize(n_samples = n(), .groups = "drop") |>
     mutate(sample_type = "Age Structures (otosag_id)")
 
   # count other age structures normally
-  other_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) %>% 
-    group_by(.data$yr, .data$survey) %>%
-    summarize(n_samples=n())%>%
-    mutate(sample_type = "Age Structures") %>% 
+  other_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
+    group_by(.data$yr, .data$survey) |>
+    summarize(n_samples=n())|>
+    mutate(sample_type = "Age Structures") |> 
     filter(.data$survey != "NWFSC")
 
   # Combine both into new agestr_count
@@ -121,45 +120,45 @@ survey_table <- function(data, species, form = 2) {
 }
  
   #subtract n ages counted (read structures) from n age structures to get unread age structures
-  unread_count <- dplyr::left_join(agestr_count, age_count, by = c("yr", "survey")) %>%
+  unread_count <- dplyr::left_join(agestr_count, age_count, by = c("yr", "survey")) |>
     mutate(n_ages = ifelse(is.na(.data$n_samples.y), 0, .data$n_samples.y), #change NA to 0 for calculation ease
            n_unread = .data$n_samples.x - .data$n_ages, #unread age strugtures = n age str - n ages read
-           n_samples = ifelse(.data$n_unread == 0, NA, .data$n_unread)) %>% # make 0 into NA
-    select(.data$survey, .data$yr, .data$n_samples) %>%
-    mutate(sample_type = "Unread Ages") %>% #unread structures only
+           n_samples = ifelse(.data$n_unread == 0, NA, .data$n_unread)) |> # make 0 into NA
+    select(.data$survey, .data$yr, .data$n_samples) |>
+    mutate(sample_type = "Unread Ages") |> #unread structures only
     na.omit() #omit NAs where n age structures = n read ages
 
  ## trawl counts ##
-  total_count <- fishyplots::all_catch %>% 
-    filter(.data$common_name == species | .data$scientific_name == species, survey %in% spec.data$survey) %>% 
-    ungroup() %>% 
-    rename(yr = .data$year, n_samples = .data$n_tows) %>% 
-    select(.data$yr, .data$survey, .data$n_samples) %>% 
-    mutate(sample_type = "Total Tows") %>% 
+  total_count <- fishyplots::all_catch |> 
+    filter(.data$common_name == species | .data$scientific_name == species, survey %in% spec.data$survey) |> 
+    ungroup() |> 
+    rename(yr = .data$year, n_samples = .data$n_tows) |> 
+    select(.data$yr, .data$survey, .data$n_samples) |> 
+    mutate(sample_type = "Total Tows") |> 
     filter(!.data$n_samples == 0)
     
-  pos_prop <- fishyplots::all_catch %>% 
-    filter(.data$common_name == species | .data$scientific_name == species, survey %in% spec.data$survey) %>% 
-    ungroup() %>%
-    rename(yr = .data$year, n_samples = .data$proportion_pos) %>% 
-    select(.data$yr, .data$survey, .data$n_samples) %>% 
-    mutate(sample_type = "% Positive Tows")%>% 
+  pos_prop <- fishyplots::all_catch |> 
+    filter(.data$common_name == species | .data$scientific_name == species, survey %in% spec.data$survey) |> 
+    ungroup() |>
+    rename(yr = .data$year, n_samples = .data$proportion_pos) |> 
+    select(.data$yr, .data$survey, .data$n_samples) |> 
+    mutate(sample_type = "% Positive Tows")|> 
     filter(!.data$n_samples == 0)
   
   # IF there is no catch data for a species, use other trawl data in the same region and years to fill
   if(nrow(total_count) == 0){
     total_count <- weight_count[1:2]
-    pos_prop <- weight_count[1:3] %>% mutate(sample_type = "% Positive Tows")
+    pos_prop <- weight_count[1:3] |> mutate(sample_type = "% Positive Tows")
     
     #fill count with data from a complete species (same number of tows are conducted no matter the species collected, some species data is just not available)
     #arrowtooth is complete
-    arrow.fill<-fishyplots::all_catch %>% 
-      filter(.data$common_name == "arrowtooth flounder", .data$survey %in% spec.data$survey) %>% 
-      ungroup() %>% 
-      rename(yr = .data$year, n_samples = .data$n_tows) %>% 
-      select(.data$yr, .data$survey, .data$n_samples) %>% 
+    arrow.fill<-fishyplots::all_catch |> 
+      filter(.data$common_name == "arrowtooth flounder", .data$survey %in% spec.data$survey) |> 
+      ungroup() |> 
+      rename(yr = .data$year, n_samples = .data$n_tows) |> 
+      select(.data$yr, .data$survey, .data$n_samples) |> 
       filter(!.data$n_samples == 0)
-    total_count <- dplyr::left_join(total_count, arrow.fill, by = c("yr", "survey")) %>% 
+    total_count <- dplyr::left_join(total_count, arrow.fill, by = c("yr", "survey")) |> 
       mutate(sample_type = "Total Tows")
     #fill % with NAs
     pos_prop[3] <- NA
@@ -167,24 +166,24 @@ survey_table <- function(data, species, form = 2) {
   
    ## Combine ##
   # Combine data into one DF
-  bio_data <-length_count %>%
-    bind_rows(weight_count,age_count, unread_count, total_count, pos_prop) %>%
-    arrange(.data$yr) %>% 
-    ungroup() %>% 
-    group_by(.data$survey) %>% 
-    tidyr::complete(yr = seq(min(.data$yr), max(.data$yr)), sample_type = unique(.data$sample_type), fill = list(n_samples = 0)) %>% 
-    ungroup() %>% 
-    mutate(common = unique(spec.data$common_name)) %>% 
+  bio_data <-length_count |>
+    bind_rows(weight_count,age_count, unread_count, total_count, pos_prop) |>
+    arrange(.data$yr) |> 
+    ungroup() |> 
+    group_by(.data$survey) |> 
+    tidyr::complete(yr = seq(min(.data$yr), max(.data$yr)), sample_type = unique(.data$sample_type), fill = list(n_samples = 0)) |> 
+    ungroup() |> 
+    mutate(common = unique(spec.data$common_name)) |> 
     mutate(sample_type=factor(sample_type, levels=c("% Positive Tows","Total Tows", "Unread Ages", "Ages", "Weights", "Lengths"))) #set order for plotting later
   
 #### TABLE ####
 if (form == 1) {
   # Return wide table
-  table <- bio_data %>%
+  table <- bio_data |>
     pivot_wider(
       names_from = sample_type,
       values_from = n_samples
-    ) %>% 
+    ) |> 
     select(.data$common, dplyr::everything())
   return(table)
 }
@@ -205,8 +204,8 @@ if (form == 2) {
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   #scale counts to 0-1 per region/sample type to project color
-  bio_data <- bio_data %>%
-    group_by(.data$sample_type, .data$survey) %>%
+  bio_data <- bio_data |>
+    group_by(.data$sample_type, .data$survey) |>
     mutate(n_scaled = (.data$n_samples - min(.data$n_samples, na.rm = TRUE)) / 
              (max(.data$n_samples, na.rm = TRUE) - min(.data$n_samples, na.rm = TRUE)))
   
@@ -218,8 +217,26 @@ if (form == 2) {
       colours = c("#eff3ff", "#bdd7e7", "#6baed6", "#2171b5","#1a5a90" ), 
       na.value = "white"
     ) + 
-    theme_pbs() +
+    #theme_pbs() +  -> had issues using gfplot package as a remote, next few lines and theme are is most of the formatting for the theme_pbs function
+    ggplot2::theme_light(base_size = 11, base_family = "") +
     theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.ticks.length = unit(5.5 / 2.2, "pt"),
+      strip.background = element_rect(fill = NA, colour = NA),
+      strip.text.x = element_text(colour = "grey20"),
+      strip.text.y = element_text(colour = "grey20"),
+      axis.text = element_text(colour = "grey20"),
+      axis.title = element_text(colour = "grey20"),
+      legend.title = element_text(colour = "grey20", size = rel(0.9)),
+      panel.border = element_rect(fill = NA, colour = "grey70", linewidth = 1),
+      legend.key.size = unit(0.9, "lines"),
+      legend.text = element_text(size = rel(0.7), colour = "grey20"),
+      legend.key = element_rect(colour = NA, fill = NA),
+      legend.background = element_rect(colour = NA, fill = NA),
+      plot.title = element_text(colour = "grey20", size = rel(1)),
+      plot.subtitle = element_text(colour = "grey20", size = rel(.85)),
+      # my own edits:
       axis.ticks.x = element_blank(),
       axis.ticks.y = element_blank(), 
       axis.text.x = element_text(angle = 45, hjust = 1, size = 10), # tilt years to reduce overlapping text
@@ -239,11 +256,11 @@ if (form == 2) {
     coord_cartesian(expand = FALSE)
   
   #check for no pos catch data: put note that pos catch data not available 
-  no_catch <- bio_data %>%
-    filter(.data$sample_type == "% Positive Tows") %>%
-    group_by(.data$survey) %>%
-    summarize(all_zero = all(n_samples == 0), .groups = "drop") %>%
-    filter(.data$all_zero) %>%
+  no_catch <- bio_data |>
+    filter(.data$sample_type == "% Positive Tows") |>
+    group_by(.data$survey) |>
+    summarize(all_zero = all(n_samples == 0), .groups = "drop") |>
+    filter(.data$all_zero) |>
     pull(.data$survey)
   if(any(unique(bio_data$survey) %in% no_catch)) { #if there is no 
     plot <- plot +
