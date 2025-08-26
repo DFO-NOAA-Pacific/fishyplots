@@ -22,7 +22,6 @@ Imports:
     FSA,
     stats,
     grid,
-    gfplot,
     stringr,
     patchwork,
     grDevices
