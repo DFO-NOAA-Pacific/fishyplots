@@ -7,7 +7,7 @@ devtools::load_all()
 # Species list
 spp_list <- read.csv("data-raw/afsc_joined.csv")
 spp_list$common_name[spp_list$common_name == "north pacific hake"] <- "pacific hake"
-spp_list <- spp_list |> filter(common_name != "rock sole")
+spp_list$common_name[spp_list$common_name == "rock sole"] <- "southern rock sole"
 spp_list <- clean_fishnames(spp_list)
 
 # Get catch data
