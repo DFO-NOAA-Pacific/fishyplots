@@ -5,7 +5,8 @@
 #afsc_lengths <- read.csv(local file : ak_akfin_length_composition.csv) 
 afsc_haul  <- readRDS("data-raw/afsc-haul.rds")
 afsc_specimen  <- readRDS("data-raw/afsc-specimen.rds")
-afsc_spp_list <- read.csv("data-raw/afsc_joined.csv")
+afsc_spp_list <- read.csv("data-raw/afsc_joined.csv")%>% 
+  mutate(scientific_name = str_to_sentence(scientific_name))
 
 ak_lengths_year <- afsc_lengths %>%
   rename("event_id" = HAULJOIN, "species_code" = SPECIES_CODE) %>% 
@@ -17,7 +18,7 @@ species_lookup <- afsc_specimen %>%
 
 ak_survey_lengths <- ak_lengths_year %>%
   left_join(species_lookup, by = "species_code") %>% 
-  filter(common_name %in% afsc_spp_list$common_name) %>% 
+  filter(scientific_name %in% afsc_spp_list$scientific_name) %>% 
   clean_fishnames() %>%
   rename(survey = survey_name) %>% 
   group_survey() %>% 
