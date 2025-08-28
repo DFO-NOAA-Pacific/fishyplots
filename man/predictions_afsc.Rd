@@ -5,7 +5,7 @@
 \alias{predictions_afsc}
 \title{Modeled prediction data for AFSC region}
 \format{
-A data frame with 2724672 rows and 10 variables:
+A data frame with 2809818 rows and 10 variables:
 \describe{
 \item{lon}{Original longitude coordinate}
 \item{lat}{Original latitude coordinate}
