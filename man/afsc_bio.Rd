@@ -5,7 +5,7 @@
 \alias{afsc_bio}
 \title{afsc_bio: Biological data for AFSC survey}
 \format{
-A data frame with 465480 rows and 10 variables:
+A data frame with 485258 rows and 10 variables:
 \describe{
 \item{region}{region of data collection}
 \item{survey}{subregion}

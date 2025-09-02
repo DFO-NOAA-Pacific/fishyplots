@@ -5,7 +5,7 @@
 \alias{pbs_bio}
 \title{pbs_bio: Biological data for PBS survey}
 \format{
-A data frame with 226600 rows and 10 variables:
+A data frame with 906520 rows and 10 variables:
 \describe{
 \item{region}{region of data collection}
 \item{survey}{subregion}
