@@ -51,6 +51,14 @@ plot_dbi <- function(species, surveys) {
     filter(.data$common_name == species | .data$scientific_name == species) %>%
     filter(.data$survey %in% surveys | .data$region %in% surveys) 
   
+    if (nrow(subset) == 0) {
+      return(
+        ggplot2::ggplot() + 
+          ggplot2::theme_void() + 
+          ggplot2::ggtitle(paste0("No biomass data available for ", species, " in this region."))
+      ) # avoid error if no data for given spec/survey
+    }
+    else{
   #plot
     plot <- ggplot2::ggplot(data = subset) +
       ggplot2::geom_ribbon(ggplot2::aes(x =.data$year, ymin = .data$lwr, ymax = .data$upr), fill = "gray75", alpha = 0.7) +
@@ -79,6 +87,7 @@ plot_dbi <- function(species, surveys) {
     }
     
     return(plot)
-  }
+    }
+}
    
 
