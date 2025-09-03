@@ -1,7 +1,7 @@
 #' Main function to plot mean lengths over time by sex
 #'
 #' @param data region bio data to be plotted. 
-#' @param regions choose NWFSC, PBS, AK GULF, and/or AK BSAI
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI
 #' @param species common or scientific name of target species
 #' @param facet_all Default TRUE. If TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
 #' @return a time series plot of mean lengths by sex
