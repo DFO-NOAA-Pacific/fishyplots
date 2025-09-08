@@ -76,14 +76,26 @@ length_frequency <- function(data, subregions, common, time_series = TRUE, facet
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
     
     
+    #facet wrap if plotting all regions
     if (length(subregions) > 1) {
       if (facet_all == TRUE) {
         graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
-      } else if (facet_all == FALSE) {
-        graph <- graph + facet_wrap(~survey, ncol = 4)
+        # find which regions have no data
+        empty_surveys <- setdiff(levels(data_clean$survey), unique(summary_stats$survey))
+        
+        if (length(empty_surveys) > 0) {
+          # plot "no data" message in empty facets
+          graph <- graph +
+            geom_text(
+              data = data.frame(survey = factor(empty_surveys,
+                                                levels = levels(data_clean$survey))),
+              aes(x = mean(range(summary_stats$year)), y = mean(range(summary_stats$mean)), label = "No data"),
+              inherit.aes = FALSE)
+        }
       }
-      
-    }
+      else if (facet_all == FALSE) {
+        graph <- graph + facet_wrap(~survey, ncol = 4)
+      }}
     
     return(graph)
   }

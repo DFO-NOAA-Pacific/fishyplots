@@ -138,7 +138,8 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
         # plot "no data" message in empty facets
         plot <- plot +
           geom_text(
-            data = data.frame(survey = empty_surveys),
+            data = data.frame(survey =factor(empty_surveys,
+                                               levels = levels(spec.data$survey))),
             aes(x = mean(range(spec.data$length_cm)), y = mean(range(spec.data$weight_kg)), label = "No data"),
             inherit.aes = FALSE)
       }
