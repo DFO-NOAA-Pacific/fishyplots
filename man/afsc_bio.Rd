@@ -23,6 +23,6 @@ A data frame with 485258 rows and 10 variables:
 afsc_bio
 }
 \description{
-Contains biological data from AFSC surveys for availible top species defined in data-raw/afsc_top.rds.
+Contains biological data from AFSC surveys for available top species defined in data-raw/afsc_top.rds.
 }
 \keyword{datasets}

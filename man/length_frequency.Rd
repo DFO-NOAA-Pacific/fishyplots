@@ -6,18 +6,18 @@
 \usage{
 length_frequency(
   data,
-  subregions,
-  common,
+  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  species,
   time_series = TRUE,
   facet_all = TRUE
 )
 }
 \arguments{
-\item{data}{biological fisheries data containing length information}
+\item{data}{biological data containing age and length information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
 
-\item{common}{species common name}
+\item{species}{species common or scientific name.}
 
 \item{time_series}{TRUE or FALSE}
 
@@ -34,10 +34,9 @@ Function to plot length frequency of fish species
 data(nwfsc_bio)
 data(afsc_bio)
 data(pbs_bio)
-nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
-all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+all_data <- bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 
-length_frequency(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
-
+length_frequency(all_data, species = "arrowtooth flounder")
+length_frequency(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 }
 }

@@ -4,7 +4,7 @@
 #' @return a ggplot object
 #' @importFrom dplyr filter
 #' @importFrom FSA findGrowthStarts
-#' @importFrom stats nls predict
+#' @importFrom stats nls predict coef
 #' @importFrom ggplot2 ggplot aes geom_jitter scale_color_manual geom_line theme_bw labs annotate
 #' @importFrom rlang .data
 #' @export

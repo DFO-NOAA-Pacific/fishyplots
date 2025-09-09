@@ -4,14 +4,24 @@
 \alias{survey_table}
 \title{Main function to display survey specimen counts}
 \usage{
-survey_table(data, species, form = 2)
+survey_table(
+  data,
+  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  species,
+  form = 2,
+  facet_all = TRUE
+)
 }
 \arguments{
-\item{data}{a data frame of bio data}
+\item{data}{biological data containing length and depth information for at least regions specified in \code{subregions}.}
 
-\item{species}{species of interest common or scientific name}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+
+\item{species}{species common or scientific name.}
 
 \item{form}{choose 1 for tibble or 2 for ggplot}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a tibble or ggplot object
@@ -21,17 +31,14 @@ Main function to display survey specimen counts
 }
 \examples{
 \dontrun{
-data("nwfsc_bio")
-data("pbs_bio")
-data("afsc_bio")
-akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
-akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
-all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+data(nwfsc_bio)
+data(afsc_bio)
+data(pbs_bio)
+all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
 
+survey_table(all_data, species = "arrowtooth flounder", form = 1)
+survey_table(all_data, species = "arrowtooth flounder", form = 2)
+survey_table(all_data, c("NWFSC", "AK GULF"), species = "anoplopoma fimbria", facet_all = F)
 
-survey_table(akgulf_bio, "atka mackerel", form = 1)
-survey_table(nwfsc_bio, "sebastes zacentrus", form = 2)
-survey_table(pbs_bio,"arrowtooth flounder", form = 2)
-survey_table(all_data, "arrowtooth flounder")
 }
 }

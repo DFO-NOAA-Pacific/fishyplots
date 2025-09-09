@@ -16,7 +16,7 @@ A data frame with 1491160 rows and 11 variables:
 \item{length_cm}{length of specimen, in cm}
 \item{weight_kg}{weight of specimen, in kg}
 \item{age_years}{age of specimen, in years}
-\item{otosag_id}{Unique to nwfsc dataset, defines number of availible age structures}
+\item{otosag_id}{Unique to nwfsc dataset, defines number of available age structures}
 \item{depth_m}{Depth in meters}
 }
 }

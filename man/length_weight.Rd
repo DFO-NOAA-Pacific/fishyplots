@@ -4,14 +4,24 @@
 \alias{length_weight}
 \title{Main function to plot length-weight relationships by sex}
 \usage{
-length_weight(data, species, subset = TRUE)
+length_weight(
+  data,
+  subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+  species,
+  subset = TRUE,
+  facet_all = TRUE
+)
 }
 \arguments{
-\item{data}{region bio data to be plotted. Preload from data file, see examples.}
+\item{data}{biological data containing age, length, and sex information for at least regions specified in \code{subregions}.}
 
-\item{species}{common or scientific name of target species}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+
+\item{species}{species common or scientific name.}
 
 \item{subset}{default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.}
 }
 \value{
 a plot of sexed data with log-log regression slope and intercept
@@ -21,14 +31,13 @@ Main function to plot length-weight relationships by sex
 }
 \examples{
 \dontrun{
-data("nwfsc_bio")
-data("pbs_bio")
-data("afsc_bio")
-akgulf_bio <- afsc_bio \%>\% filter(survey == "AK GULF")
-akbsai_bio <- afsc_bio \%>\% filter(survey == "AK BSAI")
-all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+data(vb_predictions)
+data(pbs_bio)
+data(afsc_bio)
+data(nwfsc_bio)
+all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 
-length_weight(all_data, "arrowtooth flounder")
-length_weight(akgulf_bio, "atka mackerel", subset = FALSE)
+length_weight(all_data, species = "arrowtooth flounder")
+length_weight(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 }
 }

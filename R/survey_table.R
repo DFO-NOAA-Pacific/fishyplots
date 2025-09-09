@@ -3,9 +3,11 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 
 #' Main function to display survey specimen counts
 #'
-#' @param data a data frame of bio data
-#' @param species species of interest common or scientific name 
+#' @param data biological data containing length and depth information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name.
 #' @param form choose 1 for tibble or 2 for ggplot
+#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted
 #' @return a tibble or ggplot object
 #' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join theme_light
 #' @importFrom tidyr pivot_wider complete
@@ -17,20 +19,17 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #'
 #' @examples
 #' \dontrun{
-#' data("nwfsc_bio")
-#' data("pbs_bio")
-#' data("afsc_bio")
-#' akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
-#' akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
-#' all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+#' data(nwfsc_bio)
+#' data(afsc_bio)
+#' data(pbs_bio)
+#' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
+#' survey_table(all_data, species = "arrowtooth flounder", form = 1)
+#' survey_table(all_data, species = "arrowtooth flounder", form = 2)
+#' survey_table(all_data, c("NWFSC", "AK GULF"), species = "anoplopoma fimbria", facet_all = F)
 #' 
-#' survey_table(akgulf_bio, "atka mackerel", form = 1)
-#' survey_table(nwfsc_bio, "sebastes zacentrus", form = 2)
-#' survey_table(pbs_bio,"arrowtooth flounder", form = 2)
-#' survey_table(all_data, "arrowtooth flounder")
 #' }
-survey_table <- function(data, species, form = 2) {
+survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
   
   #check if form = 1 or 2 (2 default) for table vs plot
   form <- match.arg(as.character(form), choices = c("1", "2"))
@@ -39,8 +38,15 @@ survey_table <- function(data, species, form = 2) {
   
   #filter data to species of interest (spec.data)
   if (any(data$common_name == species | data$scientific_name == species)) {
-  spec.data <- filter(data, .data$common_name == species | .data$scientific_name == species)}
-  else (stop(paste("Species name", "'", species,"'", "not found in ", "data.")))
+  spec.data <- filter(data, .data$common_name == species | .data$scientific_name == species, survey %in% subregions)}
+  else {
+    stop(paste("Species name", "'", species,"'", "not found in ", "data."))
+  }
+  
+  # Exit if no data
+  if (nrow(spec.data) == 0) {
+    return(ggplot() + theme_void() + ggtitle("No data available"))
+  }
   
 #### COUNTS ####
   #make subsets with just the wanted data (l/w/a, year, unread counts)
@@ -50,7 +56,7 @@ survey_table <- function(data, species, form = 2) {
   length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> #omit rows with no data from being counted
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|> #sum sample number over grouping (year)
+    summarize(n_samples=n(), .groups = "drop_last")|> #sum sample number over grouping (year)
     mutate(sample_type = "Lengths") #label as length count
 
   # use special dataset for AFSC lengths
@@ -59,7 +65,7 @@ survey_table <- function(data, species, form = 2) {
     ak_length_count <-  fishyplots::ak_survey_lengths |> 
       filter(.data$common_name == species) |> 
       group_by(.data$year, .data$survey) |>
-      summarize(n_samples=sum(.data$length.count))|>
+      summarize(n_samples=sum(.data$length.count), .groups = "drop_last")|>
       mutate(sample_type = "Lengths") |> 
       rename(yr = .data$year) |> 
       na.omit()
@@ -78,7 +84,7 @@ survey_table <- function(data, species, form = 2) {
   weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Weights")
 
 ## Ages ##
@@ -86,8 +92,9 @@ survey_table <- function(data, species, form = 2) {
   age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Ages")
+
   # fill with 0 if no ages taken (ex nwfsc Sebastes zacentrus)
   if(nrow(age_count) == 0) {
     age_count <- data.frame(survey = unique(spec.data$survey), n_samples = 0, yr = weight_count$yr, sample_type = "Ages")}
@@ -96,7 +103,7 @@ survey_table <- function(data, species, form = 2) {
   # for most data, n age structures = total specimen count (don't need to worry about multiple age str. per specimen)
   agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(),.groups = "drop_last")|>
     mutate(sample_type = "Age Structures") 
   
   # for NWFSC, use otolith ID as n age structures
@@ -111,7 +118,7 @@ survey_table <- function(data, species, form = 2) {
   # count other age structures normally
   other_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Age Structures") |> 
     filter(.data$survey != "NWFSC")
 
@@ -256,13 +263,17 @@ if (form == 2) {
     coord_cartesian(expand = FALSE)
   
   #check for no pos catch data: put note that pos catch data not available 
+  # find which regions have no data at all (annotate different message later)
+  empty_surveys <- setdiff(levels(bio_data$survey), unique(bio_data$survey))
+  
   no_catch <- bio_data |>
     filter(.data$sample_type == "% Positive Tows") |>
     group_by(.data$survey) |>
     summarize(all_zero = all(n_samples == 0), .groups = "drop") |>
     filter(.data$all_zero) |>
     pull(.data$survey)
-  if(any(unique(bio_data$survey) %in% no_catch)) { #if there is no 
+
+  if(any(unique(bio_data$survey) %in% no_catch)) { #if there is no catch data but there is other data
     plot <- plot +
       annotate(
         "text", 
@@ -271,12 +282,33 @@ if (form == 2) {
         size = 4, color = "black"
       )
   }
+
+  #facet wrap if plotting all regions
+  if (length(subregions) > 1) {
+    if (facet_all == TRUE) {
+      plot <- plot + facet_wrap(~survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 13), strip.text.x = element_text(hjust = 0))
+
+      if (length(empty_surveys) > 0) {
+        # plot "no data" message in empty facets
+        # make a tile to label no data
+        nd.tile <- data.frame(
+          survey = factor(empty_surveys, levels = levels(bio_data$survey)),
+          sample_type = "Ages",   
+          yr = min(bio_data$yr) +(diff(range(bio_data$yr))/10),                  
+          label = "No data")
+        
+        plot <- plot +
+          geom_text(
+            data = nd.tile,
+            aes(y = .data$sample_type, x = .data$yr, label =.data$label),
+            inherit.aes = FALSE, size = 5)
   
-  #facet wrap if plotting multiple regions
-  if(length(unique(bio_data$survey)) > 1) {
-    plot <- plot + facet_wrap( ~ survey, ncol = 1, drop = FALSE) + theme(strip.background = element_blank(), strip.text = element_text(size = 13), strip.text.x = element_text(hjust = 0))
-  }
-  
+      }
+    }
+    else if (facet_all == FALSE) {
+      plot <- plot + facet_wrap(~survey, ncol = 1, drop = TRUE) + theme(strip.background = element_blank(), strip.text = element_text(size = 13), strip.text.x = element_text(hjust = 0))
+    }}
+
   return(plot)
   }
   }

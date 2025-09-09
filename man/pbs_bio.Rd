@@ -23,6 +23,6 @@ A data frame with 906520 rows and 10 variables:
 pbs_bio
 }
 \description{
-Contains biological data from PBS surveys for availible top species defined in data-raw/pbs_top.rds.
+Contains biological data from PBS surveys for available top species defined in data-raw/pbs_top.rds.
 }
 \keyword{datasets}

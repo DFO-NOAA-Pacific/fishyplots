@@ -4,18 +4,21 @@
 \alias{plot_growth}
 \title{plot von Bertalanffy function predictions}
 \usage{
-plot_growth(data, predictions, subregions, common, facet_all = TRUE)
+plot_growth(
+  data,
+  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  species,
+  facet_all = TRUE
+)
 }
 \arguments{
-\item{data}{biological data containing age, length, and sex information}
+\item{data}{biological data containing age, length, and sex information for at least regions specified in \code{subregions}.}
 
-\item{predictions}{von Bertalanffy prediction data in /data folder}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
 
-\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
+\item{species}{species common or scientific name .}
 
-\item{common}{species common name}
-
-\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.}
 }
 \value{
 a ggplot object
@@ -29,9 +32,9 @@ data(vb_predictions)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)
-data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
+all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 
-plot_growth(data, vb_predictions, "AFSC", "walleye pollock")
-plot_growth(data, vb_predictions, c("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
+plot_growth(all_data, species = "arrowtooth flounder")
+plot_growth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 }
 }

@@ -1,10 +1,10 @@
 #' Plots distribution of ages across survey years.
 #'
-#' @param data biological fisheries data containing age and sex information
-#' @param subregions choose NWFSC, PBS, AK Gulf, and/or AK BSAI
-#' @param common species common name
-#' @param sex TRUE or FALSE for if you want to differentiate by sex
-#' @param cutoff define a cutoff for grouping older ages together
+#' @param data biological data containing age and sex information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name.
+#' @param by_sex TRUE or FALSE for if you want to differentiate by sex.
+#' @param cutoff define a cutoff for grouping older ages together.
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted
 #' @return a ggplot object
 #' @importFrom dplyr filter mutate distinct arrange case_when
@@ -17,21 +17,27 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' data("nwfsc_bio")
-#' data("afsc_bio")
-#' data("pbs_bio")
-#' all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+#'\dontrun{
+#' data(nwfsc_bio)
+#' data(afsc_bio)
+#' data(pbs_bio)
+#' all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
-#' age_frequency(all_data, c("PBS", "NWFSC", "AK BSAI", "AK GULF"), "yellowtail rockfish")
+#' age_frequency(data = all_data, 
+#' subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
+#'  species = "arrowtooth flounder")
+#' age_frequency(data = all_data,
+#'   subregions =  c("NWFSC", "AK GULF"), 
+#'   species = "anoplopoma fimbria", 
+#'   by_sex = T, facet_all = F)
 #' }
-age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, facet_all = TRUE) {
+age_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, by_sex = FALSE, cutoff = 0.95, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
     filter(!is.na(.data$age_years)) |>
     filter(.data$sex != "U") |>
     filter(.data$survey %in% subregions) |>
-    filter(.data$common_name == common) 
+    filter(species == .data$common_name | species == .data$scientific_name) 
   
   # Exit if no data
   if (nrow(data_clean) == 0) {
@@ -70,33 +76,45 @@ age_frequency <- function(data, subregions, common, sex = FALSE, cutoff = 0.95, 
   data_clean$survey <- factor(data_clean$survey, levels = region_levels, labels = region_labels)
   
   # Create base graph 
-  if (sex == FALSE) {
+  if (by_sex == FALSE) {
     graph <- data_clean |> 
       ggplot(aes(x = .data$age_group_num, y = factor(.data$year))) +
       geom_density_ridges(stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE)
-  } else if (sex == TRUE) {
+  } else if (by_sex == TRUE) {
     graph <- data_clean |> 
       ggplot(aes(x = .data$age_group_num, y = factor(.data$year), fill = .data$sex)) +
       geom_density_ridges(alpha = 0.5, stat = "binline", bins = length(unique(data_clean$age_group)), scale = 1, draw_baseline = TRUE) +
       scale_fill_manual(values = c("M" = "#008b8b", "F" = "#daa520"))
     }
   
-  # Add facet wrap option for multiple regions
+  #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
       graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
-    } else if (facet_all == FALSE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4)
+      # find which regions have no data
+      empty_surveys <- setdiff(levels(data_clean$survey), unique(data_clean$survey))
+      
+      if (length(empty_surveys) > 0) {
+        # plot "no data" message in empty facets
+        graph <- graph +
+          geom_text(
+            data = data.frame(survey = factor(empty_surveys,
+                                              levels = levels(data_clean$survey))),
+            aes(x = mean(range(data_clean$age_group_num)), y = levels(factor(data_clean$year))[ceiling(length(levels(factor(data_clean$year))) / 2)], label = "No data"),
+            inherit.aes = FALSE)
+      }
     }
-  }
+    else if (facet_all == FALSE) {
+      graph <- graph + facet_wrap(~survey, ncol = 4)
+    }}
   
   # Add aesthetics
   graph <- graph + 
     theme_bw() +
     labs(x = "Age (years)", y = "", title = "Age frequency") +
-    scale_x_continuous(breaks = 1:length(labels), labels = labels) +
+    scale_x_continuous(breaks = 1:length(labels), labels = labels)+ #, guide = guide_axis(n.dodge=2)) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     theme(panel.grid = element_blank())
-  
+
   return(graph)
 }

@@ -1,10 +1,9 @@
 #' plot von Bertalanffy function predictions
 #'
-#' @param data biological data containing age, length, and sex information
-#' @param predictions von Bertalanffy prediction data in /data folder
-#' @param subregions choose NWFSC, PBS, AK Gulf, and/or AK BSAI
-#' @param common species common name 
-#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
+#' @param data biological data containing age, length, and sex information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name .
+#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.
 #' @return a ggplot object
 #' @importFrom dplyr filter rename pull mutate summarize group_by
 #' @importFrom ggplot2 ggplot aes geom_point scale_color_manual scale_fill_manual geom_line labs geom_label
@@ -17,22 +16,22 @@
 #' data(pbs_bio)
 #' data(afsc_bio)
 #' data(nwfsc_bio)
-#' data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
+#' all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 #' 
-#' plot_growth(data, vb_predictions, "AFSC", "walleye pollock")
-#' plot_growth(data, vb_predictions, c("AK BSAI", "AK GULF", "NWFSC", "PBS"), "arrowtooth flounder")
+#' plot_growth(all_data, species = "arrowtooth flounder")
+#' plot_growth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
-plot_growth <- function(data, predictions, subregions, common, facet_all = TRUE) {
+plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),species, facet_all = TRUE) {
   data <- data |>
     filter(!is.na(.data$length_cm)) |>
     filter(!is.na(.data$age_years)) |>
     filter(.data$sex == "F" | .data$sex == "M") |>
     filter(.data$survey %in% subregions) |>
-    filter(.data$common_name == common)
+    filter(species == .data$common_name | species == .data$scientific_name)
   
-  predictions <- predictions |>
+  predictions <- fishyplots::vb_predictions |>
     filter(.data$survey %in% subregions) |>
-    filter(.data$common_name == common)
+    filter(species == .data$common_name | species == .data$scientific_name)
   
   data$survey <- factor(data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
                         labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
@@ -75,14 +74,26 @@ plot_growth <- function(data, predictions, subregions, common, facet_all = TRUE)
       alpha = 0.2, inherit.aes = FALSE, show.legend = FALSE, size = 3.3) +
     theme(panel.grid = element_blank())
   
+  #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
       graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
-    } else if (facet_all == FALSE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4)
+      # find which regions have no data
+      empty_surveys <- setdiff(levels(data$survey), unique(predictions$survey))
+      
+      if (length(empty_surveys) > 0) {
+        # plot "no data" message in empty facets
+        graph <- graph +
+          geom_text(
+            data = data.frame(survey = factor(empty_surveys,
+                                              levels = levels(data$survey))),
+            aes(x = mean(range(data$age_years)), y = mean(range(data$length_cm)), label = "No data"),
+            inherit.aes = FALSE)
+      }
     }
-    
-  }
-  
+    else if (facet_all == FALSE) {
+      graph <- graph + facet_wrap(~survey, ncol = 4)
+    }}
+ 
   return(graph)
 }

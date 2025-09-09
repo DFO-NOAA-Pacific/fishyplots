@@ -39,8 +39,10 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
     filter(.data$region %in% rrr)
   
   if (nrow(data) == 0) {
-    stop(paste0("No data for ", common_name, " in this region."))
+    return(ggplot() + theme_void() + ggtitle(paste("No data for", common_name,"in this region.")))
+    #stop(paste0("No data for ", common_name, " in this region."))
   }
+  
   
   # Color scale transformation
   fourth_root <- trans_new(

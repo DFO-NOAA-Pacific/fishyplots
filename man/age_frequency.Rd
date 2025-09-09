@@ -6,23 +6,23 @@
 \usage{
 age_frequency(
   data,
-  subregions,
-  common,
-  sex = FALSE,
+  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  species,
+  by_sex = FALSE,
   cutoff = 0.95,
   facet_all = TRUE
 )
 }
 \arguments{
-\item{data}{biological fisheries data containing age and sex information}
+\item{data}{biological data containing age and sex information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK Gulf, and/or AK BSAI}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
 
-\item{common}{species common name}
+\item{species}{species common or scientific name.}
 
-\item{sex}{TRUE or FALSE for if you want to differentiate by sex}
+\item{by_sex}{TRUE or FALSE for if you want to differentiate by sex.}
 
-\item{cutoff}{define a cutoff for grouping older ages together}
+\item{cutoff}{define a cutoff for grouping older ages together.}
 
 \item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
@@ -34,11 +34,17 @@ Plots distribution of ages across survey years.
 }
 \examples{
 \dontrun{
-data("nwfsc_bio")
-data("afsc_bio")
-data("pbs_bio")
-all_data <- bind_rows(afsc_bio, nwfsc_bio, pbs_bio)
+data(nwfsc_bio)
+data(afsc_bio)
+data(pbs_bio)
+all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 
-age_frequency(all_data, c("PBS", "NWFSC", "AK BSAI", "AK GULF"), "yellowtail rockfish")
+age_frequency(data = all_data, 
+subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
+ species = "arrowtooth flounder")
+age_frequency(data = all_data,
+  subregions =  c("NWFSC", "AK GULF"), 
+  species = "anoplopoma fimbria", 
+  by_sex = T, facet_all = F)
 }
 }
