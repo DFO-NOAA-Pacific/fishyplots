@@ -42,7 +42,8 @@ length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC")
     select(.data$survey, .data$year, .data$common_name, .data$sex, .data$length_cm ) |> 
     group_by(.data$survey, .data$year, .data$sex ) |> 
     summarise(avg.length = mean(.data$length_cm),
-              se = sd(.data$length_cm, na.rm = TRUE) / sqrt(n()))
+              se = sd(.data$length_cm, na.rm = TRUE) / sqrt(n()),
+              .groups = "drop_last")
   
   sex.color <- c("M" = "#E69F00", "F" = "#009E73")
   legend <- data.frame(label = c("M", "F"),

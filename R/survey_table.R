@@ -56,7 +56,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   length_count <- data.frame(length = spec.data$length_cm, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> #omit rows with no data from being counted
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|> #sum sample number over grouping (year)
+    summarize(n_samples=n(), .groups = "drop_last")|> #sum sample number over grouping (year)
     mutate(sample_type = "Lengths") #label as length count
 
   # use special dataset for AFSC lengths
@@ -65,7 +65,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
     ak_length_count <-  fishyplots::ak_survey_lengths |> 
       filter(.data$common_name == species) |> 
       group_by(.data$year, .data$survey) |>
-      summarize(n_samples=sum(.data$length.count))|>
+      summarize(n_samples=sum(.data$length.count), .groups = "drop_last")|>
       mutate(sample_type = "Lengths") |> 
       rename(yr = .data$year) |> 
       na.omit()
@@ -84,7 +84,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Weights")
 
 ## Ages ##
@@ -92,7 +92,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   age_count <- data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |>
     na.omit() |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Ages")
 
   # fill with 0 if no ages taken (ex nwfsc Sebastes zacentrus)
@@ -103,7 +103,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   # for most data, n age structures = total specimen count (don't need to worry about multiple age str. per specimen)
   agestr_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(),.groups = "drop_last")|>
     mutate(sample_type = "Age Structures") 
   
   # for NWFSC, use otolith ID as n age structures
@@ -118,7 +118,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   # count other age structures normally
   other_count <-  data.frame(age = spec.data$age_years, yr = spec.data$year, survey = spec.data$survey) |> 
     group_by(.data$yr, .data$survey) |>
-    summarize(n_samples=n())|>
+    summarize(n_samples=n(), .groups = "drop_last")|>
     mutate(sample_type = "Age Structures") |> 
     filter(.data$survey != "NWFSC")
 
