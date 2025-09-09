@@ -29,7 +29,7 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' survey_table(all_data, c("NWFSC", "AK GULF"), species = "anoplopoma fimbria", facet_all = F)
 #' 
 #' }
-survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = FALSE ) {
+survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
   
   #check if form = 1 or 2 (2 default) for table vs plot
   form <- match.arg(as.character(form), choices = c("1", "2"))

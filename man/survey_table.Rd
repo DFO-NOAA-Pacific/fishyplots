@@ -9,7 +9,7 @@ survey_table(
   subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
   species,
   form = 2,
-  facet_all = FALSE
+  facet_all = TRUE
 )
 }
 \arguments{

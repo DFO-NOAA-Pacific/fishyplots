@@ -18,7 +18,7 @@
 #' data(nwfsc_bio)
 #' data(afsc_bio)
 #' data(pbs_bio)
-#' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+#' all_data <- bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
 #' length_frequency(all_data, species = "arrowtooth flounder")
 #' length_frequency(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)

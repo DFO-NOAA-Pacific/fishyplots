@@ -37,15 +37,14 @@ Plots distribution of ages across survey years.
 data(nwfsc_bio)
 data(afsc_bio)
 data(pbs_bio)
-all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 
-age_frequency(all_data, species = "arrowtooth flounder")
-age_frequency(all_data, c("NWFSC", "AK GULF"), 
-  species = "anoplopoma fimbria", by_sex = T, facet_all = F)
-
-# For best axis visibility, it is recommended that regions are viewed one at a time.
-age_frequency(all_data, subregion = "NWFSC", 
+age_frequency(data = all_data, 
+subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
+ species = "arrowtooth flounder")
+age_frequency(data = all_data,
+  subregions =  c("NWFSC", "AK GULF"), 
   species = "anoplopoma fimbria", 
-   facet_all = F, cutoff = 0.1)
+  by_sex = T, facet_all = F)
 }
 }
