@@ -20,7 +20,9 @@
 #' all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
 #' 
 #' plot_age_depth(all_data, species = "arrowtooth flounder")
-#' plot_age_depth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", by_sex = T, facet_all = F)
+#' plot_age_depth(all_data, c("NWFSC", "AK GULF"),
+#'  species = "anoplopoma fimbria",
+#'  by_sex = T, facet_all = F)
 #' }
 
 plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), species, by_sex = FALSE, facet_all = TRUE) {
@@ -167,8 +169,8 @@ plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK G
       p2 <- p2 + facet_grid(sex_group ~ survey, drop = !facet_all) + labs(caption = caption)
       
       # Window 1 midpoint
-      totals <- counts1 %>%
-        group_by(depth_mid,survey, sex_group) %>%
+      totals <- counts1 |>
+        group_by(.data$depth_mid, .data$survey, .data$sex_group) |>
         summarise(total = sum(count, na.rm = TRUE), .groups = "drop")
       mp1 <- max(totals$total, na.rm = TRUE)/2
       
@@ -178,9 +180,9 @@ plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK G
       p1 <- p1 + facet_wrap(~survey, ncol = 4, drop = !facet_all)
       p2 <- p2 + facet_wrap(~survey, ncol = 4, drop = !facet_all)
       
-      totals <- counts1 %>%
-        group_by(depth_mid,survey) %>%
-        summarise(total = sum(count, na.rm = TRUE), .groups = "drop")
+      totals <- counts1 |>
+        group_by(.data$depth_mid, .data$survey) |>
+        summarise(total = sum(.data$count, na.rm = TRUE), .groups = "drop")
       mp1 <- max(totals$total, na.rm = TRUE)/2
     }
     

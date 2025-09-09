@@ -37,6 +37,8 @@ data(nwfsc_bio)
 all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
 
 plot_length_depth(all_data, species = "arrowtooth flounder")
-plot_length_depth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", by_sex = T, facet_all = F)
+plot_length_depth(all_data, c("NWFSC", "AK GULF"),
+  species = "anoplopoma fimbria",
+  by_sex = T, facet_all = F)
  }
 }

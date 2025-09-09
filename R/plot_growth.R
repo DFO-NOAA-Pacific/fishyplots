@@ -29,7 +29,7 @@ plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS
     filter(.data$survey %in% subregions) |>
     filter(species == .data$common_name | species == .data$scientific_name)
   
-  predictions <- vb_predictions |>
+  predictions <- fishyplots::vb_predictions |>
     filter(.data$survey %in% subregions) |>
     filter(species == .data$common_name | species == .data$scientific_name)
   
