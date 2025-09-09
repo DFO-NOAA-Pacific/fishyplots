@@ -6,19 +6,22 @@
 \usage{
 plot_age_depth(
   data,
-  subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"),
-  common,
-  by_sex = FALSE
+  subregions = c("NWFSC", "PBS", "AK BSAI", "AK GULF"),
+  species,
+  by_sex = FALSE,
+  facet_all = TRUE
 )
 }
 \arguments{
-\item{data}{biological data}
+\item{data}{biological data containing age and depth information for at least regions specified in \code{subregions}.}
 
-\item{subregion}{choose PBS, NWFSC, AK BSAI, AK GULF}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
 
-\item{common}{species common name}
+\item{species}{species common or scientific name.}
 
 \item{by_sex}{show sex differentiation}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a ggplot object
@@ -32,6 +35,8 @@ data(afsc_bio)
 data(pbs_bio)
 data(nwfsc_bio)
 all_data <- bind_rows(afsc_bio, pbs_bio, nwfsc_bio)
-plot_age_depth(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+
+plot_age_depth(all_data, species = "arrowtooth flounder")
+plot_age_depth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", by_sex = T, facet_all = F)
 }
 }

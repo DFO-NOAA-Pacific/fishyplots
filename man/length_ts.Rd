@@ -4,29 +4,34 @@
 \alias{length_ts}
 \title{Main function to plot mean lengths over time by sex}
 \usage{
-length_ts(data, species)
+length_ts(
+  data,
+  subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+  species,
+  facet_all = TRUE
+)
 }
 \arguments{
-\item{data}{region bio data to be plotted. Preload from data file, see examples.}
+\item{data}{biological data containing length information for at least regions specified in \code{subregions}.}
 
-\item{species}{common or scientific name of target species}
-}
-\value{
-a time series plot of mean lengths by sex
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+
+\item{species}{species common or scientific name.}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.#' @return a time series plot of mean lengths by sex}
 }
 \description{
 Main function to plot mean lengths over time by sex
 }
 \examples{
 \dontrun{
-data("nwfsc_bio")
-data("pbs_bio")
-data("afsc_bio")
-akgulf_bio <- afsc_bio \%>\% filter(survey == "AK GULF")
-akbsai_bio <- afsc_bio \%>\% filter(survey == "AK BSAI")
-all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+data(vb_predictions)
+data(pbs_bio)
+data(afsc_bio)
+data(nwfsc_bio)
+all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 
-length_ts(all_data, "arrowtooth flounder")
-length_ts(akgulf_bio, "atka mackerel")
+length_ts(all_data, species = "arrowtooth flounder")
+length_ts(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 }
 }
