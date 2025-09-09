@@ -1,10 +1,9 @@
 #' Main function to plot mean lengths over time by sex
 #'
-#' @param data region bio data to be plotted. 
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI
-#' @param species common or scientific name of target species
-#' @param facet_all Default TRUE. If TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
-#' @return a time series plot of mean lengths by sex
+#' @param data biological data containing length information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name.
+#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.#' @return a time series plot of mean lengths by sex
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual scale_fill_manual theme_bw theme element_blank element_text xlab ylab geom_label geom_ribbon
 #' @importFrom dplyr filter mutate
 #' @importFrom stats sd
@@ -12,18 +11,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("nwfsc_bio")
-#' data("pbs_bio")
-#' data("afsc_bio")
-#' akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
-#' akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
-#' all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+#' data(vb_predictions)
+#' data(pbs_bio)
+#' data(afsc_bio)
+#' data(nwfsc_bio)
+#' all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 #' 
-#' length_ts(data = all_data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species = "arrowtooth flounder")
-#' length_ts(data = akgulf_bio, subregions ="AK GULF", species = "arrowtooth flounder")
+#' length_ts(all_data, species = "arrowtooth flounder")
+#' length_ts(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_ts <- function(data, subregions, species, facet_all = TRUE) {
+length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species, facet_all = TRUE) {
   
   spec.data <- data |>
     filter(!is.na(.data$length_cm), !.data$sex == "U") |>
@@ -95,7 +93,7 @@ length_ts <- function(data, subregions, species, facet_all = TRUE) {
         # plot "no data" message in empty facets
         plot <- plot +
           geom_text(
-            data = data.frame(survey = empty_surveys),
+            data = data.frame(survey = factor(empty_surveys, levels = levels(plot.data$survey))),
             aes(x = mean(range(plot.data$year)), y = mean(range(plot.data$avg.length)), label = "No data"),
             inherit.aes = FALSE)
       }

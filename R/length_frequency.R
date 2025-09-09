@@ -1,8 +1,8 @@
 #' Function to plot length frequency of fish species
 #'
-#' @param data biological fisheries data containing length information
-#' @param subregions choose NWFSC, PBS, AK Gulf, and/or AK BSAI
-#' @param common species common name
+#' @param data biological data containing age and length information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name.
 #' @param time_series TRUE or FALSE 
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
 #' @return a ggplot object
@@ -18,23 +18,22 @@
 #' data(nwfsc_bio)
 #' data(afsc_bio)
 #' data(pbs_bio)
-#' nwfsc_bio <- nwfsc_bio |> select(-otosag_id)
 #' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
-#' length_frequency(all_data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
-#' 
+#' length_frequency(all_data, species = "arrowtooth flounder")
+#' length_frequency(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_frequency <- function(data, subregions, common, time_series = TRUE, facet_all = TRUE) {
+length_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, time_series = TRUE, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
     filter(!is.na(.data$length_cm)) |>
     filter(.data$survey %in% subregions) |>
-    filter(.data$common_name == common)
+    filter(species == .data$common_name | species == .data$scientific_name)
   
   # Exit if no data
   if (nrow(data_clean) == 0) {
-    #message(paste0("No age data available for ", common, " in ", paste(subregions, collapse = ","), "."))
+    #message(paste0("No age data available for ", species, " in ", paste(subregions, collapse = ","), "."))
     return(ggplot() + theme_void() + ggtitle("No length frequency data available."))
   }
   

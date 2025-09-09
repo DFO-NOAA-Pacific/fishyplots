@@ -1,10 +1,10 @@
 #' Main function to plot length-weight relationships by sex
 #'
-#' @param data region bio data to be plotted. Preload from data file, see examples.
-#' @param subregions choose NWFSC, PBS, AK Gulf, and/or AK BSAI
-#' @param species common or scientific name of target species
+#' @param data biological data containing age, length, and sex information for at least regions specified in `subregions`.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param species species common or scientific name.
 #' @param subset default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.
-#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
+#' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.
 #' @return a plot of sexed data with log-log regression slope and intercept
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_linetype_manual theme_classic theme element_blank element_text xlab ylab annotate
 #' @importFrom dplyr filter mutate slice_sample
@@ -14,18 +14,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' data("nwfsc_bio")
-#' data("pbs_bio")
-#' data("afsc_bio")
-#' akgulf_bio <- afsc_bio |> filter(survey == "AK GULF")
-#' akbsai_bio <- afsc_bio |> filter(survey == "AK BSAI")
-#' all_data <- bind_rows(akgulf_bio, akbsai_bio, nwfsc_bio, pbs_bio)
+#' data(vb_predictions)
+#' data(pbs_bio)
+#' data(afsc_bio)
+#' data(nwfsc_bio)
+#' all_data <- bind_rows(pbs_bio, afsc_bio, nwfsc_bio)
 #' 
-#' length_weight(data = all_data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species = "arrowtooth flounder")
-#' length_weight(data = akgulf_bio, subregions ="AK GULF", species = "arrowtooth flounder")
+#' length_weight(all_data, species = "arrowtooth flounder")
+#' length_weight(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_weight <- function(data, subregions, species, subset = TRUE, facet_all = TRUE) { # subset default
+length_weight <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species, subset = TRUE, facet_all = TRUE) { # subset default
 
 #### DATA ####
   #load lw prediction dataset
