@@ -1,4 +1,4 @@
-pandoc: 3.1.11
+pandoc: '3.2'
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
@@ -6,7 +6,7 @@ articles:
   a2_plotting_biology: a2_plotting_biology.html
   a3_fishmap: a3_fishmap.html
   a4_survey_table: a4_survey_table.html
-last_built: 2025-09-03T21:12Z
+last_built: 2025-09-09T20:57Z
 urls:
   reference: https://dfo-noaa-pacific.github.io/fishyplots/reference
   article: https://dfo-noaa-pacific.github.io/fishyplots/articles
