@@ -43,6 +43,11 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
     stop(paste("Species name", "'", species,"'", "not found in ", "data."))
   }
   
+  # Exit if no data
+  if (nrow(spec.data) == 0) {
+    return(ggplot() + theme_void() + ggtitle("No data available"))
+  }
+  
 #### COUNTS ####
   #make subsets with just the wanted data (l/w/a, year, unread counts)
   
