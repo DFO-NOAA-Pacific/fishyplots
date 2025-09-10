@@ -25,7 +25,6 @@ Main function to plot mean lengths over time by sex
 }
 \examples{
 \dontrun{
-data(vb_predictions)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)

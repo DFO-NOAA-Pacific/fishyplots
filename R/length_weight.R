@@ -14,7 +14,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' data(vb_predictions)
 #' data(pbs_bio)
 #' data(afsc_bio)
 #' data(nwfsc_bio)
@@ -29,14 +28,16 @@ length_weight <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWF
 #### DATA ####
   #load lw prediction dataset
   
-  #subset data to species (spec.data), or give error message
-  if (any(data$common_name == species | data$scientific_name == species)) {
-    spec.data <- data  |> 
-      filter(species == .data$common_name | species == .data$scientific_name, .data$survey %in% subregions) |>
-      filter(!.data$sex == "U", !is.na(.data$length_cm), !is.na(.data$weight_kg)) #remove U sex, rows with NA lengths or widths
- } else (
-    #stop(paste("Species name", "'", species,"'", "not found in this dataset.")))
-    stop(return(ggplot() + theme_void() + ggtitle("No length-weight data available."))))
+  #subset data to species
+  spec.data <- data |>
+    filter(!is.na(.data$length_cm),!is.na(.data$weight_kg), !.data$sex == "U") |>
+    filter(.data$survey %in% subregions) |>
+    filter(.data$common_name == species | .data$scientific_name == species)
+  
+  # Exit if no data
+  if (nrow(spec.data) == 0) {
+    return(ggplot() + theme_void() + ggtitle("No length-weight data available."))
+  }
   
   # when subset = TRUE, subset into 10000 random points for plotting speed
   if(subset == TRUE){
