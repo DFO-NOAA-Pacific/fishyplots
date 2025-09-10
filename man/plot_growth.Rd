@@ -28,7 +28,6 @@ plot von Bertalanffy function predictions
 }
 \examples{
 \dontrun{
-data(vb_predictions)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)
