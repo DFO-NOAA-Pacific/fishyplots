@@ -4,12 +4,14 @@
 \alias{plot_dbi}
 \title{Function and formatted data to plot design based index}
 \usage{
-plot_dbi(species, surveys)
+plot_dbi(species, surveys, facet_all = TRUE)
 }
 \arguments{
 \item{species}{common or scientific name of species of interest. See examples for options per dataset.}
 
 \item{surveys}{surveys or survey group, required to specify servey/region to be plotted. See examples for options per dataset.}
+
+\item{facet_all}{if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted}
 }
 \value{
 a ggplot object, plot of design based indicies
