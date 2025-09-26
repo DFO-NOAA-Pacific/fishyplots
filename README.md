@@ -1,22 +1,19 @@
-# fishyplots
-This repository is a collection of plotting functions to be used for coastwide synopsis project, led by Zoe Khan and Callie Murakami. 
+## fishyplots
 
 [![DOI](https://zenodo.org/badge/1012008498.svg)](https://doi.org/10.5281/zenodo.15932836)
 
-These functions and code are heavily inspired by Fisheries and Oceans Canada's reports
+This repository is a collection of plotting functions for the [Pacific Groundfish Data Synopsis Shiny app](https://github.com/DFO-NOAA-Pacific/shinyfishyplots), led by [Zoe Khan](https://github.com/ZoeKhan1) and [Callie Murakami](https://github.com/calmurakami). 
 
-**Anderson SC, Dunic JC, Keppel EA, and Edwards AM. 2023. A data synopsis for British Columbia groundfish : 2023 data update. Canadian technical report of fisheries and aquatic sciences, 1488-5379 ; 3641.**
+The concept and code are heavily inspired by Fisheries and Oceans Canada's annual [Pacific Groundfish Data Synopsis Reports](https://github.com/pbs-assess/gfsynopsis) and the paper:
 
-**Anderson, SC, Keppel, EA, Edwards, AM. 2021. A data synopsis for British Columbia groundfish: 2021 data update. DFO Can. Sci. Advis. Sec. Res. Doc. 2022/020. vii + 257 p.**
+Anderson, S.C., Keppel, E.A., and Edwards, A.M. 2020. Reproducible visualization of raw fisheries data for 113 species improves transparency, assessment efficiency, and monitoring. Fisheries 45: 535–543. <https://doi.org/10.1002/fsh.10441> [[PDF](https://drive.google.com/file/d/1-eLZFvEK9FxrKJPQ-AiojI30siYyfrUr/view?usp=sharing)].
 
-with associated code 
-[https://github.com/pbs-assess/gfplot](https://github.com/pbs-assess/gfplot)
+This work also builds off of initial NOAA implementation from 2024 of the synopsis report concept by
+[Chantel Wetzel](https://github.com/DFO-NOAA-Pacific/gfsynopsis-noaa) and [Matt Callahan](https://github.com/MattCallahan-NOAA/gapproductssynopsis).
 
-This work is also building off of initial NOAA versions (summer 2024) of the synopsis idea by 
-Chantel Wetzel [https://github.com/DFO-NOAA-Pacific/gfsynopsis-noaa](https://github.com/DFO-NOAA-Pacific/gfsynopsis-noaa) and
-Matt Callahan [https://github.com/MattCallahan-NOAA/gapproductssynopsis](https://github.com/MattCallahan-NOAA/gapproductssynopsis)
+### Installation:
 
-Installation:
-```
-devtools::install_github("DFO-NOAA-Pacific/fishyplots")
+```r
+# install.packages("pak")
+pak::pak("DFO-NOAA-Pacific/fishyplots")
 ```
