@@ -55,8 +55,8 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
   plot_list <- list()
   
   # Map data
-  states <- ne_states(country = "united states of america", returnclass = "sf", scale = 50)
-  canada <- ne_states(returnclass = "sf", country = "canada", scale = 50) |> select(.data$name, .data$geometry)
+  states <- ne_states(country = "united states of america", returnclass = "sf")
+  canada <- ne_states(returnclass = "sf", country = "canada") |> select(.data$name, .data$geometry)
   mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = .data$admin, .data$geometry)
   alaska <- states |> filter(.data$name == "Alaska")
   
