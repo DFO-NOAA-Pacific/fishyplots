@@ -16,6 +16,7 @@ Imports:
     ggplot2,
     tidyr,
     rnaturalearth,
+    rnaturalearthdata,
     scales,
     sf,
     ggridges,
@@ -26,9 +27,6 @@ Imports:
     patchwork,
     grDevices
 Suggests:
-    devtools,
-    usethis,
-    rnaturalearthdata,
     knitr,
     MASS,
     rmarkdown,
@@ -39,5 +37,5 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2 
+RoxygenNote: 7.3.3
 SystemRequirements: GNU make

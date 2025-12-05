@@ -9,9 +9,9 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted
 #' @return a tibble or ggplot object
-#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join theme_light
+#' @importFrom dplyr group_by summarize mutate arrange bind_rows ungroup left_join 
 #' @importFrom tidyr pivot_wider complete
-#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text element_rect ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides scale_y_discrete rel
+#' @importFrom ggplot2 ggplot aes geom_tile geom_text scale_fill_distiller theme_minimal theme element_blank element_text element_rect ggtitle scale_alpha_manual coord_cartesian facet_wrap scale_x_continuous scale_fill_gradientn guides theme_light scale_y_discrete rel
 #' @importFrom stats na.omit
 #' @importFrom scales label_wrap
 #' 
