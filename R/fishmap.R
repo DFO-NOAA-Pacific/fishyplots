@@ -6,7 +6,7 @@
 #' @return a ggplot object
 #' @importFrom scales trans_new
 #' @importFrom dplyr bind_rows
-#' @importFrom rnaturalearth ne_countries ne_states
+#' @importFrom rnaturalearth ne_countries ne_download
 #' @importFrom sf st_crop st_transform
 #' @importFrom ggplot2 ggplot geom_sf stat_summary_hex aes scale_fill_viridis_c theme_minimal labs geom_sf_text coord_sf
 #' @importFrom patchwork wrap_plots
@@ -55,9 +55,17 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
   plot_list <- list()
   
   # Map data
-  states <- ne_states(country = "united states of america", returnclass = "sf")
-  canada <- ne_states(returnclass = "sf", country = "canada") |> select(.data$name, .data$geometry)
-  mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = .data$admin, .data$geometry)
+  # states <- ne_states(country = "united states of america", returnclass = "sf")
+  # canada <- ne_states(returnclass = "sf", country = "canada") |> select(.data$name, .data$geometry)
+  # mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> select(name = .data$admin, .data$geometry)
+  # alaska <- states |> filter(.data$name == "Alaska")
+  # We use ne_download() here instead of ne_states because we can specify the scale
+  states <- ne_download(scale = 50, type = "states", category = "cultural", returnclass = "sf")
+  states <- states |> filter(.data$admin == "United States of America")
+  canada <- ne_download(scale = 50, type = "states", category = "cultural", returnclass = "sf")
+  canada <- canada |> filter(.data$admin == "Canada") |> select(.data$name, .data$geometry)
+  mexico <- ne_countries(scale = "medium", returnclass = "sf", country = "mexico") |> 
+    select(name = .data$admin, .data$geometry)
   alaska <- states |> filter(.data$name == "Alaska")
   
   # Loop for mapping

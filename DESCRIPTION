@@ -17,7 +17,6 @@ Imports:
     tidyr,
     rnaturalearth,
     rnaturalearthdata,
-    rnaturalearthhires,
     scales,
     sf,
     ggridges,
