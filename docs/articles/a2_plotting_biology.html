@@ -109,7 +109,7 @@ binning (it is automatically set at 0.95). You may also choose to set
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/age_frequency.html">age_frequency</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>, </span>
 <span>              subregions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PBS"</span>, <span class="st">"NWFSC"</span>, <span class="st">"AK BSAI"</span>, <span class="st">"AK GULF"</span><span class="op">)</span>, </span>
 <span>              species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot1-1.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot1-1.png" class="r-plt" width="1152"></p>
 </div>
 <div class="section level2">
 <h2 id="length-frequency">Length Frequency<a class="anchor" aria-label="anchor" href="#length-frequency"></a>
@@ -123,7 +123,7 @@ function).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/length_frequency.html">length_frequency</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>, </span>
 <span>                 subregions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PBS"</span>, <span class="st">"NWFSC"</span>, <span class="st">"AK BSAI"</span>, <span class="st">"AK GULF"</span><span class="op">)</span>, </span>
 <span>                 species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot2-1.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot2-1.png" class="r-plt" width="1152"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/length_frequency.html">length_frequency</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nwfsc_bio</span>, </span>
@@ -132,7 +132,7 @@ function).</p>
 <span>                 time_series <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 1 row containing non-finite outside the scale range</span></span>
 <span><span class="co">#&gt; (`stat_bin()`).</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot2-2.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot2-2.png" class="r-plt" width="1152"></p>
 </div>
 <div class="section level2">
 <h2 id="average-length">Average Length<a class="anchor" aria-label="anchor" href="#average-length"></a>
@@ -143,7 +143,7 @@ differentiated by sex.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/length_ts.html">length_ts</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>, </span>
 <span>          subregions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PBS"</span>, <span class="st">"NWFSC"</span>, <span class="st">"AK BSAI"</span>, <span class="st">"AK GULF"</span><span class="op">)</span>, </span>
 <span>          species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/unnamed-chunk-4-1.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="1152"></p>
 </div>
 <div class="section level2">
 <h2 id="age---depth">Age - Depth<a class="anchor" aria-label="anchor" href="#age---depth"></a>
@@ -156,13 +156,13 @@ across all regions is also an option.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_age_depth.html">plot_age_depth</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>, </span>
 <span>               subregion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AK BSAI"</span>, <span class="st">"AK GULF"</span>, <span class="st">"PBS"</span>, <span class="st">"NWFSC"</span><span class="op">)</span>, </span>
 <span>               species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot3-1.png" width="672"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot3-1.png" class="r-plt" width="672"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_age_depth.html">plot_age_depth</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>,</span>
 <span>               subregion <span class="op">=</span> <span class="st">"NWFSC"</span>, </span>
 <span>               species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span>,</span>
 <span>               by_sex <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot4-1.png" width="576"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot4-1.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="length---depth">Length - Depth<a class="anchor" aria-label="anchor" href="#length---depth"></a>
@@ -174,7 +174,7 @@ specified here.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_length_depth.html">plot_length_depth</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>,</span>
 <span>                  subregions <span class="op">=</span> <span class="st">"NWFSC"</span>,</span>
 <span>                  species <span class="op">=</span> <span class="st">"sablefish"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot5-1.png" width="576"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot5-1.png" class="r-plt" width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="growth">Growth<a class="anchor" aria-label="anchor" href="#growth"></a>
@@ -192,7 +192,7 @@ when set to FALSE.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_growth.html">plot_growth</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_data</span>,</span>
 <span>            subregions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AK BSAI"</span>, <span class="st">"AK GULF"</span>, <span class="st">"NWFSC"</span>, <span class="st">"PBS"</span><span class="op">)</span>,</span>
 <span>            species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/plot6-1.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/plot6-1.png" class="r-plt" width="1152"></p>
 </div>
 <div class="section level2">
 <h2 id="length---weight">Length - Weight<a class="anchor" aria-label="anchor" href="#length---weight"></a>
@@ -210,7 +210,7 @@ available data points, set as FALSE.</p>
 <span>              species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span>,</span>
 <span>              subset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: Plotting a random n = 10000 subset of arrowtooth flounder. Model values not impacted.</span></span></code></pre></div>
-<p><img src="a2_plotting_biology_files/figure-html/unnamed-chunk-7-1.png" width="1152"></p>
+<p><img src="a2_plotting_biology_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="1152"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -223,7 +223,7 @@ available data points, set as FALSE.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
