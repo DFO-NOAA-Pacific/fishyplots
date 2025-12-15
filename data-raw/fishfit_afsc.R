@@ -94,7 +94,7 @@ for(i in 1:nrow(spp_list)) {
   # mesh$mesh$n
   
   tweedie <- FALSE
-  fit <- tryCatch({sdmTMB(cpue ~ 1,
+  fit <- tryCatch({sdmTMB(catch_weight ~ 1,
                           data = joined,
                           offset = log(joined$effort),
                           mesh = mesh,
