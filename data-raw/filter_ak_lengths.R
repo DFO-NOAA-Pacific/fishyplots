@@ -26,7 +26,8 @@ ak_survey_lengths <- ak_lengths_year %>%
   group_by(year, survey, common_name, scientific_name) %>%
   summarise(length.count = sum(FREQUENCY)) %>% 
   #remove early afsc years where arrowtooth and kamchatka flounder were conflated
-  filter(!(survey == "AK BSAI" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>% 
+  filter(!(survey == "AK BERING" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>%
+  filter(!(survey == "AK ALEUTIANS" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>%
   filter(!(survey == "AK GULF" & common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% 
   filter(!(survey == "AK GULF" & common_name == "kamchatka founder" & year %in% 1982:1994))
 

@@ -4,7 +4,7 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' Main function to display survey specimen counts
 #'
 #' @param data biological data containing length and depth information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK BERING and/or AK ALEUTIANS. Default all.
 #' @param species species common or scientific name.
 #' @param form choose 1 for tibble or 2 for ggplot
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted
@@ -22,14 +22,14 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' data(nwfsc_bio)
 #' data(afsc_bio)
 #' data(pbs_bio)
-#' all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+#' all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
 #' survey_table(all_data, species = "arrowtooth flounder", form = 1)
 #' survey_table(all_data, species = "arrowtooth flounder", form = 2)
 #' survey_table(all_data, c("NWFSC", "AK GULF"), species = "anoplopoma fimbria", facet_all = F)
 #' 
 #' }
-survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
+survey_table <- function(data, subregions = c("AK BERING","AK ALEUTIANS", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
   
   #check if form = 1 or 2 (2 default) for table vs plot
   form <- match.arg(as.character(form), choices = c("1", "2"))
@@ -62,7 +62,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   # use special dataset for AFSC lengths
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
 
-    ak_length_count <-  fishyplots::ak_survey_lengths |> 
+    ak_length_count <- ak_survey_lengths |> # fishyplots::
       filter(.data$common_name == species) |> 
       group_by(.data$year, .data$survey) |>
       summarize(n_samples=sum(.data$length.count), .groups = "drop_last")|>
@@ -70,7 +70,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
       rename(yr = .data$year) |> 
       na.omit()
     
-    #which afsc surveys are being called  (akgulf vs akbsai)
+    #which afsc surveys are being called  (akgulf,akbs, akai)
     which.asfc<- unique(spec.data$survey[spec.data$region == "AFSC"])
     
     # replace original AK lengths with special dataset
@@ -78,7 +78,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
       filter(!(.data$survey %in% which.asfc)) |>
       bind_rows(ak_length_count |> filter(.data$survey %in% which.asfc))
   }
-
+  
 ## Weights ##
   # nothing special, just count of weight data
   weight_count <- data.frame(weight = spec.data$weight_kg, yr = spec.data$year, survey = spec.data$survey) |>
@@ -108,7 +108,7 @@ survey_table <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PB
   
   # for NWFSC, use otolith ID as n age structures
   # if nwfsc data present, rewrite agestr_count
-  if ("otosag_id" %in% names(data)) { # Otosag ony present if given dataset contains nwfsc data
+  if ("otosag_id" %in% names(data)) { # Otosag only present if given dataset contains nwfsc data
   nwfsc_count <- spec.data |>
     filter(.data$region == "NWFSC", !is.na(.data$otosag_id)) |>
     group_by(.data$survey, yr = .data$year) |>
@@ -207,8 +207,8 @@ if (form == 2) {
                               as.character(bio_data$n_samples), # keep as number if under 1000
                                      paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
   #give region descriptive labels
-  bio_data$survey <- factor(bio_data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                        labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  bio_data$survey <- factor(bio_data$survey, levels = c("AK BERING", "AK ALEUTIANS", "AK GULF", "PBS", "NWFSC"),
+                        labels = c("Bering Sea","Aleutian Islands", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   #scale counts to 0-1 per region/sample type to project color
   bio_data <- bio_data |>

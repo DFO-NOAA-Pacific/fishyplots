@@ -64,10 +64,10 @@
 #' Contains biological length counts from AFSC surveys for available top species defined in data-raw/afsc_top.rds, separated by survey group.
 #' Compiled from large external dataset. Filtering can be found in data-raw/filter_ak_lengths.R
 #'
-#' @format A data frame with 1158 rows and 5 variables:
+#' @format A data frame with 1398 rows and 5 variables:
 #' \describe{
 #'   \item{year}{year of data collection}
-#'   \item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska) or AK BSAI (Bering Sea and Aleutian Islands)}
+#'   \item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska), AK BERING (Bering Sea), and AK ALEUTIAN and (Aleutian Islands)}
 #'   \item{common_name}{common name of specien}
 #'   \item{scientific_name}{scientific name of specimen}
 #'   \item{length.count}{number of lengths taken for specimen in survey and year}
@@ -79,7 +79,7 @@
 #'
 #' Contains catch data from all surveys/regions for available top species. Catch data pulled from packages nwfscSurvey and surveyjoin
 #'
-#' @format A data frame with 4052 rows and 8 variables:
+#' @format A data frame with 5059 rows and 8 variables:
 #' \describe{
 #'   \item{region}{region of data collection}
 #'   \item{survey}{subregion}

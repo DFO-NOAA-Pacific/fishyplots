@@ -38,7 +38,7 @@ afsc_bio <- dplyr::inner_join(afsc_specimen, afsc_years, by = "event_id") %>% # 
   group_survey() %>% 
   clean_fishnames() %>% 
   #remove early afsc years where arrowtooth and kamchatka flounder were conflated
-  filter(!(survey == "AK BSAI" & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>% 
+  filter(!(survey %in% c("AK BERING","AK ALEUTIANS") & common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) %>% 
   filter(!(survey == "AK GULF" & common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% 
   filter(!(survey == "AK GULF" & common_name == "kamchatka founder" & year %in% 1982:1994))
   

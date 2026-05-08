@@ -3,6 +3,7 @@
 library(janitor)
 library(stringr)
 library(surveyjoin)
+library(tidyr)
 #get top species
 afsc_top <- read.csv("data-raw/afsc_joined.csv")
 pbs_top <- read.csv("data-raw/pbs_joined.csv") 
@@ -47,15 +48,18 @@ pbs_catch <- pbs_surveys %>%
   fishyplots:::clean_fishnames() 
 #rockfish not in surveyjoin catch database: redstripe, silvergrey, yellowmouth, roughteye/blackspotted complex
 
-#### AFSC DATA (GULF AND BSAI) ####
+#### AFSC DATA (GULF, BS, AI) ####
 afsc_surveys <- get_data(scientific = afsc_top$scientific_name,
                         regions = "afsc")
 akgulf_surveys <- afsc_surveys %>% 
   filter(survey_name == "Gulf of Alaska") %>% 
   mutate(survey = "AK GULF")
-akbsai_surveys <- afsc_surveys %>% 
-  filter(survey_name != "Gulf of Alaska") %>% 
-  mutate(survey = "AK BSAI")
+akbs_surveys <- afsc_surveys %>% 
+  filter(survey_name %in% c("eastern Bering Sea","northern Bering Sea", "Bering Sea Slope")) %>% 
+  mutate(survey = "AK BERING")
+akai_surveys <- afsc_surveys %>% 
+  filter(survey_name == "Aleutian Islands" ) %>% 
+  mutate(survey = "AK ALEUTIANS")
 
 akgulf_catch <- akgulf_surveys%>% 
   group_by(region, survey, common_name,scientific_name, year) %>% 
@@ -70,7 +74,20 @@ akgulf_catch <- akgulf_surveys%>%
   filter(!(common_name == "arrowtooth flounder" & year %in% 1982:1991)) %>% # remove species in years with no pos catch data
   filter(!(common_name == "kamchatka flounder" & year %in% 1982:1994))
 
-akbsai_catch <- akbsai_surveys%>% 
+akbs_catch <- akbs_surveys%>% 
+  group_by(region, survey, common_name,scientific_name, year) %>% 
+  summarise(n_tows = n(),                               
+            n_pos = sum(catch_numbers != 0| catch_weight != 0, na.rm = TRUE),  
+            .groups = "drop") %>% 
+  mutate(proportion_pos = n_pos/n_tows) %>% 
+  group_by(region, survey, common_name, scientific_name) %>% 
+  complete(year = 1982:2024, fill = list(n_tows = 0, n_pos = 0, proportion_pos = 0)) %>% 
+  fishyplots:::clean_fishnames() %>% 
+  #remove early afsc years where arrowtooth and kamchatka flounder were conflated
+  filter(!(common_name %in% c("arrowtooth flounder", "kamchatka founder") & year %in% 1982:1991)) # remove species in years with no pos catch data (species unidentifiable)
+# species catch data not in surveyjoin: Alaska plaice, atka mackerel, hardnose skates, northern rockfish, shortraker rockfish, starry flounder, yellowfin sole
+
+akai_catch <- akai_surveys%>% 
   group_by(region, survey, common_name,scientific_name, year) %>% 
   summarise(n_tows = n(),                               
             n_pos = sum(catch_numbers != 0| catch_weight != 0, na.rm = TRUE),  
@@ -84,7 +101,8 @@ akbsai_catch <- akbsai_surveys%>%
 # species catch data not in surveyjoin: Alaska plaice, atka mackerel, hardnose skates, northern rockfish, shortraker rockfish, starry flounder, yellowfin sole
 
 
+
 # add all together with row_bind, save
-all_catch <- bind_rows(nwfsc_catch, pbs_catch, akbsai_catch, akgulf_catch)
+all_catch <- bind_rows(nwfsc_catch, pbs_catch, akbs_catch,akai_catch, akgulf_catch)
 usethis::use_data(all_catch, overwrite = TRUE)
 #documentation stored with bio data documentation
