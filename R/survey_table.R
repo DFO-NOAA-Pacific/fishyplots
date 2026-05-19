@@ -62,7 +62,7 @@ survey_table <- function(data, subregions = c("AK BERING","AK ALEUTIANS", "AK GU
   # use special dataset for AFSC lengths
   if(any(spec.data$region == "AFSC")){ #only called if dealing with AFSC data
 
-    ak_length_count <- ak_survey_lengths |> # fishyplots::
+    ak_length_count <- fishyplots::ak_survey_lengths |> 
       filter(.data$common_name == species) |> 
       group_by(.data$year, .data$survey) |>
       summarize(n_samples=sum(.data$length.count), .groups = "drop_last")|>

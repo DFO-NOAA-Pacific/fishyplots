@@ -7,9 +7,10 @@ library(minpack.lm)
 data(pbs_bio)
 data(afsc_bio)
 data(nwfsc_bio)
-akbsai <- afsc_bio |> filter(survey == "AK BSAI")
-akgulf <- afsc_bio |> filter(survey == "AK GULF")
-bio_data <- list(pbs = pbs_bio, akbsai = akbsai, akgulf = akgulf, nwfsc = nwfsc_bio)
+akbs <- afsc_bio |> dplyr::filter(survey == "AK BERING")
+akai <- afsc_bio |> dplyr::filter(survey == "AK ALEUTIANS")
+akgulf <- afsc_bio |> dplyr::filter(survey == "AK GULF")
+bio_data <- list(pbs = pbs_bio,  akbering = akbs, akaleu = akai, akgulf = akgulf, nwfsc = nwfsc_bio)
 
 # Function
 vb_predict <- function(data) {

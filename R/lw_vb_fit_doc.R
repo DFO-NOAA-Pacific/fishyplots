@@ -2,7 +2,7 @@
 #'
 #' Contains log-log length-weight regression estimates for the top species of each survey group, separated by sex. 
 #'
-#' @format A data frame with 10122 rows and 9 variables:
+#' @format A data frame with 11621 rows and 9 variables:
 #' \describe{
 #'   \item{fit_length}{fish lengths in cm }
 #'   \item{fit_weight}{predicted weight in kg at length in cm}
@@ -20,7 +20,7 @@
 #'
 #' Contains von Bertalanffy growth curve estimates for each fish age bracket 
 #'
-#' @format A data frame with 3854 rows and 9 variables:
+#' @format A data frame with 5145 rows and 9 variables:
 #' \describe{
 #'   \item{age_years}{Fish age in years}
 #'   \item{fit}{Growth estimate (length cm)}
