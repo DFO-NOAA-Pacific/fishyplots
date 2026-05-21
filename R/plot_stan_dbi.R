@@ -22,9 +22,11 @@ plot_stan_dbi <- function(species, surveys) {
   
   # Assign surveys to larger region center if argument is a single center name
   if (is.character(surveys) && length(surveys) == 1) {
-    if (surveys == "AK BSAI") {
-      surveys <- c("U.S. Aleutian Islands", "U.S. Eastern Bering Sea Slope", 
-                     "U.S. Eastern Bering Sea Standard Plus NW Region", "U.S. Northern Bering Sea")
+    if (surveys == "AK BERING") {
+      surveys <- c("U.S. Eastern Bering Sea Slope", 
+                   "U.S. Eastern Bering Sea Standard Plus NW Region", "U.S. Northern Bering Sea")
+    } else if (surveys == "AK ALEUTIANS") {
+      surveys <- "U.S. Aleutian Islands" 
     } else if (surveys == "AK GULF") {
       surveys <- "U.S. Gulf of Alaska"
     }else if (surveys == "PBS") {

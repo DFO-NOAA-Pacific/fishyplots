@@ -1,4 +1,4 @@
-depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common, sex = FALSE) {
+depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK ALEUTIANS","AK BERING", "AK GULF"), common, sex = FALSE) {
   # Sex differentiation automatic for 1 region
   if (length(subregion) == 1) {
     sex <- TRUE
@@ -54,8 +54,8 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
   # Factor relevel sex and survey
   counts1$sex <- factor(counts1$sex, levels = c("M", "F"), labels = c("Male", "Female"))
   counts2$sex <- factor(counts2$sex, levels = c("M", "F"), labels = c("Male", "Female"))
-  counts1$survey <- factor(counts1$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
-  counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
+  counts1$survey <- factor(counts1$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
+  counts2$survey <- factor(counts2$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
   # Debug
   counts1 <- counts1 |> filter(is.finite(depth_mid), is.finite(age_group), is.finite(prop))
@@ -104,8 +104,8 @@ depth_plot <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF")
       p1 <- p1 + facet_grid(sex ~ survey, drop = FALSE)
       p2 <- p2 + facet_grid(sex ~ survey, drop = FALSE)
     } else if (sex == FALSE) {
-      p1 <- p1 + facet_wrap(~survey, drop = FALSE, ncol = 4)
-      p2 <- p2 + facet_wrap(~survey, drop = FALSE, ncol = 4)
+      p1 <- p1 + facet_wrap(~survey, drop = FALSE, ncol = 5)
+      p2 <- p2 + facet_wrap(~survey, drop = FALSE, ncol = 5)
     }
   } else if (length(subregion) == 1) {
     if (sex == TRUE) {

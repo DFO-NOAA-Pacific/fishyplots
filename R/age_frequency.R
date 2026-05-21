@@ -1,7 +1,7 @@
 #' Plots distribution of ages across survey years.
 #'
 #' @param data biological data containing age and sex information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.
 #' @param species species common or scientific name.
 #' @param by_sex TRUE or FALSE for if you want to differentiate by sex.
 #' @param cutoff define a cutoff for grouping older ages together.
@@ -24,14 +24,14 @@
 #' all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 #' 
 #' age_frequency(data = all_data, 
-#' subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
+#' subregions = c("NWFSC", "AK GULF", "PBS", "AK ALEUTIANS","AK BERING"),
 #'  species = "arrowtooth flounder")
 #' age_frequency(data = all_data,
 #'   subregions =  c("NWFSC", "AK GULF"), 
 #'   species = "anoplopoma fimbria", 
 #'   by_sex = T, facet_all = F)
 #' }
-age_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, by_sex = FALSE, cutoff = 0.95, facet_all = TRUE) {
+age_frequency <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "NWFSC", "PBS"), species, by_sex = FALSE, cutoff = 0.95, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
     filter(!is.na(.data$age_years)) |>
@@ -71,8 +71,8 @@ age_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "P
   labels <- levels(data_clean$age_group)
   
   # Re factor survey labels
-  region_levels <- c("AK BSAI", "AK GULF", "PBS", "NWFSC")
-  region_labels <- c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast")
+  region_levels <- c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC")
+  region_labels <- c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast")
   data_clean$survey <- factor(data_clean$survey, levels = region_levels, labels = region_labels)
   
   # Create base graph 
@@ -90,7 +90,7 @@ age_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "P
   #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
+      graph <- graph + facet_wrap(~survey, ncol = 5, drop = FALSE)
       # find which regions have no data
       empty_surveys <- setdiff(levels(data_clean$survey), unique(data_clean$survey))
       
@@ -105,7 +105,7 @@ age_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "P
       }
     }
     else if (facet_all == FALSE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4)
+      graph <- graph + facet_wrap(~survey, ncol = 5)
     }}
   
   # Add aesthetics

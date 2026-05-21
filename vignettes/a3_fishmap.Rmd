@@ -34,7 +34,7 @@ data <- bind_rows(predictions_afsc, predictions_pbs, predictions_nwfsc)
 The function takes in these predictions, specified region(s), and 1 species. For instance, we can take a look at arrowtooth flounder densities in all regions. Note that if you select all regions but a species does not occur in all of them, empty base maps will still show up.
 
 ```{r, warning = FALSE, fig.height = 12}
-fishmap(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+fishmap(data, c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 ```
 
 Alternatively, you may just want to look at one region.

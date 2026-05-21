@@ -5,7 +5,7 @@
 \alias{lw_predictions}
 \title{lw_vb_fit_doc: Documentation of lw and vb predictions}
 \format{
-A data frame with 10122 rows and 9 variables:
+A data frame with 11621 rows and 9 variables:
 \describe{
 \item{fit_length}{fish lengths in cm }
 \item{fit_weight}{predicted weight in kg at length in cm}

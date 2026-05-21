@@ -28,7 +28,7 @@
 #'   \item{linf}{Asymptotic length of growth curve}
 #'   \item{k}{growth coefficient, rate of growth}
 #'   \item{t0}{exponent, slope of length-weight regression }
-#'   \item{survey}{subregion (NWFSC, PBS, AK GULF, AK BSAI)}
+#'   \item{survey}{subregion (NWFSC, PBS, AK GULF, AK ALEUTIANS, AK BERING)}
 #'   \item{common_name}{Species common name}
 #'   \item{scientific_name}{Species scientific name}
 #' }

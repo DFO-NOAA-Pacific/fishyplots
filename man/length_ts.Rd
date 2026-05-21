@@ -6,7 +6,7 @@
 \usage{
 length_ts(
   data,
-  subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
   species,
   facet_all = TRUE
 )
@@ -14,7 +14,7 @@ length_ts(
 \arguments{
 \item{data}{biological data containing length information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+\item{subregions}{choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.}
 
 \item{species}{species common or scientific name.}
 

@@ -6,7 +6,7 @@
 \usage{
 length_weight(
   data,
-  subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
   species,
   subset = TRUE,
   facet_all = TRUE
@@ -15,7 +15,7 @@ length_weight(
 \arguments{
 \item{data}{biological data containing age, length, and sex information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK AK ALEUTIANS, and/or AK BERING. Default all.}
 
 \item{species}{species common or scientific name.}
 

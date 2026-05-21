@@ -1,7 +1,7 @@
 #' Function for age-depth plot
 #'
 #' @param data biological data containing age and depth information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.
 #' @param species species common or scientific name.
 #' @param by_sex show sex differentiation 
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted
@@ -25,7 +25,7 @@
 #'  by_sex = T, facet_all = F)
 #' }
 
-plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), species, by_sex = FALSE, facet_all = TRUE) {
+plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK ALEUTIANS", "AK BERING", "AK GULF"), species, by_sex = FALSE, facet_all = TRUE) {
   # Sex differentiation automatic for 1 region
   if (length(subregions) == 1) {
     by_sex <- TRUE
@@ -90,8 +90,8 @@ plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK G
     counts2$sex_group <- factor(counts2$sex_group, levels = c("M", "F"), labels = c("Male", "Female"))
   }
   
-  counts1$survey <- factor(counts1$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
-  counts2$survey <- factor(counts2$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
+  counts1$survey <- factor(counts1$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
+  counts2$survey <- factor(counts2$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "US West Coast"))
   
   # Debug
   counts1 <- counts1 |> filter(is.finite(.data$depth_mid), is.finite(.data$age_group), is.finite(.data$prop))
@@ -177,8 +177,8 @@ plot_age_depth <- function(data, subregions = c("NWFSC", "PBS", "AK BSAI", "AK G
       
     } else {
       # Multiple regions, not by sex
-      p1 <- p1 + facet_wrap(~survey, ncol = 4, drop = !facet_all)
-      p2 <- p2 + facet_wrap(~survey, ncol = 4, drop = !facet_all)
+      p1 <- p1 + facet_wrap(~survey, ncol = 5, drop = !facet_all)
+      p2 <- p2 + facet_wrap(~survey, ncol = 5, drop = !facet_all)
       
       totals <- counts1 |>
         group_by(.data$depth_mid, .data$survey) |>

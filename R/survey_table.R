@@ -29,7 +29,7 @@ utils::globalVariables(c("survey", "yr", "n_samples", "sample_type"))
 #' survey_table(all_data, c("NWFSC", "AK GULF"), species = "anoplopoma fimbria", facet_all = F)
 #' 
 #' }
-survey_table <- function(data, subregions = c("AK BERING","AK ALEUTIANS", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
+survey_table <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "NWFSC", "PBS"), species, form = 2, facet_all = TRUE ) {
   
   #check if form = 1 or 2 (2 default) for table vs plot
   form <- match.arg(as.character(form), choices = c("1", "2"))
@@ -207,8 +207,8 @@ if (form == 2) {
                               as.character(bio_data$n_samples), # keep as number if under 1000
                                      paste0(round(bio_data$n_samples / 1000), "K") ))# if over 1000, round to nearest and label with k
   #give region descriptive labels
-  bio_data$survey <- factor(bio_data$survey, levels = c("AK BERING", "AK ALEUTIANS", "AK GULF", "PBS", "NWFSC"),
-                        labels = c("Bering Sea","Aleutian Islands", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  bio_data$survey <- factor(bio_data$survey, levels = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
+                        labels = c("Aleutian Islands","Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   #scale counts to 0-1 per region/sample type to project color
   bio_data <- bio_data |>
