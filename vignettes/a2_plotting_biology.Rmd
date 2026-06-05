@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 For these plots we will need biological data stored in three data frames in the `fishyplots` package which we can combine with `bind_rows` from `dplyr`.
 
 ```{r setup, message = FALSE}
-#library(fishyplots)
+library(fishyplots)
 library(utils)
 library(dplyr)
 ```
