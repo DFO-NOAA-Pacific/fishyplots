@@ -5,12 +5,14 @@ in the `fishyplots` package which we can combine with `bind_rows` from
 `dplyr`.
 
 ``` r
+
 library(fishyplots)
 library(utils)
 library(dplyr)
 ```
 
 ``` r
+
 data("nwfsc_bio")
 data("afsc_bio")
 data("pbs_bio")
@@ -24,8 +26,9 @@ displayed. If multiple regions are selected, plots will be faceted by
 region by default.
 
 ``` r
+
 unique(all_data$survey)
-#> [1] "AK GULF" "AK BSAI" "NWFSC"   "PBS"
+#> [1] "AK GULF"      "AK BERING"    "AK ALEUTIANS" "NWFSC"        "PBS"
 head(unique(all_data$common_name))
 #> [1] "atka mackerel"       "pacific ocean perch" "southern rock sole" 
 #> [4] "northern rockfish"   "flathead sole"       "shortraker rockfish"
@@ -48,8 +51,9 @@ automatically set at 0.95). You may also choose to set `by_sex` to TRUE
 if you want to differentiate by sex.
 
 ``` r
+
 age_frequency(data = all_data, 
-              subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+              subregions = c("PBS", "NWFSC", "AK ALEUTIANS","AK BERING", "AK GULF"), 
               species = "arrowtooth flounder")
 ```
 
@@ -63,14 +67,16 @@ instead see a histogram of lengths by year you may choose to set the
 all_data to the desired regions before calling the function).
 
 ``` r
+
 length_frequency(data = all_data, 
-                 subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+                 subregions = c("PBS", "NWFSC", "AK ALEUTIANS", "AK BERING", "AK GULF"), 
                  species = "arrowtooth flounder")
 ```
 
 ![](a2_plotting_biology_files/figure-html/plot2-1.png)
 
 ``` r
+
 
 length_frequency(data = nwfsc_bio, 
                  subregions = "NWFSC", 
@@ -88,8 +94,9 @@ We also have a function that provides mean length over time
 differentiated by sex.
 
 ``` r
+
 length_ts(data = all_data, 
-          subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+          subregions = c("PBS", "NWFSC", "AK ALEUTIANS", "AK BERING", "AK GULF"), 
           species = "arrowtooth flounder")
 ```
 
@@ -103,14 +110,16 @@ looking at one region, although looking at this across all regions is
 also an option.
 
 ``` r
+
 plot_age_depth(data = all_data, 
-               subregion = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), 
+               subregion = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"), 
                species = "arrowtooth flounder")
 ```
 
 ![](a2_plotting_biology_files/figure-html/plot3-1.png)
 
 ``` r
+
 plot_age_depth(data = all_data,
                subregion = "NWFSC", 
                species = "arrowtooth flounder",
@@ -125,6 +134,7 @@ You can make the same types of graphs for the length-depth relationship
 as well. Again, the `by_sex` argument can be specified here.
 
 ``` r
+
 plot_length_depth(data = all_data,
                   subregions = "NWFSC",
                   species = "sablefish")
@@ -139,6 +149,7 @@ formulated from the von Bertalanffy function that is stored in the
 `fishyplots` package.
 
 ``` r
+
 data(vb_predictions)
 ```
 
@@ -148,8 +159,9 @@ subregions regardless of missing data, but can be turned off when set to
 FALSE.
 
 ``` r
+
 plot_growth(data = all_data,
-            subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+            subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
             species = "arrowtooth flounder")
 ```
 
@@ -162,6 +174,7 @@ growth function, this function internally uses log-log regression
 prediction data from the `fishyplots` package.
 
 ``` r
+
 data(lw_predictions)
 ```
 
@@ -170,6 +183,7 @@ points per region for quicker plotting speed. To see all available data
 points, set as FALSE.
 
 ``` r
+
 length_weight(data = all_data,
               species = "arrowtooth flounder",
               subset = TRUE)

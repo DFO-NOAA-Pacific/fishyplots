@@ -7,7 +7,7 @@ Function for age-depth plot
 ``` r
 plot_age_depth(
   data,
-  subregions = c("NWFSC", "PBS", "AK BSAI", "AK GULF"),
+  subregions = c("NWFSC", "PBS", "AK ALEUTIANS", "AK BERING", "AK GULF"),
   species,
   by_sex = FALSE,
   facet_all = TRUE
@@ -23,7 +23,8 @@ plot_age_depth(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default
+  all.
 
 - species:
 

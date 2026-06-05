@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Biomass • fishyplots</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Biomass">
 </head>
@@ -83,9 +83,9 @@ data by the survey’s mean.</p>
 <p>The functions take a species common or scientific name and one or
 more <code>surveys</code>. <code>surveys</code> may be a single survey
 area, a list of survey areas, or a survey group. For survey group “AK
-BSAI” (Alaska Bering Sea, Aleutian Islands), the survey “U.S. Eastern
-Bering Sea Standard Region” is excluded in favor of the extended “U.S.
-Eastern Bering Sea Standard Plus NW Region” data.</p>
+BERING” (Alaska Bering Sea), the survey “U.S. Eastern Bering Sea
+Standard Region” is excluded in favor of the extended “U.S. Eastern
+Bering Sea Standard Plus NW Region” data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#survey names</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">all_dbi</span><span class="op">$</span><span class="va">survey</span><span class="op">)</span></span>
@@ -102,7 +102,7 @@ Eastern Bering Sea Standard Plus NW Region” data.</p>
 <span><span class="co">#&gt; [11] "U.S. West Coast"</span></span>
 <span><span class="co">#grouped survey names</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">all_dbi</span><span class="op">$</span><span class="va">survey_group</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "PBS"     "AK GULF" "AK BSAI" "NWFSC"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "PBS"          "AK GULF"      "AK ALEUTIANS" "AK BERING"    "NWFSC"</span></span></code></pre></div>
 <p>If multiple surveys or a survey group is passed in
 <code><a href="../reference/plot_dbi.html">plot_dbi()</a></code>, multiple plots will be shown separately. If
 multiple surveys or a survey group is passed in
@@ -113,13 +113,13 @@ multiple surveys or a survey group is passed in
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use the `linewidth` argument instead.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">fishyplots</span> package.</span></span>
 <span><span class="co">#&gt;   Please report the issue to the authors.</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre></div>
-<p><img src="a1_dbi_plots_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="700"></p>
+<p><img src="a1_dbi_plots_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="700"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_stan_dbi.html">plot_stan_dbi</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"arrowtooth flounder"</span>, surveys <span class="op">=</span> <span class="st">"PBS"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="a1_dbi_plots_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" width="700"></p>
+<p><img src="a1_dbi_plots_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="700"></p>
   </main>
 </div>
 

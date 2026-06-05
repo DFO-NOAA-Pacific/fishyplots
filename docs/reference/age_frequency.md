@@ -7,7 +7,7 @@ Plots distribution of ages across survey years.
 ``` r
 age_frequency(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   by_sex = FALSE,
   cutoff = 0.95,
@@ -24,7 +24,8 @@ age_frequency(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default
+  all.
 
 - species:
 
@@ -46,22 +47,3 @@ age_frequency(
 ## Value
 
 a ggplot object
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-data(nwfsc_bio)
-data(afsc_bio)
-data(pbs_bio)
-all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
-
-age_frequency(data = all_data, 
-subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
- species = "arrowtooth flounder")
-age_frequency(data = all_data,
-  subregions =  c("NWFSC", "AK GULF"), 
-  species = "anoplopoma fimbria", 
-  by_sex = T, facet_all = F)
-} # }
-```

@@ -7,7 +7,7 @@ Main function to plot mean lengths over time by sex
 ``` r
 length_ts(
   data,
-  subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
   species,
   facet_all = TRUE
 )
@@ -22,7 +22,8 @@ length_ts(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default
+  all.
 
 - species:
 

@@ -7,7 +7,7 @@ Main function to display survey specimen counts
 ``` r
 survey_table(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   form = 2,
   facet_all = TRUE
@@ -23,7 +23,8 @@ survey_table(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK BERING and/or AK ALEUTIANS. Default
+  all.
 
 - species:
 
@@ -49,7 +50,7 @@ if (FALSE) { # \dontrun{
 data(nwfsc_bio)
 data(afsc_bio)
 data(pbs_bio)
-all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 
 survey_table(all_data, species = "arrowtooth flounder", form = 1)
 survey_table(all_data, species = "arrowtooth flounder", form = 2)

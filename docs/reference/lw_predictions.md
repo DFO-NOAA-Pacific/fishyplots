@@ -11,7 +11,7 @@ lw_predictions
 
 ## Format
 
-A data frame with 10122 rows and 9 variables:
+A data frame with 11621 rows and 9 variables:
 
 - fit_length:
 

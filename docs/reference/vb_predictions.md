@@ -11,7 +11,7 @@ vb_predictions
 
 ## Format
 
-A data frame with 3854 rows and 9 variables:
+A data frame with 5145 rows and 9 variables:
 
 - age_years:
 
@@ -39,7 +39,7 @@ A data frame with 3854 rows and 9 variables:
 
 - survey:
 
-  subregion (NWFSC, PBS, AK GULF, AK BSAI)
+  subregion (NWFSC, PBS, AK GULF, AK ALEUTIANS, AK BERING)
 
 - common_name:
 

@@ -7,7 +7,7 @@ plot von Bertalanffy function predictions
 ``` r
 plot_growth(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   facet_all = TRUE
 )
@@ -22,7 +22,8 @@ plot_growth(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default
+  all.
 
 - species:
 

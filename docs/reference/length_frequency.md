@@ -7,7 +7,7 @@ Function to plot length frequency of fish species
 ``` r
 length_frequency(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   time_series = TRUE,
   facet_all = TRUE
@@ -23,7 +23,8 @@ length_frequency(
 
 - subregions:
 
-  choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+  choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING Default
+  all.
 
 - species:
 

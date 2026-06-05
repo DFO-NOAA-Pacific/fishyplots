@@ -26,6 +26,7 @@ Callahan](https://github.com/MattCallahan-NOAA/gapproductssynopsis).
 ### Installation:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("DFO-NOAA-Pacific/fishyplots")
 ```

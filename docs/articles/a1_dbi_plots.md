@@ -1,6 +1,7 @@
 # Biomass
 
 ``` r
+
 library(fishyplots)
 library(dplyr)
 ```
@@ -19,17 +20,19 @@ The standardized indices are calculated within the
 function by dividing a survey’s data by the survey’s mean.
 
 ``` r
+
 data("all_dbi")
 ```
 
 The functions take a species common or scientific name and one or more
 `surveys`. `surveys` may be a single survey area, a list of survey
-areas, or a survey group. For survey group “AK BSAI” (Alaska Bering Sea,
-Aleutian Islands), the survey “U.S. Eastern Bering Sea Standard Region”
-is excluded in favor of the extended “U.S. Eastern Bering Sea Standard
-Plus NW Region” data.
+areas, or a survey group. For survey group “AK BERING” (Alaska Bering
+Sea), the survey “U.S. Eastern Bering Sea Standard Region” is excluded
+in favor of the extended “U.S. Eastern Bering Sea Standard Plus NW
+Region” data.
 
 ``` r
+
 #survey names
 unique(all_dbi$survey)
 #>  [1] "SYN QCS"                                        
@@ -45,7 +48,7 @@ unique(all_dbi$survey)
 #> [11] "U.S. West Coast"
 #grouped survey names
 unique(all_dbi$survey_group)
-#> [1] "PBS"     "AK GULF" "AK BSAI" "NWFSC"
+#> [1] "PBS"          "AK GULF"      "AK ALEUTIANS" "AK BERING"    "NWFSC"
 ```
 
 If multiple surveys or a survey group is passed in
@@ -56,12 +59,13 @@ group is passed in
 data will be overlayed.
 
 ``` r
+
 plot_dbi(species = "arrowtooth flounder", surveys = c("SYN HS", "SYN QCS", "SYN WCHG"))
 #> Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
 #> ℹ Please use the `linewidth` argument instead.
 #> ℹ The deprecated feature was likely used in the fishyplots package.
 #>   Please report the issue to the authors.
-#> This warning is displayed once every 8 hours.
+#> This warning is displayed once per session.
 #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 #> generated.
 ```
@@ -69,6 +73,7 @@ plot_dbi(species = "arrowtooth flounder", surveys = c("SYN HS", "SYN QCS", "SYN 
 ![](a1_dbi_plots_files/figure-html/unnamed-chunk-4-1.png)
 
 ``` r
+
 plot_stan_dbi(species = "arrowtooth flounder", surveys = "PBS")
 ```
 

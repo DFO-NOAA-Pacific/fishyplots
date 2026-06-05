@@ -13,7 +13,7 @@ ak_survey_lengths
 
 ## Format
 
-A data frame with 1158 rows and 5 variables:
+A data frame with 1398 rows and 5 variables:
 
 - year:
 
@@ -21,8 +21,8 @@ A data frame with 1158 rows and 5 variables:
 
 - survey:
 
-  subregion group within AFSC: AK GULF (Gulf of Alaska) or AK BSAI
-  (Bering Sea and Aleutian Islands)
+  subregion group within AFSC: AK GULF (Gulf of Alaska), AK BERING
+  (Bering Sea), and AK ALEUTIAN and (Aleutian Islands)
 
 - common_name:
 
