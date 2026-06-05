@@ -4,12 +4,16 @@
 \alias{fishmap}
 \title{Function for modeled CPUE map based on prediction data}
 \usage{
-fishmap(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common_name)
+fishmap(
+  data,
+  subregion = c("NWFSC", "PBS", "AK ALEUTIANS", "AK BERING", "AK GULF"),
+  common_name
+)
 }
 \arguments{
 \item{data}{prediction data from fishfit scripts}
 
-\item{subregion}{choose AK BSAI, AK GULF, PBS, NWFSC}
+\item{subregion}{choose AK ALEUTIANS, AK BERING, AK GULF, PBS, NWFSC}
 
 \item{common_name}{species common name}
 }
@@ -26,7 +30,7 @@ data(predictions_pbs)
 data(predictions_nwfsc)
 data <- bind_rows(predictions_afsc, predictions_pbs, predictions_nwfsc)
 
-fishmap(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+fishmap(data, c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 fishmap(data, "PBS", "dover sole")
 }
 }

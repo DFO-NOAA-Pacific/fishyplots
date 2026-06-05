@@ -1,7 +1,7 @@
 #' Function for modeled CPUE map based on prediction data
 #'
 #' @param data prediction data from fishfit scripts
-#' @param subregion choose AK BSAI, AK GULF, PBS, NWFSC
+#' @param subregion choose AK ALEUTIANS, AK BERING, AK GULF, PBS, NWFSC
 #' @param common_name species common name 
 #' @return a ggplot object
 #' @importFrom scales trans_new
@@ -21,18 +21,18 @@
 #' data(predictions_nwfsc)
 #' data <- bind_rows(predictions_afsc, predictions_pbs, predictions_nwfsc)
 #' 
-#' fishmap(data, c("AK BSAI", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
+#' fishmap(data, c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), "arrowtooth flounder")
 #' fishmap(data, "PBS", "dover sole")
 #' }
-fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), common_name) {
+fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK ALEUTIANS","AK BERING", "AK GULF"), common_name) {
   # 
-  if(all(c("AK BSAI", "AK GULF") %in% subregion)) {
-    subregion <- setdiff(subregion, c("AK BSAI", "AK GULF"))
+  if(all(c("AK ALEUTIANS","AK BERING", "AK GULF") %in% subregion)) {
+    subregion <- setdiff(subregion, c("AK ALEUTIANS","AK BERING", "AK GULF"))
     subregion <- unique(c("AFSC", subregion))
   }
   
   # Clean data
-  rrr <- unique(ifelse(subregion %in% c("AK BSAI", "AK GULF"), "AFSC", subregion))
+  rrr <- unique(ifelse(subregion %in% c("AK ALEUTIANS","AK BERING", "AK GULF"), "AFSC", subregion))
   data <- data |> 
     filter(.data$species == common_name) |>
     filter(.data$sanity != FALSE) |>
@@ -78,7 +78,7 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
       name <- "US West Coast"
       caption <- "Survey year: 2024."
     }
-    else if (i == "AK BSAI" | i == "AK GULF" | i == "AFSC"){
+    else if (i == "AK ALEUTIANS" | i == "AK BERING" | i == "AK GULF" | i == "AFSC"){
       combined <- bind_rows(alaska, canada, states)
       proj <- st_transform(combined, crs = 32602)
       proj <- suppressWarnings(st_crop(proj, c(xmin = -606409.9, ymin = 3190000, xmax = 3250000, ymax = 8000000)))
@@ -87,11 +87,15 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
         year <- "2023/2024"
         name <- "Alaska"
         caption <- str_wrap("Survey year: Gulf of Alaska (2023), northern Bering Sea (2023), eastern Bering Sea (2024), Aleutian Islands (2024).", 45)
-      } else if (i == "AK BSAI") {
+      } else if (i == "AK ALEUTIANS") {
         year <- "2023/2024"
-        name <- "Aleutians/Bering Sea"
-        caption <- str_wrap("Survey year: northern Bering Sea (2023), eastern Bering Sea (2024), Aleutian Islands (2024).", 45)
-      } else if (i == "AK GULF") {
+        name <- "Aleutians"
+        caption <- str_wrap("Survey year: Aleutian Islands (2024).", 45)
+      } else if (i == "AK BERING") {
+        year <- "2023/2024"
+        name <- "Bering Sea"
+        caption <- str_wrap("Survey year: northern Bering Sea (2023), eastern Bering Sea (2024)", 45)
+      }else if (i == "AK GULF") {
         year <- "2023"
         name <- "Gulf of Alaska"
         caption <- "Survey year: 2023."
@@ -111,8 +115,12 @@ fishmap <- function(data, subregion = c("NWFSC", "PBS", "AK BSAI", "AK GULF"), c
     
     if (i == "AK GULF") {
       subset <- data |> filter(.data$survey == "Gulf of Alaska Bottom Trawl Survey")
-    } else if (i == "AK BSAI") {
-      subset <- data |> filter(.data$survey != "Gulf of Alaska Bottom Trawl Survey")
+    } else if (i == "AK ALEUTIANS") {
+      subset <- data |> filter(.data$survey == "Aleutian Islands Bottom Trawl Survey")
+    } else if (i == "AK BERING") {
+      subset <- data |> filter(.data$survey %in% c("Northern Bering Sea Crab/Groundfish Survey - Eastern Bering Sea Shelf Survey Extension",
+                                                   "Eastern Bering Sea Crab/Groundfish Bottom Trawl Survey",                            
+                                                   "Eastern Bering Sea Slope Bottom Trawl Survey"))
     } else {
       subset <- data |> filter(.data$region == i)
     }

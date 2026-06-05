@@ -27,7 +27,7 @@ data("all_dbi")
  
  
 The functions take a species common or scientific name and one or more `surveys`. `surveys` may be a single survey area, a list of survey areas, or a survey group. 
-For survey group "AK BSAI" (Alaska Bering Sea, Aleutian Islands), the survey "U.S. Eastern Bering Sea Standard Region" is excluded in favor of the extended "U.S. Eastern Bering Sea Standard Plus NW Region" data.
+For survey group "AK BERING" (Alaska Bering Sea), the survey "U.S. Eastern Bering Sea Standard Region" is excluded in favor of the extended "U.S. Eastern Bering Sea Standard Plus NW Region" data.
 
 ```{r}
 #survey names

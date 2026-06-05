@@ -1,7 +1,7 @@
 #' plot von Bertalanffy function predictions
 #'
 #' @param data biological data containing age, length, and sex information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.
 #' @param species species common or scientific name .
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.
 #' @return a ggplot object
@@ -20,7 +20,7 @@
 #' plot_growth(all_data, species = "arrowtooth flounder")
 #' plot_growth(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
-plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),species, facet_all = TRUE) {
+plot_growth <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "NWFSC", "PBS"),species, facet_all = TRUE) {
   data <- data |>
     filter(!is.na(.data$length_cm)) |>
     filter(!is.na(.data$age_years)) |>
@@ -32,10 +32,10 @@ plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS
     filter(.data$survey %in% subregions) |>
     filter(species == .data$common_name | species == .data$scientific_name)
   
-  data$survey <- factor(data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                        labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
-  predictions$survey <- factor(predictions$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                               labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  data$survey <- factor(data$survey, levels = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
+                        labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  predictions$survey <- factor(predictions$survey, levels = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"),
+                               labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   # Exit if no data
   if (nrow(predictions) == 0) {
@@ -76,7 +76,7 @@ plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS
   #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
+      graph <- graph + facet_wrap(~survey, ncol = 5, drop = FALSE)
       # find which regions have no data
       empty_surveys <- setdiff(levels(data$survey), unique(predictions$survey))
       
@@ -91,7 +91,7 @@ plot_growth <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS
       }
     }
     else if (facet_all == FALSE) {
-      graph <- graph + facet_wrap(~survey, ncol = 4)
+      graph <- graph + facet_wrap(~survey, ncol = 5)
     }}
  
   return(graph)

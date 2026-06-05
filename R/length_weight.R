@@ -1,7 +1,7 @@
 #' Main function to plot length-weight relationships by sex
 #'
 #' @param data biological data containing age, length, and sex information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK AK ALEUTIANS, and/or AK BERING. Default all.
 #' @param species species common or scientific name.
 #' @param subset default TRUE for a faster plotting subset of n = 10000. Set FALSE for all available data.
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.
@@ -23,7 +23,7 @@
 #' length_weight(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_weight <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species, subset = TRUE, facet_all = TRUE) { # subset default
+length_weight <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), species, subset = TRUE, facet_all = TRUE) { # subset default
 
 #### DATA ####
   #load lw prediction dataset
@@ -66,12 +66,12 @@ annotations <- fishyplots::lw_predictions |>
   
 
 #rename for labeling
-annotations$survey <-  factor(annotations$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                              labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
-spec.data$survey <- factor(spec.data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                      labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
-predict_all$survey <- factor(predict_all$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                                labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+annotations$survey <-  factor(annotations$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"),
+                              labels = c("Aleutian Islands" , "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+spec.data$survey <- factor(spec.data$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"),
+                      labels = c("Aleutian Islands" , "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+predict_all$survey <- factor(predict_all$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"),
+                                labels = c("Aleutian Islands" , "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
 
 #### PLOTTING #### 
 #set M vs F color
@@ -130,7 +130,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
   #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
-      plot <- plot + facet_wrap(~survey, ncol = 4, drop = FALSE)
+      plot <- plot + facet_wrap(~survey, ncol = 5, drop = FALSE)
       # find which regions have no data
       empty_surveys <- setdiff(levels(spec.data$survey), unique(spec.data$survey))
       
@@ -145,7 +145,7 @@ sex.color <- c("M" = "#E69F00", "F" = "#009E73")
       }
     }
     else if (facet_all == FALSE) {
-      plot <- plot + facet_wrap(~survey, ncol = 4)
+      plot <- plot + facet_wrap(~survey, ncol = 5)
     }}
   
   

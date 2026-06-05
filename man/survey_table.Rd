@@ -6,7 +6,7 @@
 \usage{
 survey_table(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   form = 2,
   facet_all = TRUE
@@ -15,7 +15,7 @@ survey_table(
 \arguments{
 \item{data}{biological data containing length and depth information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+\item{subregions}{choose NWFSC, PBS, AK GULF, AK BERING and/or AK ALEUTIANS. Default all.}
 
 \item{species}{species common or scientific name.}
 
@@ -34,7 +34,7 @@ Main function to display survey specimen counts
 data(nwfsc_bio)
 data(afsc_bio)
 data(pbs_bio)
-all_data <- rbind(nwfsc_bio, afsc_bio, pbs_bio)
+all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
 
 survey_table(all_data, species = "arrowtooth flounder", form = 1)
 survey_table(all_data, species = "arrowtooth flounder", form = 2)

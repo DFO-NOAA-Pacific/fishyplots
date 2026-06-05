@@ -44,7 +44,7 @@ In order to manage the right skew caused by older groundfish, ages are binned at
 
 ```{r plot1, warning = FALSE, fig.height = 5, fig.width = 12}
 age_frequency(data = all_data, 
-              subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+              subregions = c("PBS", "NWFSC", "AK ALEUTIANS","AK BERING", "AK GULF"), 
               species = "arrowtooth flounder")
 
 ```
@@ -55,7 +55,7 @@ The following function generates a length frequency plot. If you want to instead
 
 ```{r plot2, fig.height = 5, fig.width = 12}
 length_frequency(data = all_data, 
-                 subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+                 subregions = c("PBS", "NWFSC", "AK ALEUTIANS", "AK BERING", "AK GULF"), 
                  species = "arrowtooth flounder")
 
 length_frequency(data = nwfsc_bio, 
@@ -70,7 +70,7 @@ We also have a function that provides mean length over time differentiated by se
 
 ```{r fig.height = 5, fig.width = 12}
 length_ts(data = all_data, 
-          subregions = c("PBS", "NWFSC", "AK BSAI", "AK GULF"), 
+          subregions = c("PBS", "NWFSC", "AK ALEUTIANS", "AK BERING", "AK GULF"), 
           species = "arrowtooth flounder")
 ```
 
@@ -80,7 +80,7 @@ The next function plots both a histogram and heatmap for the age-depth relations
 
 ```{r plot3, fig.height = 6, fig.width = 7}
 plot_age_depth(data = all_data, 
-               subregion = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), 
+               subregion = c("AK ALEUTIANS", "AK BERING", "AK GULF", "PBS", "NWFSC"), 
                species = "arrowtooth flounder")
 
 ```
@@ -112,9 +112,9 @@ data(vb_predictions)
 
 The function takes in the biological data, the desired region(s), and 1 species. The argument `facet_all` will automatically include all subregions regardless of missing data, but can be turned off when set to FALSE.
 
-```{r plot6, fig.height = 4, fig.width = 12}
+```{r plot6, fig.height = 5, fig.width = 15}
 plot_growth(data = all_data,
-            subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+            subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
             species = "arrowtooth flounder")
 ```
 

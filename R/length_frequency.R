@@ -1,7 +1,7 @@
 #' Function to plot length frequency of fish species
 #'
 #' @param data biological data containing age and length information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING Default all.
 #' @param species species common or scientific name.
 #' @param time_series TRUE or FALSE 
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted 
@@ -24,7 +24,7 @@
 #' length_frequency(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"), species, time_series = TRUE, facet_all = TRUE) {
+length_frequency <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "NWFSC", "PBS"), species, time_series = TRUE, facet_all = TRUE) {
   # Clean data
   data_clean <- data |>
     filter(!is.na(.data$length_cm)) |>
@@ -51,8 +51,8 @@ length_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC",
   }
   if (time_series == TRUE) {
     
-    data_clean$survey <- factor(data_clean$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                                        labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+    data_clean$survey <- factor(data_clean$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"),
+                                        labels = c("Aleutian Islands","Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
     
     summary_stats <- data_clean |>
       group_by(.data$year, .data$survey) |>
@@ -78,7 +78,7 @@ length_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC",
     #facet wrap if plotting all regions
     if (length(subregions) > 1) {
       if (facet_all == TRUE) {
-        graph <- graph + facet_wrap(~survey, ncol = 4, drop = FALSE)
+        graph <- graph + facet_wrap(~survey, ncol = 5, drop = FALSE)
         # find which regions have no data
         empty_surveys <- setdiff(levels(data_clean$survey), unique(summary_stats$survey))
         
@@ -93,7 +93,7 @@ length_frequency <- function(data, subregions = c("AK BSAI", "AK GULF", "NWFSC",
         }
       }
       else if (facet_all == FALSE) {
-        graph <- graph + facet_wrap(~survey, ncol = 4)
+        graph <- graph + facet_wrap(~survey, ncol = 5)
       }}
     
     return(graph)

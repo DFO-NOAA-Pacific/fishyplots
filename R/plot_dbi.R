@@ -35,9 +35,11 @@ plot_dbi <- function(species, surveys, facet_all = TRUE) {
   
   # Assign surveys to larger region center if argument is a single center name (ex input "PBS" will plot c("SYN QCS","SYN WCVI", "SYN HS", "SYN WCHG"))
   if (is.character(surveys) && length(surveys) == 1) {
-    if (surveys == "AK BSAI") {
-      surveys <- c("U.S. Aleutian Islands", "U.S. Eastern Bering Sea Slope", 
+    if (surveys == "AK BERING") {
+      surveys <- c("U.S. Eastern Bering Sea Slope", 
                    "U.S. Eastern Bering Sea Standard Plus NW Region", "U.S. Northern Bering Sea")
+    } else if (surveys == "AK ALEUTIANS") {
+      surveys <- "U.S. Aleutian Islands" 
     } else if (surveys == "AK GULF") {
       surveys <- "U.S. Gulf of Alaska"
     }else if (surveys == "PBS") {

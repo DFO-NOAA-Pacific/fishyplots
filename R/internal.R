@@ -28,9 +28,9 @@ convert_sex <- function(x) {
   )
 }
 
-#' group surveys to differentiate AK Gulf and AK BSAI surveys for later data visualization. 
+#' group surveys to differentiate AK Gulf, Aleutians, and Bering surveys for later data visualization. 
 #'
-#' groups all PBS surveys under "PBS". groups Gulf of Alaska into "AK GULF". groups Bering Sea and Aleutian Island surveys into "AK BSAI"
+#' groups all PBS surveys under "PBS". Groups Gulf of Alaska into "AK GULF". Groups Bering Sea into "AK BERING". Groups Aleutian Islands into "AK ALEUTIANS".
 #' Internal function.
 #'
 #' @param data bio data
@@ -42,7 +42,8 @@ group_survey <- function(data){
       grepl("U.S. West Coast", data$survey, ignore.case = TRUE) ~ "NWFSC",
       grepl("SYN", data$survey, ignore.case = TRUE) ~ "PBS",
       grepl("Gulf", data$survey, ignore.case = TRUE) ~ "AK GULF",
-      TRUE ~ "AK BSAI"
+      grepl("Bering", data$survey, ignore.case = TRUE) ~ "AK BERING",
+      TRUE ~ "AK ALEUTIANS"
     )
     return(data)
   }

@@ -6,7 +6,7 @@
 \usage{
 age_frequency(
   data,
-  subregions = c("AK BSAI", "AK GULF", "NWFSC", "PBS"),
+  subregions = c("AK ALEUTIANS", "AK BERING", "AK GULF", "NWFSC", "PBS"),
   species,
   by_sex = FALSE,
   cutoff = 0.95,
@@ -16,7 +16,7 @@ age_frequency(
 \arguments{
 \item{data}{biological data containing age and sex information for at least regions specified in \code{subregions}.}
 
-\item{subregions}{choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.}
+\item{subregions}{choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.}
 
 \item{species}{species common or scientific name.}
 
@@ -31,20 +31,4 @@ a ggplot object
 }
 \description{
 Plots distribution of ages across survey years.
-}
-\examples{
-\dontrun{
-data(nwfsc_bio)
-data(afsc_bio)
-data(pbs_bio)
-all_data <- dplyr::bind_rows(nwfsc_bio, afsc_bio, pbs_bio)
-
-age_frequency(data = all_data, 
-subregions = c("NWFSC", "AK GULF", "PBS", "AK BSAI"),
- species = "arrowtooth flounder")
-age_frequency(data = all_data,
-  subregions =  c("NWFSC", "AK GULF"), 
-  species = "anoplopoma fimbria", 
-  by_sex = T, facet_all = F)
-}
 }

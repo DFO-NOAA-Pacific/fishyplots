@@ -11,17 +11,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' US West Coast
+#' #US West Coast
 #' load("data/nwfsc_bio.rda")
 #' data <- nwfsc_bio |> filter(common_name == "arrowtooth flounder")
 #' vonb_growth(data)
 #' 
-#' Canada
+#' #Canada
 #' load("data/pbs_bio.rda")
 #' data <- pbs_bio |> filter(common_name == "arrowtooth flounder")
 #' vonb_growth(data)
 #' 
-#' Alaska
+#' #Alaska
 #' load("data/afsc_bio.rda")
 #' data <- afsc_bio |> filter(common_name == "arrowtooth flounder")
 #' vonb_growth(data)

@@ -29,7 +29,8 @@ pbs_biomass <- do.call(rbind, lapply(names(pbs_biomass),function(spec){
 all_dbi <- rbind(pbs_biomass, afsc_biomass, nwfsc_biomass) %>% 
   clean_fishnames() %>% 
   mutate(survey_group = case_when(
-    grepl("bering|aleutian", survey, ignore.case = TRUE) ~ "AK BSAI", #group surveys of ak bsai
+    grepl("bering", survey, ignore.case = TRUE) ~ "AK BERING",
+    grepl("aleutian", survey, ignore.case = TRUE) ~ "AK ALEUTIANS",
     grepl("Gulf", survey, ignore.case = FALSE) ~ "AK GULF", 
     grepl("SYN", survey, ignore.case = FALSE) ~ "PBS", 
     TRUE ~ "NWFSC"

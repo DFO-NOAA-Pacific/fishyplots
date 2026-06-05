@@ -1,7 +1,7 @@
 #' Main function to plot mean lengths over time by sex
 #'
 #' @param data biological data containing length information for at least regions specified in `subregions`.
-#' @param subregions choose NWFSC, PBS, AK GULF, and/or AK BSAI. Default all.
+#' @param subregions choose NWFSC, PBS, AK GULF, AK ALEUTIANS, and/or AK BERING. Default all.
 #' @param species species common or scientific name.
 #' @param facet_all if TRUE this will facet all surveys regardless of missing data, if FALSE then only the region(s) with data will be faceted.#' @return a time series plot of mean lengths by sex
 #' @importFrom ggplot2 ggplot aes geom_point geom_line scale_color_manual scale_fill_manual theme_bw theme element_blank element_text xlab ylab geom_label geom_ribbon
@@ -20,7 +20,7 @@
 #' length_ts(all_data, c("NWFSC", "AK GULF"),species = "anoplopoma fimbria", facet_all = F)
 #' }
 
-length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC"), species, facet_all = TRUE) {
+length_ts <- function(data, subregions = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"), species, facet_all = TRUE) {
   
   spec.data <- data |>
     filter(!is.na(.data$length_cm), !.data$sex == "U") |>
@@ -33,8 +33,8 @@ length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC")
   }
   
   #set region names
-  spec.data$survey <- factor(spec.data$survey, levels = c("AK BSAI", "AK GULF", "PBS", "NWFSC"),
-                             labels = c("Aleutians/Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
+  spec.data$survey <- factor(spec.data$survey, levels = c("AK ALEUTIANS","AK BERING", "AK GULF", "PBS", "NWFSC"),
+                             labels = c("Aleutian Islands", "Bering Sea", "Gulf of Alaska", "Canada", "U.S. West Coast"))
   
   #plot version of the data
   plot.data <- spec.data |> 
@@ -85,7 +85,7 @@ length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC")
   #facet wrap if plotting all regions
   if (length(subregions) > 1) {
     if (facet_all == TRUE) {
-      plot <- plot + facet_wrap(~survey, ncol = 4, drop = FALSE)
+      plot <- plot + facet_wrap(~survey, ncol = 5, drop = FALSE)
       # find which regions have no data
       empty_surveys <- setdiff(levels(spec.data$survey), unique(spec.data$survey))
       
@@ -99,7 +99,7 @@ length_ts <- function(data, subregions = c("AK BSAI", "AK GULF", "PBS", "NWFSC")
       }
     }
     else if (facet_all == FALSE) {
-      plot <- plot + facet_wrap(~survey, ncol = 4)
+      plot <- plot + facet_wrap(~survey, ncol = 5)
     }}
   
   

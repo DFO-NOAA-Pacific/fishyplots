@@ -5,10 +5,10 @@
 \alias{ak_survey_lengths}
 \title{ak_survey_lengths: length count data from AFSC surveys}
 \format{
-A data frame with 1158 rows and 5 variables:
+A data frame with 1398 rows and 5 variables:
 \describe{
 \item{year}{year of data collection}
-\item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska) or AK BSAI (Bering Sea and Aleutian Islands)}
+\item{survey}{subregion group within AFSC: AK GULF (Gulf of Alaska), AK BERING (Bering Sea), and AK ALEUTIAN and (Aleutian Islands)}
 \item{common_name}{common name of specien}
 \item{scientific_name}{scientific name of specimen}
 \item{length.count}{number of lengths taken for specimen in survey and year}
