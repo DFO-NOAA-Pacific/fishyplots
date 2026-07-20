@@ -25,12 +25,15 @@ Imports:
     grid,
     stringr,
     patchwork,
-    grDevices
+    grDevices,
+    terra
 Suggests:
     knitr,
     MASS,
     rmarkdown,
     testthat (>= 3.0.0)
+Remotes:
+    github::rspatial/terra
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
